@@ -25,6 +25,9 @@ on:
       GITHUB_NPM_TOKEN:
         description: Token to install GitHub packages with
         required: false
+      NPM_TOKEN:
+        description: Token to install npm packages with
+        required: false
     outputs:
       artifact_name:
         value: ${{ jobs.build.outputs.artifact_name }}
@@ -38,6 +41,7 @@ jobs:
       - uses: skyleague/node-standards/.github/actions/setup-node@main
         env:
           GITHUB_NPM_TOKEN: ${{ secrets.GITHUB_NPM_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
       - run: npm run lint
 
   standards:
@@ -50,6 +54,7 @@ jobs:
           postinstall: ${{ inputs.standards_postinstall }}
         env:
           GITHUB_NPM_TOKEN: ${{ secrets.GITHUB_NPM_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
       - run: npm run check:project
 
   types:
@@ -60,6 +65,7 @@ jobs:
       - uses: skyleague/node-standards/.github/actions/setup-node@main
         env:
           GITHUB_NPM_TOKEN: ${{ secrets.GITHUB_NPM_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
       - run: npm run check:types
 
   test:
@@ -70,4 +76,5 @@ jobs:
       - uses: skyleague/node-standards/.github/actions/setup-node@main
         env:
           GITHUB_NPM_TOKEN: ${{ secrets.GITHUB_NPM_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
       - run: npm run check:coverage
