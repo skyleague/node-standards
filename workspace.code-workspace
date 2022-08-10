@@ -1,0 +1,13 @@
+{
+  "folders": [
+    {
+      "path": "."
+    },
+    {
+      "path": "examples\\library"
+    },
+    {
+      "path": "examples\\yargs-cli"
+    }
+  ]
+}

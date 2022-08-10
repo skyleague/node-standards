@@ -1,0 +1,35 @@
+name: 'Release using semantic release'
+
+inputs:
+  dry_run:
+    description: Enable dry-run flag on semantic-release
+    required: false
+    default: 'true'
+  git_author:
+    description: The name of the git committer
+    required: false
+    default: 'Hoid'
+  git_email:
+    description: The git committer email address
+    required: false
+    default: 'hoid@zefiros.io'
+
+runs:
+  using: 'composite'
+  steps:
+    - if: ${{ inputs.dry_run == 'false' }}
+      run: npx semantic-release
+      shell: bash
+      env:
+        GIT_AUTHOR_NAME: ${{ inputs.git_author }}
+        GIT_COMMITTER_NAME: ${{ inputs.git_author }}
+        GIT_AUTHOR_EMAIL: ${{ inputs.git_email }}
+        GIT_COMMITTER_EMAIL: ${{ inputs.git_email }}
+    - if: ${{ inputs.dry_run == 'true' }}
+      run: npx semantic-release --dry-run
+      shell: bash
+      env:
+        GIT_AUTHOR_NAME: ${{ inputs.git_author }}
+        GIT_COMMITTER_NAME: ${{ inputs.git_author }}
+        GIT_AUTHOR_EMAIL: ${{ inputs.git_email }}
+        GIT_COMMITTER_EMAIL: ${{ inputs.git_email }}

@@ -1,0 +1,44 @@
+{
+  "name": "@skyleague/package-name",
+  "description": "example package",
+  "version": "0.0.1",
+  "license": "MIT",
+  "main": ".main.js",
+  "types": "index.d.ts",
+  "bin": {
+    "example-cli": "./bin/run"
+  },
+  "engines": {
+    "node": ">=14"
+  },
+  "node-standards": {
+    "type": "yargs-cli"
+  },
+  "files": ["bin", ".main.js", ".main.js.map", "index.d.ts", "src/**/*.d.ts", "package.json"],
+  "scripts": {
+    "build": "npx ts-node esbuild.config.ts",
+    "build:clean": "npx tsc --build --clean && rm .main.js && rm .main.js.map",
+    "build:docs": "npx typedoc",
+    "check:cost": "npx cost-of-modules --no-install --include-dev",
+    "check:coverage": "npx jest --collectCoverage=true",
+    "check:full": "npm run lint && npm run check:types && npm run check:coverage && npm run build && npm run check:project",
+    "check:project": "npx node-standards lint",
+    "check:types": "npx tsc -p tsconfig.json",
+    "fix": "npm run lint -- --fix",
+    "format": "npx prettier \"**/*.{ts,js,json,yml,yaml}\" --ignore-path .gitignore --write",
+    "lint": "npx eslint \"{src,test,typing}/**/*.ts\" --no-eslintrc --cache -c .eslintrc.js --ignore-path .gitignore",
+    "lint:full": "bash -c \"FULL_LINT=true npm run lint\"",
+    "package": "rm -rf .dist && npm run build",
+    "prepare": "npx husky install || true",
+    "test": "npx jest"
+  },
+  "devDependencies": {
+    "@types/source-map-support": "^0.5.4",
+    "@skyleague/node-standards": "file:.yalc/@skyleague/node-standards",
+    "source-map-support": "^0.5.21",
+    "tslib": "^2.4.0",
+    "typescript": "^4.7.3",
+    "yargs": "^17.5.1"
+  },
+  "dependencies": {}
+}

@@ -1,0 +1,59 @@
+name: 'Setup Node.js'
+description: 'Setup a NodeJS environment and restore dependencies'
+
+inputs:
+  node-version:
+    description: 'Node version to use, default to (16.x)'
+    required: true
+    default: 16
+  working-directory:
+    description: 'From which directory do we need to set this up'
+    required: true
+    default: './'
+  global-packages:
+    description: 'Which global packages to install'
+    required: false
+    default: ''
+  preinstall:
+    description: 'Preinstall command'
+    required: false
+    default: ''
+  postinstall:
+    description: 'Postinstall command'
+    required: false
+    default: ''
+outputs:
+  cache-hit:
+    description: 'Had an exact cache hit'
+    value: ${{ steps.cache.outputs.cache-hit }}
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Use Node.js ${{ inputs.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ inputs.node-version }}
+    - name: Cache dependencies
+      id: cache
+      uses: actions/cache@v3
+      with:
+        path: ${{ inputs.working-directory }}node_modules
+        key: ${{ inputs.working-directory }}-node-modules-${{ inputs.node-version }}-${{ hashFiles('package-lock.json') }}
+    - name: Install global dependencies
+      if: ${{ inputs.global-packages != '' }}
+      run: npm install -g ${{ inputs.global-packages }}
+      shell: bash
+    - name: Preinstall
+      if: ${{ inputs.preinstall != '' }}
+      run: ${{ inputs.preinstall }}
+      shell: bash
+    - name: Install dependencies
+      if: steps.cache.outputs.cache-hit != 'true'
+      run: npm ci --ignore-scripts
+      working-directory: ${{ inputs.working-directory }}
+      shell: bash
+    - name: Postinstall
+      if: ${{ inputs.postinstall != '' }}
+      run: ${{ inputs.postinstall }}
+      shell: bash

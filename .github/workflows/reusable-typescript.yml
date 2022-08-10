@@ -1,0 +1,73 @@
+name: Reusable Typescript Pipeline
+
+on:
+  workflow_call:
+    inputs:
+      artifact_path:
+        description: Path of the build artifacts (multi-line)
+        type: string
+        required: false
+        default: |
+          .main.js
+          .main.js.map
+          index.d.ts
+          src/**/*.d.ts
+      artifact_name:
+        description: Custom name of the build artifacts
+        type: string
+        required: false
+        default: build-artifacts
+      standards_postinstall:
+        description: Postinstall command to run on the standards job
+        type: string
+        required: false
+    secrets:
+      GITHUB_NPM_TOKEN:
+        description: Token to install GitHub packages with
+        required: false
+    outputs:
+      artifact_name:
+        value: ${{ jobs.build.outputs.artifact_name }}
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: skyleague/node-standards/.github/actions/setup-node@next
+        env:
+          GITHUB_NPM_TOKEN: ${{ secrets.GITHUB_NPM_TOKEN }}
+      - run: npm run lint
+
+  standards:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: skyleague/node-standards/.github/actions/setup-node@next
+        with:
+          postinstall: ${{ inputs.standards_postinstall }}
+        env:
+          GITHUB_NPM_TOKEN: ${{ secrets.GITHUB_NPM_TOKEN }}
+      - run: npm run check:project
+
+  types:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: skyleague/node-standards/.github/actions/setup-node@next
+        env:
+          GITHUB_NPM_TOKEN: ${{ secrets.GITHUB_NPM_TOKEN }}
+      - run: npm run check:types
+
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: skyleague/node-standards/.github/actions/setup-node@next
+        env:
+          GITHUB_NPM_TOKEN: ${{ secrets.GITHUB_NPM_TOKEN }}
+      - run: npm run check:coverage

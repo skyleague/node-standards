@@ -1,0 +1,47 @@
+name: Reusable Typescript build pipeline
+
+on:
+  workflow_call:
+    inputs:
+      artifact_path:
+        description: Path of the build artifacts (multi-line)
+        type: string
+        required: false
+        default: |
+          .main.js
+          .main.js.map
+          index.d.ts
+          src/**/*.d.ts
+      artifact_name:
+        description: Custom name of the build artifacts
+        type: string
+        required: false
+        default: build-artifacts
+    secrets:
+      GITHUB_NPM_TOKEN:
+        description: Token to install GitHub packages with
+        required: false
+    outputs:
+      artifact_name:
+        value: ${{ jobs.build.outputs.artifact_name }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: skyleague/node-standards/.github/actions/setup-node@next
+        env:
+          GITHUB_NPM_TOKEN: ${{ secrets.GITHUB_NPM_TOKEN }}
+      - run: npm run build
+      - name: Dist artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ inputs.artifact_name }}
+          path: ${{ inputs.artifact_path }}
+      - id: set_artifact_name
+        run: echo '::set-output name=artifact_name::${{ inputs.artifact_name }}'
+
+    outputs:
+      artifact_name: ${{ steps.set_artifact_name.outputs.artifact_name }}

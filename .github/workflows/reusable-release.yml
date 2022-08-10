@@ -1,0 +1,68 @@
+name: Reusable release pipeline for NodeJS projects
+
+on:
+  workflow_call:
+    inputs:
+      build_artifact_name:
+        description: Name of the build artifact
+        type: string
+        required: true
+      build_artifact_path:
+        required: false
+        type: string
+      publish_docs:
+        description: Publish documentation folder to github pages
+        type: string
+        required: false
+        default: 'true'
+    secrets:
+      GITHUB_NPM_TOKEN:
+        description: Token to install GitHub packages with
+        required: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Download node standards
+        uses: actions/download-artifact@v3
+        with:
+          name: ${{ inputs.build_artifact_name }}
+          path: ${{ inputs.build_artifact_path }}
+      - uses: skyleague/node-standards/.github/actions/setup-node@next
+        env:
+          GITHUB_NPM_TOKEN: ${{ secrets.GITHUB_NPM_TOKEN }}
+      - uses: skyleague/node-standards/.github/actions/release@next
+        with:
+          dry_run: ${{ (github.ref == 'refs/heads/next' || github.ref == 'refs/heads/main') && 'false' || 'true' }}
+        env:
+          # Uses GITHUB_TOKEN for publish permissions
+          GITHUB_NPM_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  documentation:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    if: ${{ inputs.publish_docs == 'true' && (github.ref == 'refs/heads/next' || github.ref == 'refs/heads/main') }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: skyleague/node-standards/.github/actions/setup-node@next
+        env:
+          GITHUB_NPM_TOKEN: ${{ secrets.GITHUB_NPM_TOKEN }}
+      - run: npm run build:docs
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v1
+        with:
+          path: '.docs'
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v1
