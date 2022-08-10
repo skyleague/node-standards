@@ -8,12 +8,12 @@ jobs:
     with:
       standards_postinstall: npm link
     secrets:
-      GITHUB_NPM_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   build:
     uses: skyleague/node-standards/.github/workflows/reusable-build.yml@next
     secrets:
-      GITHUB_NPM_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   library:
     needs: [build]
@@ -31,7 +31,7 @@ jobs:
           global-packages: yalc
           preinstall: yalc publish --script=false && cd examples/library && yalc add @skyleague/node-standards
         env:
-          GITHUB_NPM_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
       - run: npm run check:full
         working-directory: examples/library
 
@@ -51,7 +51,7 @@ jobs:
           global-packages: yalc
           preinstall: yalc publish --script=false && cd examples/yargs-cli && yalc add @skyleague/node-standards
         env:
-          GITHUB_NPM_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
       - run: npm run check:full
         working-directory: examples/yargs-cli
 
@@ -61,4 +61,4 @@ jobs:
     with:
       build_artifact_name: ${{ needs.build.outputs.artifact_name }}
     secrets:
-      GITHUB_NPM_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
