@@ -34,7 +34,7 @@
     "tslib": "^2.4.0"
   },
   "devDependencies": {
-    "@skyleague/node-standards": "file:.yalc/@skyleague/node-standards",
-    "typescript": "^4.7.3"
+    "@skyleague/node-standards": "^1.0.0-beta.2",
+    "typescript": "^4.7.4"
   }
 }
