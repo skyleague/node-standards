@@ -18,6 +18,10 @@ inputs:
     description: 'Preinstall command'
     required: false
     default: ''
+  install:
+    description: 'Install command'
+    required: false
+    default: 'npm ci --ignore-scripts'
   postinstall:
     description: 'Postinstall command'
     required: false
@@ -50,7 +54,7 @@ runs:
       shell: bash
     - name: Install dependencies
       if: steps.cache.outputs.cache-hit != 'true'
-      run: npm ci --ignore-scripts
+      run: ${{ inputs.install }}
       working-directory: ${{ inputs.working-directory }}
       shell: bash
     - name: Postinstall
