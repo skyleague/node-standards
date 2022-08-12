@@ -13,6 +13,10 @@ inputs:
     description: The git committer email address
     required: false
     default: 'hoid@zefiros.io'
+  beta_release:
+    description: Create beta release
+    required: false
+    default: 'false'
 
 runs:
   using: 'composite'
@@ -21,6 +25,7 @@ runs:
       run: npx semantic-release
       shell: bash
       env:
+        BETA_RELEASE: ${{ inputs.beta_release == 'true' && 'true' || 'false' }}
         GIT_AUTHOR_NAME: ${{ inputs.git_author }}
         GIT_COMMITTER_NAME: ${{ inputs.git_author }}
         GIT_AUTHOR_EMAIL: ${{ inputs.git_email }}
@@ -29,6 +34,7 @@ runs:
       run: npx semantic-release --dry-run
       shell: bash
       env:
+        BETA_RELEASE: ${{ inputs.beta_release == 'true' && 'true' || 'false' }}
         GIT_AUTHOR_NAME: ${{ inputs.git_author }}
         GIT_COMMITTER_NAME: ${{ inputs.git_author }}
         GIT_AUTHOR_EMAIL: ${{ inputs.git_email }}

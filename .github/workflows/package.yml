@@ -1,17 +1,24 @@
 name: Typescript Package CI
 
-on: push
+on: 
+  push:
+  workflow_dispatch:
+      inputs:
+        beta_release:
+          description: Create beta release
+          required: true
+          type: boolean
 
 jobs:
   typescript:
-    uses: skyleague/node-standards/.github/workflows/reusable-typescript.yml@next
+    uses: skyleague/node-standards/.github/workflows/reusable-typescript.yml@main
     with:
       standards_postinstall: npm link
     secrets:
       GITHUB_NPM_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   build:
-    uses: skyleague/node-standards/.github/workflows/reusable-build.yml@next
+    uses: skyleague/node-standards/.github/workflows/reusable-build.yml@main
     secrets:
       GITHUB_NPM_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -25,7 +32,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: ${{ needs.build.outputs.artifact_name }}
-      - uses: skyleague/node-standards/.github/actions/setup-node@next
+      - uses: skyleague/node-standards/.github/actions/setup-node@main
         with:
           working-directory: examples/library/
           global-packages: yalc
@@ -45,7 +52,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: ${{ needs.build.outputs.artifact_name }}
-      - uses: skyleague/node-standards/.github/actions/setup-node@next
+      - uses: skyleague/node-standards/.github/actions/setup-node@main
         with:
           working-directory: examples/yargs-cli/
           global-packages: yalc
@@ -57,8 +64,9 @@ jobs:
 
   release:
     needs: [library, yargs, typescript, build]
-    uses: skyleague/node-standards/.github/workflows/reusable-release.yml@next
+    uses: skyleague/node-standards/.github/workflows/reusable-release.yml@main
     with:
       build_artifact_name: ${{ needs.build.outputs.artifact_name }}
+      beta_release: ${{ inputs.beta_release || false }}
     secrets:
       GITHUB_NPM_TOKEN: ${{ secrets.GITHUB_TOKEN }}

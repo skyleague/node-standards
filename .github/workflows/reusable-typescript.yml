@@ -35,7 +35,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - uses: skyleague/node-standards/.github/actions/setup-node@next
+      - uses: skyleague/node-standards/.github/actions/setup-node@main
         env:
           GITHUB_NPM_TOKEN: ${{ secrets.GITHUB_NPM_TOKEN }}
       - run: npm run lint
@@ -45,7 +45,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - uses: skyleague/node-standards/.github/actions/setup-node@next
+      - uses: skyleague/node-standards/.github/actions/setup-node@main
         with:
           postinstall: ${{ inputs.standards_postinstall }}
         env:
@@ -57,7 +57,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - uses: skyleague/node-standards/.github/actions/setup-node@next
+      - uses: skyleague/node-standards/.github/actions/setup-node@main
         env:
           GITHUB_NPM_TOKEN: ${{ secrets.GITHUB_NPM_TOKEN }}
       - run: npm run check:types
@@ -67,7 +67,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - uses: skyleague/node-standards/.github/actions/setup-node@next
+      - uses: skyleague/node-standards/.github/actions/setup-node@main
         env:
           GITHUB_NPM_TOKEN: ${{ secrets.GITHUB_NPM_TOKEN }}
       - run: npm run check:coverage
