@@ -6,12 +6,12 @@ jobs:
   typescript:
     uses: skyleague/node-standards/.github/workflows/reusable-typescript.yml@main
     secrets:
-      GITHUB_NPM_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   build:
     uses: skyleague/node-standards/.github/workflows/reusable-build.yml@main
     secrets:
-      GITHUB_NPM_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   release:
     needs: [typescript, build]
@@ -19,4 +19,4 @@ jobs:
     with:
       build_artifact_name: ${{ needs.build.outputs.artifact_name }}
     secrets:
-      GITHUB_NPM_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

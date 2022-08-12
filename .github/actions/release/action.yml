@@ -12,7 +12,7 @@ inputs:
   git_email:
     description: The git committer email address
     required: false
-    default: 'hoid@zefiros.io'
+    default: 'hoid@skyleague.io'
   beta_release:
     description: Create beta release
     required: false
