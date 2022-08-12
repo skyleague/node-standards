@@ -1,5 +1,6 @@
 {
   "name": "@skyleague/node-standards",
+  "version": "1.0.0",
   "description": "Build tools for SkyLeague packages",
   "license": "MIT",
   "main": ".main.js",

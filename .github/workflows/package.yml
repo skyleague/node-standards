@@ -1,13 +1,13 @@
 name: Typescript Package CI
 
-on: 
+on:
   push:
   workflow_dispatch:
-      inputs:
-        beta_release:
-          description: Create beta release
-          required: true
-          type: boolean
+    inputs:
+      beta_release:
+        description: Create beta release
+        required: true
+        type: boolean
 
 jobs:
   typescript:
@@ -37,6 +37,7 @@ jobs:
           working-directory: examples/library/
           global-packages: yalc
           preinstall: yalc publish --script=false && cd examples/library && yalc add @skyleague/node-standards
+          install: npm install --no-script
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
       - run: npm run check:full
@@ -57,6 +58,7 @@ jobs:
           working-directory: examples/yargs-cli/
           global-packages: yalc
           preinstall: yalc publish --script=false && cd examples/yargs-cli && yalc add @skyleague/node-standards
+          install: npm install --no-script
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
       - run: npm run check:full
