@@ -71,6 +71,8 @@ export class ProjectLinter {
 
     private lintFile(from: string, target: string): void {
         target = target.replace(/_gitignore$/g, '.gitignore')
+        target = target.replace(/_npmrc/g, '.npmrc')
+
         const oldContent = fs.existsSync(target) ? fs.readFileSync(target, 'utf-8') : undefined
         const newContent = fs.readFileSync(from, 'utf-8')
         const isDifferent = oldContent !== newContent
