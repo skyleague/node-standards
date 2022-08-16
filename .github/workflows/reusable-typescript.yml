@@ -21,6 +21,10 @@ on:
         description: Postinstall command to run on the standards job
         type: string
         required: false
+      working-directory:
+        type: string
+        required: true
+        default: './'
     secrets:
       GITHUB_NPM_TOKEN:
         description: Token to install GitHub packages with
@@ -35,10 +39,15 @@ on:
 jobs:
   check:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ inputs.working-directory }}
 
     steps:
       - uses: actions/checkout@v3
       - uses: skyleague/node-standards/.github/actions/setup-node@main
+        with:
+          working-directory: ${{ inputs.working-directory }}
         env:
           GITHUB_NPM_TOKEN: ${{ secrets.GITHUB_NPM_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
@@ -46,11 +55,15 @@ jobs:
 
   standards:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ inputs.working-directory }}
 
     steps:
       - uses: actions/checkout@v3
       - uses: skyleague/node-standards/.github/actions/setup-node@main
         with:
+          working-directory: ${{ inputs.working-directory }}
           postinstall: ${{ inputs.standards_postinstall }}
         env:
           GITHUB_NPM_TOKEN: ${{ secrets.GITHUB_NPM_TOKEN }}
@@ -59,10 +72,15 @@ jobs:
 
   types:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ inputs.working-directory }}
 
     steps:
       - uses: actions/checkout@v3
       - uses: skyleague/node-standards/.github/actions/setup-node@main
+        with:
+          working-directory: ${{ inputs.working-directory }}
         env:
           GITHUB_NPM_TOKEN: ${{ secrets.GITHUB_NPM_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
@@ -70,10 +88,15 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ inputs.working-directory }}
 
     steps:
       - uses: actions/checkout@v3
       - uses: skyleague/node-standards/.github/actions/setup-node@main
+        with:
+          working-directory: ${{ inputs.working-directory }}
         env:
           GITHUB_NPM_TOKEN: ${{ secrets.GITHUB_NPM_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
