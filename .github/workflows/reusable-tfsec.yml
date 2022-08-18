@@ -1,0 +1,80 @@
+name: tfsec
+
+on:
+  workflow_call:
+    inputs:
+      terraform-version:
+        description: "Terraform version to use, default to (1.2.7)"
+        required: true
+        type: string
+        default: "1.2.7"
+      working-directory:
+        description: "From which directory do we need to set this up"
+        required: true
+        type: string
+        default: "./"
+      preinstall:
+        description: "Preinstall command"
+        required: false
+        type: string
+        default: ""
+      postinstall:
+        description: "Postinstall command"
+        required: false
+        type: string
+        default: ""
+      cache-hash:
+        description: "Additional hash for caching"
+        required: false
+        type: string
+        default: ""
+
+jobs:
+  tfsec:
+    name: tfsec
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: setup terraform and cache
+        uses: skyleague/node-standards/.github/actions/setup-terraform@main
+        with:
+          terraform-version: ${{ inputs.terraform-version }}
+          working-directory: ${{ inputs.working-directory }}
+          preinstall: ${{ inputs.preinstall }}
+          postinstall: ${{ inputs.postinstall }}
+          cache-hash: ${{ inputs.cache-hash }}
+      - name: tfsec
+        uses: aquasecurity/tfsec-action@v1.0.2
+
+  validate:
+    name: validate
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: setup terraform and cache
+        uses: skyleague/node-standards/.github/actions/setup-terraform@main
+        with:
+          terraform-version: ${{ inputs.terraform-version }}
+          working-directory: ${{ inputs.working-directory }}
+          preinstall: ${{ inputs.preinstall }}
+          postinstall: ${{ inputs.postinstall }}
+          cache-hash: ${{ inputs.cache-hash }}
+      - run: terraform validate
+
+  lint:
+    name: lint
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: setup terraform and cache
+        uses: skyleague/node-standards/.github/actions/setup-terraform@main
+        with:
+          terraform-version: ${{ inputs.terraform-version }}
+          working-directory: ${{ inputs.working-directory }}
+          preinstall: ${{ inputs.preinstall }}
+          postinstall: ${{ inputs.postinstall }}
+          cache-hash: ${{ inputs.cache-hash }}
+      - run: terraform fmt -check

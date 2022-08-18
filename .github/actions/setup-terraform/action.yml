@@ -1,0 +1,57 @@
+name: "Setup Terraform"
+description: "Setup a Terraform environment and restore dependencies"
+
+inputs:
+  terraform-version:
+    description: "Terraform version to use, default to (1.2.7)"
+    required: true
+    default: 1.2.7
+  working-directory:
+    description: "From which directory do we need to set this up"
+    required: true
+    default: "./"
+  preinstall:
+    description: "Preinstall command"
+    required: false
+    default: ""
+  postinstall:
+    description: "Postinstall command"
+    required: false
+    default: ""
+  cache-hash:
+    description: "Additional hash for caching"
+    required: false
+    default: ""
+outputs:
+  cache-hit:
+    description: "Had an exact cache hit"
+    value: ${{ steps.cache.outputs.cache-hit }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Setup Terraform ${{ inputs.terraform-version }}
+      uses: hashicorp/setup-terraform@v1
+      with:
+        terraform_version: ${{ inputs.terraform-version }}
+    - name: Cache dependencies
+      id: cache
+      uses: actions/cache@v2
+      with:
+        path: |
+          ${{ inputs.working-directory }}.terraform
+          ${{ inputs.working-directory }}.terraform.lock.hcl
+        key: ${{ inputs.working-directory }}-terraform-${{ inputs.terraform-version }}-${{ hashFiles(inputs.working-directory) }}-${{ inputs.cache-hash }}
+    - name: Preinstall
+      if: ${{ inputs.preinstall != '' }}
+      run: ${{ inputs.preinstall }}
+      shell: bash
+    - name: Terraform Init
+      id: init
+      shell: bash
+      run: terraform init
+      working-directory: ${{ inputs.working-directory }}
+    - name: Postinstall
+      if: ${{ inputs.postinstall != '' }}
+      run: ${{ inputs.postinstall }}
+      shell: bash
