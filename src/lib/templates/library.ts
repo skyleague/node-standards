@@ -7,6 +7,10 @@ export const LibraryTemplate: ProjectTemplate = {
     type: PackageType.Library,
     repositoryUrl,
     scripts: undefined,
+    publishConfig: {
+        registry: 'https://registry.npmjs.org',
+        access: 'public',
+    },
     files: ['.main.js', '.main.js.map', 'index.d.ts', 'src/**/*.d.ts', 'package.json'],
     dependencies: undefined,
     devDependencies: undefined,

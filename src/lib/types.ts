@@ -10,6 +10,7 @@ export interface PackageConfiguration {
     template?: {
         exclude?: string[]
         lint?: {
+            publishConfig?: boolean
             files?: boolean
             dependencies?: boolean
             devDependencies?: boolean
@@ -21,6 +22,7 @@ export interface PackageConfiguration {
 
 export type PackageJson = Record<string, unknown> & {
     version: string
+    publishConfig: { registry: string; access: 'public' | 'restricted' } | undefined
     scripts: Record<string, string | undefined> | undefined
     dependencies: Record<string, string | undefined> | undefined
     devDependencies: Record<string, string | undefined> | undefined
