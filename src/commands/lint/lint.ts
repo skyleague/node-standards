@@ -100,6 +100,7 @@ export class ProjectLinter {
         this.lintConfiguration()
         this.linDefinition()
         this.lintScripts()
+        this.lintPublishConfig()
         this.lintPackageFiles()
         this.lintDependencies()
         this.lintDevDependencies()
@@ -141,6 +142,25 @@ export class ProjectLinter {
             console.warn(
                 `[package.json>${this.configurationKey}] missing or outdated script entries found:\n${
                     vdiff(JSON.parse(json), this.packagejson).text
+                }`
+            )
+
+            this.fail()
+        }
+    }
+
+    public lintPublishConfig(): void {
+        if (this.config?.template?.lint?.publishConfig === false || this.template?.publishConfig === undefined) {
+            return
+        }
+
+        const json = JSON.stringify(this.packagejson.publishConfig ?? {})
+
+        this.packagejson.publishConfig = this.template?.publishConfig
+        if (JSON.stringify(this.packagejson.publishConfig) !== json) {
+            console.warn(
+                `[package.json>publishConfig] missing or outdated publish configuration found:\n${
+                    vdiff(JSON.parse(json), this.packagejson.publishConfig).text
                 }`
             )
 

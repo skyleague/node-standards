@@ -109,6 +109,7 @@ describe('lint definition', () => {
         expect(linter.shouldFail).toBeTruthy()
     })
 })
+
 describe('lint package files', () => {
     const linter = new ProjectLinter({
         templates: [],
@@ -163,6 +164,65 @@ describe('lint package files', () => {
                 "src/",
                 "docs",
               ],
+            }
+        `)
+        expect(linter.shouldFail).toBeTruthy()
+    })
+})
+
+describe('lint publish config', () => {
+    const linter = new ProjectLinter({
+        templates: [],
+        configurationKey: 'foo-key',
+        fix: false,
+    })
+
+    afterEach(() => jest.restoreAllMocks())
+
+    test('explicit ignore skips lint step', () => {
+        const config: PackageConfiguration = {
+            type: PackageType.YargsCli,
+            template: {
+                lint: {
+                    publishConfig: false,
+                },
+            },
+        }
+        const packagejson = { 'foo-key': config } as unknown as PackageJson
+        jest.spyOn(linter, 'packagejson', 'get').mockReturnValue(packagejson)
+        jest.spyOn(linter, 'template', 'get').mockReturnValue({ publishConfig: { foo: 'bar' } } as unknown as ProjectTemplate)
+
+        linter.lintPublishConfig()
+        expect(linter.shouldFail).toBeFalsy()
+    })
+
+    test('does not fail when template isnt found', () => {
+        const packagejson = {} as PackageJson
+        jest.spyOn(linter, 'packagejson', 'get').mockReturnValue(packagejson)
+        jest.spyOn(linter, 'template', 'get').mockReturnValue(undefined)
+
+        linter.lintPublishConfig()
+        expect(packagejson).toMatchInlineSnapshot(`Object {}`)
+        expect(linter.shouldFail).toBeFalsy()
+    })
+
+    test('fixes the package according to the template', () => {
+        const packagejson = {} as PackageJson
+        jest.spyOn(linter, 'packagejson', 'get').mockReturnValue(packagejson)
+        jest.spyOn(linter, 'template', 'get').mockReturnValue({
+            publishConfig: {
+                registry: 'https://registry.npmjs.org',
+                access: 'public',
+            },
+        } as unknown as ProjectTemplate)
+
+        linter.lintPublishConfig()
+        expect(packagejson).toMatchInlineSnapshot(`
+            Object {
+              "publishConfig": Object {
+                "access": "public",
+                "registry": "https://registry.npmjs.org",
+              },
             }
         `)
         expect(linter.shouldFail).toBeTruthy()
