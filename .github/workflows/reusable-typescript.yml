@@ -23,8 +23,8 @@ on:
         required: false
       working-directory:
         type: string
-        required: true
-        default: './'
+        required: false
+        default: "./"
     secrets:
       GITHUB_NPM_TOKEN:
         description: Token to install GitHub packages with
