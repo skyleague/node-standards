@@ -28,6 +28,11 @@ on:
         required: false
         type: string
         default: ""
+      tfsec-var-files:
+        description: "Var files to include in testing"
+        type: string
+        required: false
+        default: ""
 
 jobs:
   tfsec:
@@ -46,6 +51,30 @@ jobs:
           cache-hash: ${{ inputs.cache-hash }}
       - name: tfsec
         uses: aquasecurity/tfsec-action@v1.0.2
+
+  tfsec-matrix:
+    name: tfsec - ${{ matrix.var-file }}
+    runs-on: ubuntu-latest
+    if: inputs.tfsec-var-files != ''
+
+    strategy:
+      matrix:
+        var-file: ${{ fromJson(inputs.tfsec-var-files) }}
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: setup terraform and cache
+        uses: skyleague/node-standards/.github/actions/setup-terraform@main
+        with:
+          terraform-version: ${{ inputs.terraform-version }}
+          working-directory: ${{ inputs.working-directory }}
+          preinstall: ${{ inputs.preinstall }}
+          postinstall: ${{ inputs.postinstall }}
+          cache-hash: ${{ inputs.cache-hash }}
+      - name: tfsec
+        uses: aquasecurity/tfsec-action@v1.0.2
+        with:
+          additional_args: --var-file=${{ matrix.var-file }}
 
   validate:
     name: validate
