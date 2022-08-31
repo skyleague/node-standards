@@ -67,6 +67,16 @@ module.exports = {
         'no-duplicate-imports': 'off',
         'no-shadow': 'off',
         eqeqeq: ['error', 'always'],
+        '@typescript-eslint/ban-types': [
+            'error',
+            {
+                types: {
+                    // starting typescript 4.8 we should use this in generics again
+                    '{}': false,
+                },
+                extendDefaults: true,
+            },
+        ],
 
         ...(process.env.VSCODE_PID !== undefined || process.env.FULL_LINT === '1'
             ? {
