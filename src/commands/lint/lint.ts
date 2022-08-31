@@ -75,22 +75,42 @@ export class ProjectLinter {
 
         const oldContent = fs.existsSync(target) ? fs.readFileSync(target, 'utf-8') : undefined
         const newContent = fs.readFileSync(from, 'utf-8')
-        const isDifferent = oldContent !== newContent
+
+        const oldPermissions = fs.existsSync(target) ? fs.statSync(target).mode : undefined
+        const newPermissions = fs.existsSync(from) ? fs.statSync(from).mode : undefined
+
+        const isContentDifferent = oldContent !== newContent
+        const isPermissionsDifferent =
+            oldPermissions !== undefined && newPermissions !== oldPermissions && newPermissions !== undefined
+        const isDifferent = isContentDifferent || isPermissionsDifferent
         if (isDifferent) {
-            if (oldContent !== undefined) {
-                console.warn(`[${target}]:\n${new LineDiff(oldContent, newContent).toString()}`)
-            } else {
-                console.warn(`[${target}]: file not found`)
+            if (isContentDifferent) {
+                if (oldContent !== undefined) {
+                    console.warn(`[${target}]:\n${new LineDiff(oldContent, newContent).toString()}`)
+                } else {
+                    console.warn(`[${target}]: file not found`)
+                }
             }
+
+            if (isPermissionsDifferent && newPermissions !== undefined) {
+                console.warn(`[${target}]: permissions are not set to ${newPermissions.toString(8)}`)
+            }
+
             this.fail()
 
             if (this.fix) {
-                console.log(`Writing ${target}`)
-                const dir = path.dirname(target)
-                if (!fs.existsSync(dir)) {
-                    fs.mkdirSync(dir, { recursive: true })
+                if (isContentDifferent) {
+                    console.log(`Writing ${target}`)
+                    const dir = path.dirname(target)
+                    if (!fs.existsSync(dir)) {
+                        fs.mkdirSync(dir, { recursive: true })
+                    }
+                    fs.writeFileSync(target, newContent, { mode: newPermissions })
                 }
-                fs.writeFileSync(target, newContent)
+                if (isPermissionsDifferent && newPermissions !== undefined) {
+                    console.log(`Setting permissions ${target} ${newPermissions.toString(8)}`)
+                    fs.chmodSync(target, newPermissions)
+                }
             }
         }
     }
