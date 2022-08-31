@@ -85,7 +85,7 @@ module.exports = {
                   // '@typescript-eslint/prefer-readonly-parameter-types': ['warn', { checkParameterProperties: false }],
                   '@typescript-eslint/naming-convention': [
                       'warn',
-                      { leadingUnderscore: 'allow', selector: 'property', format: ['camelCase'] },
+                      { leadingUnderscore: 'allow', selector: 'property', format: ['camelCase', 'PascalCase'] },
                   ],
               }
             : {}),
