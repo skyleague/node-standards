@@ -19,8 +19,8 @@ describe('lint configuration', () => {
 
         linter.lintConfiguration()
         expect(packagejson).toMatchInlineSnapshot(`
-            Object {
-              "foo-key": Object {
+            {
+              "foo-key": {
                 "type": "library",
               },
             }
@@ -40,10 +40,10 @@ describe('lint configuration', () => {
 
         linter.lintConfiguration()
         expect(packagejson).toMatchInlineSnapshot(`
-            Object {
-              "foo-key": Object {
-                "template": Object {
-                  "exclude": Array [
+            {
+              "foo-key": {
+                "template": {
+                  "exclude": [
                     "foofile",
                   ],
                 },
@@ -87,7 +87,7 @@ describe('lint definition', () => {
         jest.spyOn(linter, 'template', 'get').mockReturnValue(undefined)
 
         linter.linDefinition()
-        expect(packagejson).toMatchInlineSnapshot(`Object {}`)
+        expect(packagejson).toMatchInlineSnapshot(`{}`)
         expect(linter.shouldFail).toBeFalsy()
     })
 
@@ -102,7 +102,7 @@ describe('lint definition', () => {
 
         linter.linDefinition()
         expect(packagejson).toMatchInlineSnapshot(`
-            Object {
+            {
               "engine": "nodefoo",
             }
         `)
@@ -143,8 +143,8 @@ describe('lint package files', () => {
 
         linter.lintPackageFiles()
         expect(packagejson).toMatchInlineSnapshot(`
-            Object {
-              "files": Array [],
+            {
+              "files": [],
             }
         `)
         expect(linter.shouldFail).toBeFalsy()
@@ -159,8 +159,8 @@ describe('lint package files', () => {
 
         linter.lintPackageFiles()
         expect(packagejson).toMatchInlineSnapshot(`
-            Object {
-              "files": Array [
+            {
+              "files": [
                 "src/",
                 "docs",
               ],
@@ -202,7 +202,7 @@ describe('lint publish config', () => {
         jest.spyOn(linter, 'template', 'get').mockReturnValue(undefined)
 
         linter.lintPublishConfig()
-        expect(packagejson).toMatchInlineSnapshot(`Object {}`)
+        expect(packagejson).toMatchInlineSnapshot(`{}`)
         expect(linter.shouldFail).toBeFalsy()
     })
 
@@ -218,8 +218,8 @@ describe('lint publish config', () => {
 
         linter.lintPublishConfig()
         expect(packagejson).toMatchInlineSnapshot(`
-            Object {
-              "publishConfig": Object {
+            {
+              "publishConfig": {
                 "access": "public",
                 "registry": "https://registry.npmjs.org",
               },
@@ -262,8 +262,8 @@ describe('lint script', () => {
 
         linter.lintScripts()
         expect(packagejson).toMatchInlineSnapshot(`
-            Object {
-              "scripts": Object {},
+            {
+              "scripts": {},
             }
         `)
         expect(linter.shouldFail).toBeFalsy()
@@ -285,8 +285,8 @@ describe('lint script', () => {
 
         linter.lintScripts()
         expect(packagejson).toMatchInlineSnapshot(`
-            Object {
-              "scripts": Object {
+            {
+              "scripts": {
                 "foo": undefined,
                 "fooz": "npx bar",
               },
@@ -319,8 +319,8 @@ describe('lint script', () => {
 
         linter.lintScripts()
         expect(packagejson).toMatchInlineSnapshot(`
-            Object {
-              "scripts": Object {
+            {
+              "scripts": {
                 "foo": undefined,
                 "fooz": "npx bar2",
               },
@@ -367,9 +367,9 @@ describe('lint dependencies', () => {
 
         linter.lintDependencies()
         expect(packagejson).toMatchInlineSnapshot(`
-            Object {
-              "dependencies": Object {},
-              "devDependencies": Object {},
+            {
+              "dependencies": {},
+              "devDependencies": {},
             }
         `)
         expect(linter.shouldFail).toBeFalsy()
@@ -391,11 +391,11 @@ describe('lint dependencies', () => {
 
         linter.lintDependencies()
         expect(packagejson).toMatchInlineSnapshot(`
-            Object {
-              "dependencies": Object {
+            {
+              "dependencies": {
                 "fooz": "^1.0.0",
               },
-              "devDependencies": Object {},
+              "devDependencies": {},
             }
         `)
         expect(linter.shouldFail).toBeTruthy()
@@ -420,11 +420,11 @@ describe('lint dependencies', () => {
 
         linter.lintDependencies()
         expect(packagejson).toMatchInlineSnapshot(`
-            Object {
-              "dependencies": Object {
+            {
+              "dependencies": {
                 "fooz": "^1.0.0",
               },
-              "devDependencies": Object {
+              "devDependencies": {
                 "fooz": "^1.0.0",
               },
             }
@@ -454,12 +454,12 @@ describe('lint dependencies', () => {
 
         linter.lintDependencies()
         expect(packagejson).toMatchInlineSnapshot(`
-            Object {
-              "dependencies": Object {
+            {
+              "dependencies": {
                 "foo": "^2.0.0",
                 "fooz": "^1.0.0",
               },
-              "devDependencies": Object {},
+              "devDependencies": {},
             }
         `)
         expect(linter.shouldFail).toBeTruthy()
@@ -507,9 +507,9 @@ describe('lint devDependencies', () => {
 
         linter.lintDevDependencies()
         expect(packagejson).toMatchInlineSnapshot(`
-            Object {
-              "dependencies": Object {},
-              "devDependencies": Object {},
+            {
+              "dependencies": {},
+              "devDependencies": {},
             }
         `)
         expect(linter.shouldFail).toBeFalsy()
@@ -531,9 +531,9 @@ describe('lint devDependencies', () => {
 
         linter.lintDevDependencies()
         expect(packagejson).toMatchInlineSnapshot(`
-            Object {
-              "dependencies": Object {},
-              "devDependencies": Object {
+            {
+              "dependencies": {},
+              "devDependencies": {
                 "fooz": "^1.0.0",
               },
             }
@@ -560,11 +560,11 @@ describe('lint devDependencies', () => {
 
         linter.lintDevDependencies()
         expect(packagejson).toMatchInlineSnapshot(`
-            Object {
-              "dependencies": Object {
+            {
+              "dependencies": {
                 "foo": "^1.0.0",
               },
-              "devDependencies": Object {
+              "devDependencies": {
                 "fooz": "^1.0.0",
               },
             }
@@ -594,9 +594,9 @@ describe('lint devDependencies', () => {
 
         linter.lintDevDependencies()
         expect(packagejson).toMatchInlineSnapshot(`
-            Object {
-              "dependencies": Object {},
-              "devDependencies": Object {
+            {
+              "dependencies": {},
+              "devDependencies": {
                 "foo": "^2.0.0",
                 "fooz": "^1.0.0",
               },
