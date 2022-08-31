@@ -6,7 +6,7 @@ test('main', () => {
 
 test('maintwo', () => {
     expect({ foo: 'bar' }).toMatchInlineSnapshot(`
-        Object {
+        {
           "foo": "bar",
         }
     `)
