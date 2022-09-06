@@ -1,6 +1,6 @@
 import type { ProjectTemplate } from './types'
 
-import { devDependencies, repositoryUrl, rootDirectory } from '../constants'
+import { dependencies, devDependencies, repositoryUrl, rootDirectory } from '../constants'
 import { PackageType } from '../types'
 
 export const YargsCliTemplate: ProjectTemplate = {
@@ -13,13 +13,14 @@ export const YargsCliTemplate: ProjectTemplate = {
     },
     files: ['bin', '.main.js', '.main.js.map', 'index.d.ts', 'src/**/*.d.ts', 'package.json'],
     dependencies: {
-        tslib: undefined,
+        tslib: dependencies['tslib'],
+        'source-map-support': dependencies['source-map-support'],
+        yargs: dependencies['yargs'],
     },
     devDependencies: {
         '@types/source-map-support': devDependencies['@types/source-map-support'],
-        'source-map-support': devDependencies['source-map-support'],
-        tslib: devDependencies['tslib'],
-        yargs: devDependencies['yargs'],
+        yargs: undefined,
+        'source-map-support': undefined,
     },
     definition: {
         main: '.main.js',
