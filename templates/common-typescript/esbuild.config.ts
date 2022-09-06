@@ -1,4 +1,3 @@
-
 import packageJson from './package.json'
 
 import { build } from 'esbuild'
