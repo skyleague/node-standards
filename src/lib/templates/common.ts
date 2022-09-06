@@ -1,6 +1,6 @@
 import type { ProjectTemplate } from './types'
 
-import { devDependencies, peerDependencies, repositoryUrl, rootDirectory } from '../constants'
+import { dependencies, peerDependencies, repositoryUrl, rootDirectory } from '../constants'
 import { PackageType } from '../types'
 
 export const CommonTemplate: ProjectTemplate = {
@@ -40,10 +40,11 @@ export const CommonTypescriptTemplate: ProjectTemplate = {
     },
     files: undefined,
     dependencies: {
-        tslib: devDependencies['tslib'],
+        tslib: dependencies['tslib'],
     },
     devDependencies: {
         ...peerDependencies,
+        tslib: undefined,
     },
     definition: {
         node: '>=14',

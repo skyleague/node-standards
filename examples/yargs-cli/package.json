@@ -14,7 +14,14 @@
   "node-standards": {
     "type": "yargs-cli"
   },
-  "files": ["bin", ".main.js", ".main.js.map", "index.d.ts", "src/**/*.d.ts", "package.json"],
+  "files": [
+    "bin",
+    ".main.js",
+    ".main.js.map",
+    "index.d.ts",
+    "src/**/*.d.ts",
+    "package.json"
+  ],
   "scripts": {
     "build": "npx ts-node esbuild.config.ts",
     "build:clean": "npx tsc --build --clean && rm .main.js && rm .main.js.map",
@@ -35,12 +42,13 @@
   "devDependencies": {
     "@types/source-map-support": "^0.5.6",
     "@skyleague/node-standards": "^1.0.0",
-    "source-map-support": "^0.5.21",
+    "typescript": "^4.8.2"
+  },
+  "dependencies": {
     "tslib": "^2.4.0",
-    "typescript": "^4.8.2",
+    "source-map-support": "^0.5.21",
     "yargs": "^17.5.1"
   },
-  "dependencies": {},
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
     "access": "public"
