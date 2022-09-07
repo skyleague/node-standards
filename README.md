@@ -129,6 +129,10 @@ PR's are very welcome if you think your project is missing here.
 - We aim to configure our settings to be as strict as possible. Not everyone might like this.
 - Node Standards is an insanely opinionated implementation, and this may not fit your needs or vision.
 
-## License
+## License & Copyright
 
-Node Standards is [MIT licensed](./LICENSE).
+Node Standards is [MIT licensed](./LICENSE.md)!
+
+Copyright (c) 2022, all rights reserved by SkyLeague Technologies B.V.
+'SkyLeague' and the astronaut logo are trademarks of SkyLeague Technologies B.V. 
+registered at Chamber of Commerce in The Netherlands under number 86650564.
