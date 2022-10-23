@@ -243,7 +243,7 @@ describe('lint script', () => {
             type: PackageType.YargsCli,
             template: {
                 lint: {
-                    script: false,
+                    scripts: false,
                 },
             },
         }
