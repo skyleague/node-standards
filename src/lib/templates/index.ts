@@ -1,7 +1,9 @@
 import { CommonTemplate, CommonTypescriptTemplate } from './common'
 import { LibraryTemplate } from './library'
-import type { ProjectTemplate } from './types'
+import type { ProjectTemplate, ProjectTemplateBuilder } from './types'
 import { YargsCliTemplate } from './yargs-cli'
+
+import type { PackageConfiguration } from '../types'
 export { CommonTemplate } from './common'
 export { LibraryTemplate } from './library'
 export { YargsCliTemplate } from './yargs-cli'
@@ -10,13 +12,20 @@ export { ProjectTemplate } from './types'
 export const templates = [CommonTemplate, CommonTypescriptTemplate, LibraryTemplate, YargsCliTemplate]
 
 export function getTemplate(
-    xs: ProjectTemplate[],
-    type: string | undefined,
-    { allowOverrides = true }: { allowOverrides?: boolean } = {}
+    xs: ProjectTemplateBuilder[],
+    config?: PackageConfiguration | undefined,
+    { allowOverrides = true, type = config?.type }: { allowOverrides?: boolean; type?: string } = {}
 ): ProjectTemplate | undefined {
-    if (type === undefined) {
+    if (config === undefined) {
         return undefined
     }
 
-    return xs.find((x) => x.type === type || (allowOverrides && x.overrides === type))
+    const template = xs.find((x) => x.type === type || (allowOverrides && x.overrides === type))
+    const evaluatedTemplate = typeof template?.template === 'function' ? template.template(config) : template?.template
+    return template !== undefined && evaluatedTemplate !== undefined
+        ? {
+              ...template,
+              template: evaluatedTemplate,
+          }
+        : undefined
 }

@@ -1,7 +1,8 @@
 import { spawn, isIgnored } from '../../common'
 import { rootDirectory, version } from '../../lib/constants'
-import type { ProjectTemplate } from '../../lib/templates'
-import { templates, getTemplate } from '../../lib/templates'
+import { Project } from '../../lib/project'
+import { templates } from '../../lib/templates'
+import type { ProjectTemplateDefinition } from '../../lib/templates/types'
 import { PackageType } from '../../lib/types'
 
 import AdmZip from 'adm-zip'
@@ -70,7 +71,7 @@ export async function createProject({
     type: string
     name: string
     local: boolean
-    template: ProjectTemplate
+    template: ProjectTemplateDefinition
 }): Promise<void> {
     const targetDir = path.resolve(process.cwd(), name)
 
@@ -111,7 +112,10 @@ export function builder(yargs: Argv): Argv<{ local: boolean; name: string | unde
 export async function handler(argv: ReturnType<typeof builder>['argv']): Promise<void> {
     const { type, name, local } = await argv
 
-    const template = getTemplate(templates, type)
+    const project = new Project({
+        templates,
+    })
+    const template = project.template
 
     if (template === undefined) {
         throw new Error(`could not find a template with type ${type ?? 'undefined'}`)
