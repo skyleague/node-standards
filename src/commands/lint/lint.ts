@@ -6,6 +6,7 @@ import type { PackageConfiguration, PackageJson } from '../../lib/types'
 import { PackageType } from '../../lib/types'
 
 import LineDiff from 'line-diff'
+import semver from 'semver'
 import vdiff from 'variable-diff'
 
 import fs from 'fs'
@@ -249,6 +250,10 @@ export class ProjectLinter {
         for (const [entry, value] of this.getRequiredTemplates({ order: 'last' }).flatMap((l) =>
             Object.entries(l.dependencies ?? {})
         )) {
+            // check if semver is correct
+            if (this.packageSatisfiesRange(this.packagejson.dependencies?.[entry], value)) {
+                continue
+            }
             if (value !== undefined) {
                 this.packagejson.dependencies[entry] = value
             } else {
@@ -277,6 +282,10 @@ export class ProjectLinter {
         for (const [entry, value] of this.getRequiredTemplates({ order: 'last' }).flatMap((l) =>
             Object.entries(l.devDependencies ?? {})
         )) {
+            // check if semver is correct
+            if (this.packageSatisfiesRange(this.packagejson.devDependencies?.[entry], value)) {
+                continue
+            }
             if (value !== undefined) {
                 this.packagejson.devDependencies[entry] = value
             } else {
@@ -329,6 +338,14 @@ export class ProjectLinter {
             return Object.values(found).reverse()
         }
         return _links(this.template?.links)
+    }
+
+    public packageSatisfiesRange(from: string | undefined, value: string | undefined): boolean {
+        const withoutRanges = from?.replace('^', '')?.replace('~', '')
+        const cleaned = withoutRanges !== undefined ? semver.clean(withoutRanges) : undefined
+        const satisfiesRange =
+            cleaned !== undefined && cleaned !== null && value !== undefined && semver.satisfies(cleaned, value)
+        return satisfiesRange
     }
 
     public get template(): ProjectTemplate | undefined {

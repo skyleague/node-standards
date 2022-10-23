@@ -5,10 +5,14 @@ import type { PackageConfiguration, PackageJson } from '../../lib/types'
 import { PackageType } from '../../lib/types'
 
 describe('lint configuration', () => {
-    const linter = new ProjectLinter({
-        templates: [],
-        configurationKey: 'foo-key',
-        fix: false,
+    let linter: ProjectLinter
+
+    beforeEach(() => {
+        linter = new ProjectLinter({
+            templates: [],
+            configurationKey: 'foo-key',
+            fix: false,
+        })
     })
 
     afterEach(() => jest.restoreAllMocks())
@@ -51,15 +55,19 @@ describe('lint configuration', () => {
               },
             }
         `)
-        expect(linter.shouldFail).toBeTruthy()
+        expect(linter.shouldFail).toBeFalsy()
     })
 })
 
 describe('lint definition', () => {
-    const linter = new ProjectLinter({
-        templates: [],
-        configurationKey: 'foo-key',
-        fix: false,
+    let linter: ProjectLinter
+
+    beforeEach(() => {
+        linter = new ProjectLinter({
+            templates: [],
+            configurationKey: 'foo-key',
+            fix: false,
+        })
     })
 
     afterEach(() => jest.restoreAllMocks())
@@ -111,10 +119,14 @@ describe('lint definition', () => {
 })
 
 describe('lint package files', () => {
-    const linter = new ProjectLinter({
-        templates: [],
-        configurationKey: 'foo-key',
-        fix: false,
+    let linter: ProjectLinter
+
+    beforeEach(() => {
+        linter = new ProjectLinter({
+            templates: [],
+            configurationKey: 'foo-key',
+            fix: false,
+        })
     })
 
     afterEach(() => jest.restoreAllMocks())
@@ -171,10 +183,14 @@ describe('lint package files', () => {
 })
 
 describe('lint publish config', () => {
-    const linter = new ProjectLinter({
-        templates: [],
-        configurationKey: 'foo-key',
-        fix: false,
+    let linter: ProjectLinter
+
+    beforeEach(() => {
+        linter = new ProjectLinter({
+            templates: [],
+            configurationKey: 'foo-key',
+            fix: false,
+        })
     })
 
     afterEach(() => jest.restoreAllMocks())
@@ -230,10 +246,14 @@ describe('lint publish config', () => {
 })
 
 describe('lint script', () => {
-    const linter = new ProjectLinter({
-        templates: [],
-        configurationKey: 'foo-key',
-        fix: false,
+    let linter: ProjectLinter
+
+    beforeEach(() => {
+        linter = new ProjectLinter({
+            templates: [],
+            configurationKey: 'foo-key',
+            fix: false,
+        })
     })
 
     afterEach(() => jest.restoreAllMocks())
@@ -331,12 +351,15 @@ describe('lint script', () => {
 })
 
 describe('lint dependencies', () => {
-    const linter = new ProjectLinter({
-        templates: [],
-        configurationKey: 'foo-key',
-        fix: false,
-    })
+    let linter: ProjectLinter
 
+    beforeEach(() => {
+        linter = new ProjectLinter({
+            templates: [],
+            configurationKey: 'foo-key',
+            fix: false,
+        })
+    })
     afterEach(() => jest.restoreAllMocks())
 
     test('explicit ignore skips lint step', () => {
@@ -399,6 +422,31 @@ describe('lint dependencies', () => {
             }
         `)
         expect(linter.shouldFail).toBeTruthy()
+    })
+
+    test('allows inclusive semver ranges', () => {
+        const packagejson = {
+            dependencies: {
+                foo: '^1.1.0',
+            },
+        } as unknown as PackageJson
+        jest.spyOn(linter, 'packagejson', 'get').mockReturnValue(packagejson)
+        jest.spyOn(linter, 'template', 'get').mockReturnValue({
+            dependencies: {
+                foo: '^1.0.0',
+            },
+        } as unknown as ProjectTemplate)
+
+        linter.lintDependencies()
+        expect(packagejson).toMatchInlineSnapshot(`
+            {
+              "dependencies": {
+                "foo": "^1.1.0",
+              },
+              "devDependencies": {},
+            }
+        `)
+        expect(linter.shouldFail).toBeFalsy()
     })
 
     test('remove dependencies from devDependencies', () => {
@@ -510,6 +558,31 @@ describe('lint devDependencies', () => {
             {
               "dependencies": {},
               "devDependencies": {},
+            }
+        `)
+        expect(linter.shouldFail).toBeFalsy()
+    })
+
+    test('allows inclusive semver ranges', () => {
+        const packagejson = {
+            devDependencies: {
+                foo: '^1.1.0',
+            },
+        } as unknown as PackageJson
+        jest.spyOn(linter, 'packagejson', 'get').mockReturnValue(packagejson)
+        jest.spyOn(linter, 'template', 'get').mockReturnValue({
+            devDependencies: {
+                foo: '^1.0.0',
+            },
+        } as unknown as ProjectTemplate)
+
+        linter.lintDevDependencies()
+        expect(packagejson).toMatchInlineSnapshot(`
+            {
+              "dependencies": {},
+              "devDependencies": {
+                "foo": "^1.1.0",
+              },
             }
         `)
         expect(linter.shouldFail).toBeFalsy()
