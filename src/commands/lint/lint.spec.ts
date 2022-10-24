@@ -1,6 +1,6 @@
 import { ProjectLinter } from './lint'
 
-import type { ProjectTemplate } from '../../lib/templates'
+import type { ProjectDefinition } from '../../lib/templates/types'
 import type { PackageConfiguration, PackageJson } from '../../lib/types'
 import { PackageType } from '../../lib/types'
 
@@ -82,7 +82,9 @@ describe('lint definition', () => {
             },
         }
         const packagejson = { 'foo-key': config } as unknown as PackageJson
-        jest.spyOn(linter, 'template', 'get').mockReturnValue({ definition: { foo: 'bar' } } as unknown as ProjectTemplate)
+        jest.spyOn(linter, 'template', 'get').mockReturnValue({
+            definition: { foo: 'bar' },
+        } as unknown as ProjectDefinition)
         jest.spyOn(linter, 'packagejson', 'get').mockReturnValue(packagejson)
 
         linter.linDefinition()
@@ -106,7 +108,7 @@ describe('lint definition', () => {
             definition: {
                 engine: 'nodefoo',
             },
-        } as unknown as ProjectTemplate)
+        } as unknown as ProjectDefinition)
 
         linter.linDefinition()
         expect(packagejson).toMatchInlineSnapshot(`
@@ -142,7 +144,7 @@ describe('lint package files', () => {
         }
         const packagejson = { 'foo-key': config } as unknown as PackageJson
         jest.spyOn(linter, 'packagejson', 'get').mockReturnValue(packagejson)
-        jest.spyOn(linter, 'template', 'get').mockReturnValue({ files: ['foo', 'bar'] } as unknown as ProjectTemplate)
+        jest.spyOn(linter, 'template', 'get').mockReturnValue({ files: ['foo', 'bar'] } as unknown as ProjectDefinition)
 
         linter.lintPackageFiles()
         expect(linter.shouldFail).toBeFalsy()
@@ -167,7 +169,7 @@ describe('lint package files', () => {
         jest.spyOn(linter, 'packagejson', 'get').mockReturnValue(packagejson)
         jest.spyOn(linter, 'template', 'get').mockReturnValue({
             files: ['src/', 'docs'],
-        } as unknown as ProjectTemplate)
+        } as unknown as ProjectDefinition)
 
         linter.lintPackageFiles()
         expect(packagejson).toMatchInlineSnapshot(`
@@ -206,7 +208,9 @@ describe('lint publish config', () => {
         }
         const packagejson = { 'foo-key': config } as unknown as PackageJson
         jest.spyOn(linter, 'packagejson', 'get').mockReturnValue(packagejson)
-        jest.spyOn(linter, 'template', 'get').mockReturnValue({ publishConfig: { foo: 'bar' } } as unknown as ProjectTemplate)
+        jest.spyOn(linter, 'template', 'get').mockReturnValue({
+            publishConfig: { foo: 'bar' },
+        } as unknown as ProjectDefinition)
 
         linter.lintPublishConfig()
         expect(linter.shouldFail).toBeFalsy()
@@ -230,7 +234,7 @@ describe('lint publish config', () => {
                 registry: 'https://registry.npmjs.org',
                 access: 'public',
             },
-        } as unknown as ProjectTemplate)
+        } as unknown as ProjectDefinition)
 
         linter.lintPublishConfig()
         expect(packagejson).toMatchInlineSnapshot(`
@@ -269,7 +273,7 @@ describe('lint script', () => {
         }
         const packagejson = { 'foo-key': config } as unknown as PackageJson
         jest.spyOn(linter, 'packagejson', 'get').mockReturnValue(packagejson)
-        jest.spyOn(linter, 'template', 'get').mockReturnValue({ scripts: { foo: 'bar' } } as unknown as ProjectTemplate)
+        jest.spyOn(linter, 'template', 'get').mockReturnValue({ scripts: { foo: 'bar' } } as unknown as ProjectDefinition)
 
         linter.lintScripts()
         expect(linter.shouldFail).toBeFalsy()
@@ -301,7 +305,7 @@ describe('lint script', () => {
                 fooz: 'npx bar',
                 foo: undefined,
             },
-        } as unknown as ProjectTemplate)
+        } as unknown as ProjectDefinition)
 
         linter.lintScripts()
         expect(packagejson).toMatchInlineSnapshot(`
@@ -327,7 +331,7 @@ describe('lint script', () => {
                 fooz: 'npx bar2',
                 foo: undefined,
             },
-        } as unknown as ProjectTemplate)
+        } as unknown as ProjectDefinition)
         jest.spyOn(linter, 'links', 'get').mockReturnValue([
             {
                 scripts: {
@@ -335,7 +339,7 @@ describe('lint script', () => {
                     foo: 'npx baz',
                 },
             },
-        ] as unknown as ProjectTemplate[])
+        ] as unknown as ProjectDefinition[])
 
         linter.lintScripts()
         expect(packagejson).toMatchInlineSnapshot(`
@@ -377,7 +381,7 @@ describe('lint dependencies', () => {
             dependencies: {
                 foo: 'bar',
             },
-        } as unknown as ProjectTemplate)
+        } as unknown as ProjectDefinition)
 
         linter.lintDependencies()
         expect(linter.shouldFail).toBeFalsy()
@@ -410,7 +414,7 @@ describe('lint dependencies', () => {
                 fooz: '^1.0.0',
                 foo: undefined,
             },
-        } as unknown as ProjectTemplate)
+        } as unknown as ProjectDefinition)
 
         linter.lintDependencies()
         expect(packagejson).toMatchInlineSnapshot(`
@@ -435,7 +439,7 @@ describe('lint dependencies', () => {
             dependencies: {
                 foo: '^1.0.0',
             },
-        } as unknown as ProjectTemplate)
+        } as unknown as ProjectDefinition)
 
         linter.lintDependencies()
         expect(packagejson).toMatchInlineSnapshot(`
@@ -464,7 +468,7 @@ describe('lint dependencies', () => {
                 fooz: '^1.0.0',
                 foo: undefined,
             },
-        } as unknown as ProjectTemplate)
+        } as unknown as ProjectDefinition)
 
         linter.lintDependencies()
         expect(packagejson).toMatchInlineSnapshot(`
@@ -491,14 +495,14 @@ describe('lint dependencies', () => {
             dependencies: {
                 fooz: '^1.0.0',
             },
-        } as unknown as ProjectTemplate)
+        } as unknown as ProjectDefinition)
         jest.spyOn(linter, 'links', 'get').mockReturnValue([
             {
                 dependencies: {
                     foo: '^2.0.0',
                 },
             },
-        ] as unknown as ProjectTemplate[])
+        ] as unknown as ProjectDefinition[])
 
         linter.lintDependencies()
         expect(packagejson).toMatchInlineSnapshot(`
@@ -542,7 +546,7 @@ describe('lint devDependencies', () => {
             devDependencies: {
                 foo: 'bar',
             },
-        } as unknown as ProjectTemplate)
+        } as unknown as ProjectDefinition)
 
         linter.lintDevDependencies()
         expect(linter.shouldFail).toBeFalsy()
@@ -574,7 +578,7 @@ describe('lint devDependencies', () => {
             devDependencies: {
                 foo: '^1.0.0',
             },
-        } as unknown as ProjectTemplate)
+        } as unknown as ProjectDefinition)
 
         linter.lintDevDependencies()
         expect(packagejson).toMatchInlineSnapshot(`
@@ -600,7 +604,7 @@ describe('lint devDependencies', () => {
                 fooz: '^1.0.0',
                 foo: undefined,
             },
-        } as unknown as ProjectTemplate)
+        } as unknown as ProjectDefinition)
 
         linter.lintDevDependencies()
         expect(packagejson).toMatchInlineSnapshot(`
@@ -629,7 +633,7 @@ describe('lint devDependencies', () => {
                 fooz: '^1.0.0',
                 foo: undefined,
             },
-        } as unknown as ProjectTemplate)
+        } as unknown as ProjectDefinition)
 
         linter.lintDevDependencies()
         expect(packagejson).toMatchInlineSnapshot(`
@@ -656,14 +660,14 @@ describe('lint devDependencies', () => {
             devDependencies: {
                 fooz: '^1.0.0',
             },
-        } as unknown as ProjectTemplate)
+        } as unknown as ProjectDefinition)
         jest.spyOn(linter, 'links', 'get').mockReturnValue([
             {
                 devDependencies: {
                     foo: '^2.0.0',
                 },
             },
-        ] as unknown as ProjectTemplate[])
+        ] as unknown as ProjectDefinition[])
 
         linter.lintDevDependencies()
         expect(packagejson).toMatchInlineSnapshot(`

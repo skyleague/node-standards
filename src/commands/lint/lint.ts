@@ -1,8 +1,6 @@
 import { getAllFiles } from '../../common'
-import { readPackageJson } from '../../lib/package'
-import type { ProjectTemplate } from '../../lib/templates'
-import { getTemplate } from '../../lib/templates'
-import type { PackageConfiguration, PackageJson } from '../../lib/types'
+import { Project } from '../../lib/project'
+import type { ProjectTemplateBuilder } from '../../lib/templates/types'
 import { PackageType } from '../../lib/types'
 
 import LineDiff from 'line-diff'
@@ -12,9 +10,7 @@ import vdiff from 'variable-diff'
 import fs from 'fs'
 import path from 'path'
 
-export class ProjectLinter {
-    public readonly templates: ProjectTemplate[]
-    public readonly configurationKey: string
+export class ProjectLinter extends Project {
     public readonly fix: boolean
     public shouldFail = false
 
@@ -23,18 +19,13 @@ export class ProjectLinter {
         configurationKey,
         fix = false,
     }: {
-        templates: ProjectTemplate[]
+        templates: ProjectTemplateBuilder[]
         configurationKey?: string
         fix?: boolean
     }) {
-        this.configurationKey = configurationKey ?? 'node-standards'
+        super({ templates, configurationKey })
         this.fix = fix
         this.shouldFail = false
-        this.templates = templates
-    }
-
-    public get config(): PackageConfiguration | undefined {
-        return this.packagejson[this.configurationKey] as PackageConfiguration | undefined
     }
 
     public lint(): void {
@@ -310,54 +301,11 @@ export class ProjectLinter {
         }
     }
 
-    private getRequiredTemplates({ order }: { order: 'first' | 'last' }): ProjectTemplate[] {
-        const safeTemplate: ProjectTemplate[] = this.template !== undefined ? [this.template] : []
-        if (order === 'first') {
-            return [...safeTemplate, ...this.links.reverse()]
-        }
-        return [...this.links, ...safeTemplate]
-    }
-
-    public get links(): ProjectTemplate[] {
-        const templates = this.templates
-        const found: Record<string, ProjectTemplate> = {}
-        function _links(links: string[] | undefined, overridenBy?: string) {
-            const children =
-                links
-                    ?.map((type) =>
-                        getTemplate(templates, type, { allowOverrides: overridenBy === undefined || overridenBy !== type })
-                    )
-                    .filter((x): x is ProjectTemplate => x !== undefined) ?? []
-            for (const c of children) {
-                if (found[c.type] === undefined) {
-                    found[c.type] = c
-                    _links(c.links, c.overrides)
-                }
-            }
-            // topological sort (last is first in this case)
-            return Object.values(found).reverse()
-        }
-        return _links(this.template?.links)
-    }
-
     public packageSatisfiesRange(from: string | undefined, value: string | undefined): boolean {
         const withoutRanges = from?.replace('^', '')?.replace('~', '')
         const cleaned = withoutRanges !== undefined ? semver.clean(withoutRanges) : undefined
         const satisfiesRange =
             cleaned !== undefined && cleaned !== null && value !== undefined && semver.satisfies(cleaned, value)
         return satisfiesRange
-    }
-
-    public get template(): ProjectTemplate | undefined {
-        return getTemplate(this.templates, this.config?.type)
-    }
-
-    private _packagejson: PackageJson | undefined = undefined
-    public get packagejson(): PackageJson {
-        if (this._packagejson !== undefined) {
-            return this._packagejson
-        }
-        this._packagejson = readPackageJson()
-        return this._packagejson
     }
 }
