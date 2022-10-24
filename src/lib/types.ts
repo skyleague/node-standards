@@ -14,7 +14,7 @@ export interface PackageConfiguration {
             files?: boolean
             dependencies?: boolean
             devDependencies?: boolean
-            script?: boolean
+            scripts?: boolean
             definition?: boolean
         }
     }

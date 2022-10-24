@@ -212,7 +212,7 @@ export class ProjectLinter {
     }
 
     public lintScripts(): void {
-        if (this.config?.template?.lint?.script === false) {
+        if (this.config?.template?.lint?.scripts === false) {
             return
         }
         if (!this.packagejson.scripts) {
