@@ -3,6 +3,7 @@ export enum PackageType {
     CommonTypescript = 'common-typescript',
     Library = 'library',
     YargsCli = 'yargs-cli',
+    Docusaurus = 'docusaurus',
 }
 
 export interface PackageConfiguration {
@@ -17,6 +18,7 @@ export interface PackageConfiguration {
             scripts?: boolean
             definition?: boolean
         }
+        documentation?: 'docusaurus' | 'simple'
     }
 }
 

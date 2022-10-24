@@ -56,6 +56,7 @@ export class Project {
                         })
                     )
                     .filter((x): x is ProjectTemplate => x !== undefined) ?? []
+
             for (const c of children) {
                 if (found[c.type] === undefined) {
                     found[c.type] = { ...c.template, type: c.type }

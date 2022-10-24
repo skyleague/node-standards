@@ -65,20 +65,28 @@ export class ProjectLinter extends Project {
         target = target.replace(/_gitignore$/g, '.gitignore')
         target = target.replace(/_npmrc/g, '.npmrc')
 
-        const oldContent = fs.existsSync(target) ? fs.readFileSync(target, 'utf-8') : undefined
-        const newContent = fs.readFileSync(from, 'utf-8')
+        const targetBasename = path.basename(target)
+        const targetDir = path.dirname(target)
+        const provisionNewOnly = targetBasename.startsWith('+')
+        if (provisionNewOnly) {
+            target = path.join(targetDir, targetBasename.slice(1))
+        }
 
-        const oldPermissions = fs.existsSync(target) ? fs.statSync(target).mode : undefined
+        const oldContent = fs.existsSync(target) ? fs.readFileSync(target) : undefined
+        const newContent = fs.readFileSync(from)
+
+        const targetExists = fs.existsSync(target)
+        const oldPermissions = targetExists ? fs.statSync(target).mode : undefined
         const newPermissions = fs.existsSync(from) ? fs.statSync(from).mode : undefined
 
-        const isContentDifferent = oldContent !== newContent
+        const isContentDifferent = oldContent?.toString() !== newContent.toString()
         const isPermissionsDifferent =
             oldPermissions !== undefined && newPermissions !== oldPermissions && newPermissions !== undefined
         const isDifferent = isContentDifferent || isPermissionsDifferent
-        if (isDifferent) {
+        if (isDifferent && (!provisionNewOnly || !targetExists)) {
             if (isContentDifferent) {
                 if (oldContent !== undefined) {
-                    console.warn(`[${target}]:\n${new LineDiff(oldContent, newContent).toString()}`)
+                    console.warn(`[${target}]:\n${new LineDiff(oldContent.toString(), newContent.toString()).toString()}`)
                 } else {
                     console.warn(`[${target}]: file not found`)
                 }
@@ -93,9 +101,8 @@ export class ProjectLinter extends Project {
             if (this.fix) {
                 if (isContentDifferent) {
                     console.log(`Writing ${target}`)
-                    const dir = path.dirname(target)
-                    if (!fs.existsSync(dir)) {
-                        fs.mkdirSync(dir, { recursive: true })
+                    if (!fs.existsSync(targetDir)) {
+                        fs.mkdirSync(targetDir, { recursive: true })
                     }
                     fs.writeFileSync(target, newContent, { mode: newPermissions })
                 }
