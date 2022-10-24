@@ -1,11 +1,11 @@
-import type { ProjectTemplate } from './types'
+import type { ProjectTemplateBuilder } from './types'
 
 import { repositoryUrl, rootDirectory } from '../constants'
 import { PackageType } from '../types'
 
-export const LibraryTemplate: ProjectTemplate = {
+export const LibraryTemplate: ProjectTemplateBuilder = {
     type: PackageType.Library,
-    template: {
+    template: (config) => ({
         repositoryUrl,
         scripts: undefined,
         publishConfig: {
@@ -19,7 +19,10 @@ export const LibraryTemplate: ProjectTemplate = {
             main: '.main.js',
             types: 'index.d.ts',
         },
-        links: [PackageType.CommonTypescript],
+        links: [
+            ...(config?.template?.documentation === 'docusaurus' ? [PackageType.Docusaurus] : []),
+            PackageType.CommonTypescript,
+        ],
         roots: [rootDirectory],
-    },
+    }),
 }
