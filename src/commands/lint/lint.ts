@@ -42,7 +42,7 @@ export class ProjectLinter extends Project {
         for (const template of this.getRequiredTemplates({
             order: 'first',
         })) {
-            for (const root of template?.roots ?? []) {
+            for (const root of template.roots) {
                 const templateRoot = `${root}/templates/${template.type}/`
                 if (!fs.existsSync(templateRoot)) {
                     continue
@@ -92,7 +92,7 @@ export class ProjectLinter extends Project {
                 }
             }
 
-            if (isPermissionsDifferent && newPermissions !== undefined) {
+            if (isPermissionsDifferent) {
                 console.warn(`[${target}]: permissions are not set to ${newPermissions.toString(8)}`)
             }
 
@@ -106,7 +106,7 @@ export class ProjectLinter extends Project {
                     }
                     fs.writeFileSync(target, newContent, { mode: newPermissions })
                 }
-                if (isPermissionsDifferent && newPermissions !== undefined) {
+                if (isPermissionsDifferent) {
                     console.log(`Setting permissions ${target} ${newPermissions.toString(8)}`)
                     fs.chmodSync(target, newPermissions)
                 }
@@ -175,7 +175,7 @@ export class ProjectLinter extends Project {
 
         const json = JSON.stringify(this.packagejson.publishConfig ?? {})
 
-        this.packagejson.publishConfig = this.template?.publishConfig
+        this.packagejson.publishConfig = this.template.publishConfig
         if (JSON.stringify(this.packagejson.publishConfig) !== json) {
             console.warn(
                 `[package.json>publishConfig] missing or outdated publish configuration found:\n${
@@ -249,12 +249,13 @@ export class ProjectLinter extends Project {
             Object.entries(l.dependencies ?? {})
         )) {
             // check if semver is correct
-            if (this.packageSatisfiesRange(this.packagejson.dependencies?.[entry], value)) {
+            if (this.packageSatisfiesRange(this.packagejson.dependencies[entry], value)) {
                 continue
             }
             if (value !== undefined) {
                 this.packagejson.dependencies[entry] = value
             } else {
+                // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
                 delete this.packagejson.dependencies[entry]
             }
         }
@@ -281,12 +282,13 @@ export class ProjectLinter extends Project {
             Object.entries(l.devDependencies ?? {})
         )) {
             // check if semver is correct
-            if (this.packageSatisfiesRange(this.packagejson.devDependencies?.[entry], value)) {
+            if (this.packageSatisfiesRange(this.packagejson.devDependencies[entry], value)) {
                 continue
             }
             if (value !== undefined) {
                 this.packagejson.devDependencies[entry] = value
             } else {
+                // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
                 delete this.packagejson.devDependencies[entry]
             }
         }

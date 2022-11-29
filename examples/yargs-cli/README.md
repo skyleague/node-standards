@@ -1,13 +1,18 @@
 # Library project layout
+
 This is the boilerplate for a library package
 
 <!-- toc -->
-* [Library project layout](#library-project-layout)
-* [Usage](#usage)
-* [Commands](#commands)
+
+-   [Library project layout](#library-project-layout)
+-   [Usage](#usage)
+-   [Commands](#commands)
 <!-- tocstop -->
+
 # Usage
+
 <!-- usage -->
+
 ```sh-session
 $ npm install -g package-name
 $ example-cli COMMAND
@@ -19,12 +24,16 @@ USAGE
   $ example-cli COMMAND
 ...
 ```
+
 <!-- usagestop -->
+
 # Commands
+
 <!-- commands -->
-* [`example-cli goodbye [FILE]`](#example-cli-goodbye-file)
-* [`example-cli hello [FILE]`](#example-cli-hello-file)
-* [`example-cli help [COMMAND]`](#example-cli-help-command)
+
+-   [`example-cli goodbye [FILE]`](#example-cli-goodbye-file)
+-   [`example-cli hello [FILE]`](#example-cli-hello-file)
+-   [`example-cli help [COMMAND]`](#example-cli-help-command)
 
 ## `example-cli goodbye [FILE]`
 
@@ -74,4 +83,5 @@ OPTIONS
 ```
 
 _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v2.2.1/src\commands\help.ts)_
+
 <!-- commandsstop -->

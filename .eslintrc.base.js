@@ -1,4 +1,5 @@
 module.exports = {
+    root: true,
     parser: '@typescript-eslint/parser',
     parserOptions: {
         ecmaVersion: 2022,
@@ -11,9 +12,11 @@ module.exports = {
         'eslint:recommended',
         'plugin:@typescript-eslint/recommended',
         'plugin:@typescript-eslint/recommended-requiring-type-checking',
+        'plugin:@typescript-eslint/strict',
         'plugin:prettier/recommended',
     ],
     rules: {
+        '@typescript-eslint/no-invalid-void-type': 'off',
         '@typescript-eslint/consistent-indexed-object-style': 'error',
         '@typescript-eslint/consistent-type-imports': 'error',
         '@typescript-eslint/sort-type-union-intersection-members': 'error',
@@ -108,6 +111,12 @@ module.exports = {
                 '@typescript-eslint/no-unsafe-argument': 'off',
                 '@typescript-eslint/no-unsafe-member-access': 'off',
                 '@typescript-eslint/no-var-requires': 'off',
+            },
+        },
+        {
+            files: ['*.json'],
+            rules: {
+                '@typescript-eslint/naming-convention': 'off',
             },
         },
     ],

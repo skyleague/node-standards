@@ -5,5 +5,5 @@ slug: /
 ---
 
 # Introduction
-This is the package documentation
 
+This is the package documentation

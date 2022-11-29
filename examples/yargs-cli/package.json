@@ -24,9 +24,9 @@
     "check:full": "npm run lint && npm run check:types && npm run check:coverage && npm run build && npm run check:project",
     "check:project": "npx node-standards lint",
     "check:types": "npx tsc -p tsconfig.json",
-    "fix": "npm run lint -- --fix",
-    "format": "npx prettier \"**/*.{ts,js,json,yml,yaml}\" --ignore-path .gitignore --write",
+    "format": "npx prettier \"**/*.{ts,js,json,yml,yaml,md}\" --ignore-path .gitignore --write",
     "lint": "npx eslint \"{src,test,typing}/**/*.ts\" --no-eslintrc --cache -c .eslintrc.js --ignore-path .gitignore",
+    "lint:fix": "npm run lint -- --fix",
     "lint:full": "bash -c \"FULL_LINT=true npm run lint\"",
     "package": "rm -rf .dist && npm run build",
     "prepare": "npx husky install || true",
@@ -35,12 +35,12 @@
   "devDependencies": {
     "@types/source-map-support": "^0.5.6",
     "@skyleague/node-standards": "^1.0.0",
-    "typescript": "^4.8.4"
+    "typescript": "^4.9.3"
   },
   "dependencies": {
-    "tslib": "^2.4.0",
+    "tslib": "^2.4.1",
     "source-map-support": "^0.5.21",
-    "yargs": "^17.6.0"
+    "yargs": "^17.6.2"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
