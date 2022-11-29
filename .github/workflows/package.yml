@@ -11,14 +11,15 @@ on:
 
 jobs:
   typescript:
-    uses: skyleague/node-standards/.github/workflows/reusable-typescript.yml@main
+    uses: skyleague/node-standards/.github/workflows/reusable-typescript.yml@11-29-feat_cicd_add_code_scanning
     with:
       standards_postinstall: npm link
+      coverage_artifact_path: .coverage
     secrets:
       NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   build:
-    uses: skyleague/node-standards/.github/workflows/reusable-build.yml@main
+    uses: skyleague/node-standards/.github/workflows/reusable-build.yml@11-29-feat_cicd_add_code_scanning
     secrets:
       NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
