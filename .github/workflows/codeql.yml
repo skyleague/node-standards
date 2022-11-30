@@ -1,0 +1,13 @@
+name: CodeQL
+
+on:
+  push:
+    branches: ['11-29-feat_cicd_add_code_scanning']
+  pull_request:
+    branches: ['11-29-feat_cicd_add_code_scanning']
+  schedule:
+    - cron: '34 9 * * 4'
+
+jobs:
+  codeql:
+    uses: skyleague/node-standards/.github/workflows/reusable-codeql.yml@11-29-feat_cicd_add_code_scanning
