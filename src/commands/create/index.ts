@@ -118,7 +118,7 @@ export async function handler(argv: ReturnType<typeof builder>['argv']): Promise
     const template = project.template
 
     if (template === undefined) {
-        throw new Error(`could not find a template with type ${type ?? 'undefined'}`)
+        throw new Error(`could not find a template with type ${type}`)
     }
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     await createProject({ type, name: name!, local, template })

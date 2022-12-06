@@ -58,7 +58,7 @@ export class Project {
                     .filter((x): x is ProjectTemplate => x !== undefined) ?? []
 
             for (const c of children) {
-                if (found[c.type] === undefined) {
+                if (!(c.type in found)) {
                     found[c.type] = { ...c.template, type: c.type }
                     _links(c.template.links, c.overrides)
                 }

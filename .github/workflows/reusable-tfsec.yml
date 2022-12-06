@@ -4,35 +4,35 @@ on:
   workflow_call:
     inputs:
       terraform-version:
-        description: "Terraform version to use, default to (1.2.7)"
+        description: 'Terraform version to use, default to (1.2.7)'
         required: true
         type: string
-        default: "1.2.7"
+        default: '1.2.7'
       working-directory:
-        description: "From which directory do we need to set this up"
+        description: 'From which directory do we need to set this up'
         required: true
         type: string
-        default: "./"
+        default: './'
       preinstall:
-        description: "Preinstall command"
+        description: 'Preinstall command'
         required: false
         type: string
-        default: ""
+        default: ''
       postinstall:
-        description: "Postinstall command"
+        description: 'Postinstall command'
         required: false
         type: string
-        default: ""
+        default: ''
       cache-hash:
-        description: "Additional hash for caching"
+        description: 'Additional hash for caching'
         required: false
         type: string
-        default: ""
+        default: ''
       tfsec-var-files:
-        description: "Var files to include in testing"
+        description: 'Var files to include in testing'
         type: string
         required: false
-        default: ""
+        default: ''
 
 jobs:
   tfsec:

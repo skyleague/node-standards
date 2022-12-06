@@ -14,9 +14,9 @@ export const YargsCliTemplate: ProjectTemplate = {
         },
         files: ['bin', '.main.js', '.main.js.map', 'index.d.ts', 'src/**/*.d.ts', 'package.json'],
         dependencies: {
-            tslib: dependencies['tslib'],
+            tslib: dependencies.tslib,
             'source-map-support': dependencies['source-map-support'],
-            yargs: dependencies['yargs'],
+            yargs: dependencies.yargs,
         },
         devDependencies: {
             '@types/source-map-support': devDependencies['@types/source-map-support'],

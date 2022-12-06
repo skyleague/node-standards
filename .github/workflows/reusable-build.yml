@@ -44,8 +44,9 @@ jobs:
         with:
           name: ${{ inputs.artifact_name }}
           path: ${{ inputs.artifact_path }}
-      - id: set_artifact_name
-        run: echo '::set-output name=artifact_name::${{ inputs.artifact_name }}'
+      - name: Set artifact name
+        id: set_artifact_name
+        run: echo "artifact_name=${{ inputs.artifact_name }}" >> $GITHUB_OUTPUT
 
     outputs:
       artifact_name: ${{ steps.set_artifact_name.outputs.artifact_name }}

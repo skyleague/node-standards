@@ -12,7 +12,7 @@
 
 > Nihil est sine ratione.
 >
-> - Gottfried Wilhelm Leibniz
+> -   Gottfried Wilhelm Leibniz
 
 Node Standards is an opinionated collection of best practices, bundled in a way to easily configure new (and old) typescript projects.
 
@@ -42,26 +42,27 @@ Install Node Standards using [`npm`](https://www.npmjs.com/):
 
 <!-- toc -->
 
-- [Install](#install)
-- [Usage](#usage)
-  * [Create](#Create)
-  * [Lint](#Lint)
-- [Alternative projects](#alternative-projects)
-- [When not to use Node Standards?](#when-not-to-use-node-standards)
-- [License](#license)
+-   [Install](#install)
+-   [Usage](#usage)
+    -   [Create](#Create)
+    -   [Lint](#Lint)
+-   [Alternative projects](#alternative-projects)
+-   [When not to use Node Standards?](#when-not-to-use-node-standards)
+-   [License](#license)
 
 <!-- tocstop -->
 
 ## Usage
 
-
 ### Configuration
 
-Node Standards takes little time to set up. 
- 1. Add Node Standards to the devDependencies
- 2. Configure the project linting in the package.json
+Node Standards takes little time to set up.
+
+1.  Add Node Standards to the devDependencies
+2.  Configure the project linting in the package.json
 
 The package.json should adhere to the following type:
+
 ```ts
 interface PackageJson {
   ...
@@ -85,6 +86,7 @@ interface PackageJson {
 ```
 
 ### Create
+
 Create a new project of the given type and name.
 
 ```console
@@ -103,6 +105,7 @@ Options:
 ```
 
 ### Lint
+
 Ensure the project is up-to-date with the latest project structure and configuration. The `--fix` setting can be used to automatically fix most issues found.
 
 ```
@@ -126,8 +129,8 @@ PR's are very welcome if you think your project is missing here.
 
 ## When not to use Node Standards?
 
-- We aim to configure our settings to be as strict as possible. Not everyone might like this.
-- Node Standards is an insanely opinionated implementation, and this may not fit your needs or vision.
+-   We aim to configure our settings to be as strict as possible. Not everyone might like this.
+-   Node Standards is an insanely opinionated implementation, and this may not fit your needs or vision.
 
 ## Support
 
@@ -143,7 +146,6 @@ If you using this SDK without Enterprise Support, please note this (partial) MIT
 
 > THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND
 
-Copyright (c) 2022, SkyLeague Technologies B.V..
-'SkyLeague' and the astronaut logo are trademarks of SkyLeague Technologies, registered at Chamber of Commerce in The Netherlands under number 86650564.
+Copyright (c) 2022, SkyLeague Technologies B.V.. 'SkyLeague' and the astronaut logo are trademarks of SkyLeague Technologies, registered at Chamber of Commerce in The Netherlands under number 86650564.
 
 All product names, logos, brands, trademarks and registered trademarks are property of their respective owners. All company, product and service names used in this website are for identification purposes only. Use of these names, trademarks and brands does not imply endorsement.
