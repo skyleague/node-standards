@@ -1,11 +1,11 @@
-import type { ProjectTemplate } from './types'
+import type { ProjectTemplateBuilder } from './types'
 
 import { dependencies, devDependencies, repositoryUrl, rootDirectory } from '../constants'
 import { PackageType } from '../types'
 
-export const YargsCliTemplate: ProjectTemplate = {
+export const YargsCliTemplate: ProjectTemplateBuilder = {
     type: PackageType.YargsCli,
-    template: {
+    template: (config) => ({
         repositoryUrl,
         scripts: undefined,
         publishConfig: {
@@ -27,7 +27,10 @@ export const YargsCliTemplate: ProjectTemplate = {
             main: '.main.js',
             types: 'index.d.ts',
         },
-        links: [PackageType.CommonTypescript],
+        links: [
+            ...(config?.template?.documentation === 'docusaurus' ? [PackageType.Docusaurus] : []),
+            PackageType.CommonTypescript,
+        ],
         roots: [rootDirectory],
-    },
+    }),
 }
