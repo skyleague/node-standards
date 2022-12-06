@@ -17,11 +17,8 @@ export function getTemplate(
     config?: PackageConfiguration | undefined,
     { allowOverrides = true, type = config?.type }: { allowOverrides?: boolean; type?: string } = {}
 ): ProjectTemplate | undefined {
-    if (config === undefined) {
-        return undefined
-    }
-
     const template = xs.find((x) => x.type === type || (allowOverrides && x.overrides === type))
+
     const evaluatedTemplate = typeof template?.template === 'function' ? template.template(config) : template?.template
     return template !== undefined && evaluatedTemplate !== undefined
         ? {

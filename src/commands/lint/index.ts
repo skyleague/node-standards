@@ -1,6 +1,6 @@
 import { ProjectLinter } from './lint'
 
-import { templates as allTemplates } from '../../lib/templates'
+import { templates } from '../../lib/templates'
 
 import type { Argv } from 'yargs'
 export { ProjectLinter } from './lint'
@@ -17,7 +17,7 @@ export async function handler(argv: ReturnType<typeof builder>['argv']): Promise
     const { fix } = await argv
 
     new ProjectLinter({
-        templates: allTemplates,
+        templates,
         fix,
     }).lint()
 }
