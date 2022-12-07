@@ -3,7 +3,6 @@
 const package = require('../package.json')
 const [organizationName, projectName] = package.name.replace('@', '').split('/')
 const url = new URL(package.homepage)
-console.log(url)
 
 const lightCodeTheme = require('prism-react-renderer/themes/github')
 const darkCodeTheme = require('prism-react-renderer/themes/dracula')
