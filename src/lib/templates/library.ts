@@ -12,12 +12,12 @@ export const LibraryTemplate: ProjectTemplateBuilder = {
             registry: 'https://registry.npmjs.org',
             access: 'public',
         },
-        files: ['.main.js', '.main.js.map', 'index.d.ts', 'src/**/*.d.ts', 'package.json'],
+        files: ['dist', 'package.json'],
         dependencies: undefined,
         devDependencies: undefined,
         definition: {
-            main: '.main.js',
-            types: 'index.d.ts',
+            main: 'dist/index.js',
+            types: 'dist/index.d.ts',
         },
         links: [
             ...(config?.template?.documentation === 'docusaurus' ? [PackageType.Docusaurus] : []),
