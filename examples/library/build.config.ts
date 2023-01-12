@@ -1,12 +1,8 @@
-import { build } from 'esbuild'
 import glob from 'fast-glob'
 
 import { execSync } from 'child_process'
 import fs from 'fs'
 import path from 'path'
-
-// eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-unsafe-assignment
-const { jsonLoaderPlugin, nodeExternalsPlugin } = require('@skyleague/node-standards/esbuild.plugins')
 
 async function main() {
     execSync(`rm -rf dist`)
