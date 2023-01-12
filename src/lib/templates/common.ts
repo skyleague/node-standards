@@ -26,7 +26,7 @@ export const CommonTypescriptTemplate: ProjectTemplateBuilder = {
     template: () => ({
         repositoryUrl,
         scripts: {
-            ['build']: 'npx ts-node esbuild.config.ts',
+            ['build']: 'npx ts-node build.config.ts',
             ['build:clean']: 'npx tsc --build --clean && rm .main.js && rm .main.js.map',
             ['build:docs']: 'npx typedoc',
             ['check:cost']: 'npx cost-of-modules --no-install --include-dev',

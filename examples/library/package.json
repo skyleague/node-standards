@@ -3,8 +3,8 @@
   "description": "",
   "version": "0.0.1",
   "license": "MIT",
-  "main": ".main.js",
-  "types": "index.d.ts",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "sideEffects": false,
   "node-standards": {
     "type": "library",
@@ -20,9 +20,9 @@
     "type": "git",
     "url": "https://github.com/skyleague/node-standards.git"
   },
-  "files": [".main.js", ".main.js.map", "index.d.ts", "src/**/*.d.ts", "package.json"],
+  "files": ["dist", "package.json"],
   "scripts": {
-    "build": "npx ts-node esbuild.config.ts",
+    "build": "npx ts-node build.config.ts",
     "build:clean": "npx tsc --build --clean && rm .main.js && rm .main.js.map",
     "build:docs": "(cd docs; npm install; npm run build)",
     "check:cost": "npx cost-of-modules --no-install --include-dev",

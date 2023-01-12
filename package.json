@@ -19,7 +19,7 @@
         ".eslintrc.js",
         "babel.config.js",
         "commitlint.config.js",
-        "esbuild.config.ts",
+        "build.config.ts",
         "lint-staged.config.js",
         "prettier.config.js",
         "release.config.js",
@@ -61,7 +61,7 @@
     "typedoc.js"
   ],
   "scripts": {
-    "build": "npx ts-node esbuild.config.ts",
+    "build": "npx ts-node build.config.ts",
     "build:clean": "npx tsc --build --clean && rm .main.js && rm .main.js.map",
     "build:docs": "npx typedoc",
     "check:cost": "npx cost-of-modules --no-install --include-dev",
@@ -100,6 +100,7 @@
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-prettier": "^4.2.1",
     "eslint-plugin-unused-imports": "^2.0.0",
+    "fast-glob": "^3.2.12",
     "find-root": "^1.1.0",
     "husky": "^8.0.2",
     "is-ci": "^3.0.1",
