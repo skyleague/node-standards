@@ -1,4 +1,5 @@
 const fs = require('fs')
+const path = require('path')
 
 /** @type {import('esbuild').Plugin} */
 const jsonLoaderPlugin = {
@@ -22,7 +23,7 @@ const nodeExternalsPlugin = {
                 // local refs are not external
                 return null
             }
-            if (require.resolve(args.path).includes('/node_modules/')) {
+            if (require.resolve(args.path).includes(`${path.sep}node_modules${path.sep}`)) {
                 return { path: args.path, external: true }
             }
             return null
