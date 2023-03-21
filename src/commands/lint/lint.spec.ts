@@ -2,7 +2,6 @@ import { ProjectLinter } from './lint'
 
 import type { ProjectDefinition } from '../../lib/templates/types'
 import type { PackageConfiguration, PackageJson } from '../../lib/types'
-import { PackageType } from '../../lib/types'
 
 describe('lint configuration', () => {
     let linter: ProjectLinter
@@ -34,7 +33,7 @@ describe('lint configuration', () => {
 
     test('dont modify a valid configuration', () => {
         const config: PackageConfiguration = {
-            type: PackageType.YargsCli,
+            type: 'yargs-cli',
             template: {
                 exclude: ['foofile'],
             },
@@ -74,7 +73,7 @@ describe('lint definition', () => {
 
     test('explicit ignore skips lint step', () => {
         const config: PackageConfiguration = {
-            type: PackageType.YargsCli,
+            type: 'yargs-cli',
             template: {
                 lint: {
                     definition: false,
@@ -135,7 +134,7 @@ describe('lint package files', () => {
 
     test('explicit ignore skips lint step', () => {
         const config: PackageConfiguration = {
-            type: PackageType.YargsCli,
+            type: 'yargs-cli',
             template: {
                 lint: {
                     files: false,
@@ -199,7 +198,7 @@ describe('lint publish config', () => {
 
     test('explicit ignore skips lint step', () => {
         const config: PackageConfiguration = {
-            type: PackageType.YargsCli,
+            type: 'yargs-cli',
             template: {
                 lint: {
                     publishConfig: false,
@@ -264,7 +263,7 @@ describe('lint script', () => {
 
     test('explicit ignore skips lint step', () => {
         const config: PackageConfiguration = {
-            type: PackageType.YargsCli,
+            type: 'yargs-cli',
             template: {
                 lint: {
                     scripts: false,
@@ -368,7 +367,7 @@ describe('lint dependencies', () => {
 
     test('explicit ignore skips lint step', () => {
         const config: PackageConfiguration = {
-            type: PackageType.YargsCli,
+            type: 'yargs-cli',
             template: {
                 lint: {
                     dependencies: false,
@@ -533,7 +532,7 @@ describe('lint devDependencies', () => {
 
     test('explicit ignore skips lint step', () => {
         const config: PackageConfiguration = {
-            type: PackageType.YargsCli,
+            type: 'yargs-cli',
             template: {
                 lint: {
                     devDependencies: false,

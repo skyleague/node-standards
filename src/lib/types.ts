@@ -1,12 +1,4 @@
-export enum PackageType {
-    Common = 'common',
-    CommonTypescript = 'common-typescript',
-    Library = 'library',
-    YargsCli = 'yargs-cli',
-    Docusaurus = 'docusaurus',
-}
-
-export interface PackageConfiguration {
+export interface PackageConfiguration<PackageType extends string = string> {
     type: PackageType
     template?: {
         exclude?: string[]
