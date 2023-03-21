@@ -3,9 +3,9 @@ import { rootDirectory } from '../lib/constants'
 import type { SpawnSyncReturns } from 'child_process'
 import { execSync } from 'child_process'
 
-export function isIgnored(file: string): boolean {
+export function isIgnored(file: string, { cwd = rootDirectory }: { cwd?: string } = {}): boolean {
     try {
-        return execSync(`git check-ignore ${file}`, { cwd: rootDirectory }).toString().includes(file)
+        return execSync(`git check-ignore ${file}`, { cwd }).toString().includes(file)
     } catch (error) {
         return (error as SpawnSyncReturns<string>).status === 0
     }

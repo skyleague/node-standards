@@ -57,6 +57,7 @@
     "release.config.js",
     "src/**/*.d.ts",
     "templates",
+    "examples",
     "tsconfig.base.json",
     "typedoc.js"
   ],
@@ -91,7 +92,6 @@
     "@types/semver": "^7.3.13",
     "@typescript-eslint/eslint-plugin": "^5.45.0",
     "@typescript-eslint/parser": "^5.45.0",
-    "adm-zip": "^0.5.9",
     "conventional-changelog": "^3.1.25",
     "esbuild": "^0.15.16",
     "eslint": "^8.28.0",
@@ -119,7 +119,6 @@
     "typescript": "^4.9.3"
   },
   "devDependencies": {
-    "@types/adm-zip": "^0.5.0",
     "@types/concurrently": "^7.0.0",
     "@types/find-root": "^1.1.2",
     "@types/is-ci": "^3.0.0",
