@@ -169,14 +169,19 @@ export class ProjectLinter extends Project {
     }
 
     public lintPublishConfig(): void {
-        if (this.config?.template?.lint?.publishConfig === false || this.template?.publishConfig === undefined) {
+        if (this.config?.template?.lint?.publishConfig === false) {
             return
         }
 
         const json = JSON.stringify(this.packagejson.publishConfig ?? {})
-
-        this.packagejson.publishConfig = this.template.publishConfig
-        if (JSON.stringify(this.packagejson.publishConfig) !== json) {
+        let hasValues = false
+        for (const publishConfig of this.getRequiredTemplates({ order: 'last' })
+            .map((l) => l.publishConfig)
+            .filter((x) => x !== undefined)) {
+            this.packagejson.publishConfig = publishConfig
+            hasValues = true
+        }
+        if (JSON.stringify(this.packagejson.publishConfig) !== json && hasValues) {
             console.warn(
                 `[package.json>publishConfig] missing or outdated publish configuration found:\n${
                     vdiff(JSON.parse(json), this.packagejson.publishConfig).text

@@ -14,6 +14,7 @@ export interface ProjectTemplateDefinition {
     definition?: Record<string, string> | undefined
     roots: [string, ...string[]]
     links?: string[] | undefined
+    extends?: string[] | undefined
 }
 
 export interface ProjectTemplateBuilder {

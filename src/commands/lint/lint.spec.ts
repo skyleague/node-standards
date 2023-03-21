@@ -246,6 +246,44 @@ describe('lint publish config', () => {
         `)
         expect(linter.shouldFail).toBeTruthy()
     })
+
+    test('fixes the package according to all linked templates', () => {
+        const packagejson = {
+            publishConfig: {
+                access: 'public',
+                registry: 'https://registry.npmjs.org',
+            },
+        } as unknown as PackageJson
+        jest.spyOn(linter, 'packagejson', 'get').mockReturnValue(packagejson)
+        jest.spyOn(linter, 'template', 'get').mockReturnValue({
+            publishConfig: {
+                access: 'restricted',
+                registry: 'https://registry.npmjs.org',
+            },
+        } as unknown as ProjectDefinition)
+        jest.spyOn(linter, 'links', 'get').mockReturnValue([
+            [
+                {
+                    publishConfig: {
+                        access: 'restricted',
+                        registry: 'https://npm.pkg.github.com/',
+                    },
+                },
+            ],
+            [],
+        ] as unknown as [before: ProjectDefinition[], after: ProjectDefinition[]])
+
+        linter.lintPublishConfig()
+        expect(packagejson).toMatchInlineSnapshot(`
+            {
+              "publishConfig": {
+                "access": "restricted",
+                "registry": "https://npm.pkg.github.com/",
+              },
+            }
+        `)
+        expect(linter.shouldFail).toBeTruthy()
+    })
 })
 
 describe('lint script', () => {
@@ -332,13 +370,16 @@ describe('lint script', () => {
             },
         } as unknown as ProjectDefinition)
         jest.spyOn(linter, 'links', 'get').mockReturnValue([
-            {
-                scripts: {
-                    fooz: 'npx bar',
-                    foo: 'npx baz',
+            [],
+            [
+                {
+                    scripts: {
+                        fooz: 'npx bar',
+                        foo: 'npx baz',
+                    },
                 },
-            },
-        ] as unknown as ProjectDefinition[])
+            ],
+        ] as unknown as [before: ProjectDefinition[], after: ProjectDefinition[]])
 
         linter.lintScripts()
         expect(packagejson).toMatchInlineSnapshot(`
@@ -496,12 +537,15 @@ describe('lint dependencies', () => {
             },
         } as unknown as ProjectDefinition)
         jest.spyOn(linter, 'links', 'get').mockReturnValue([
-            {
-                dependencies: {
-                    foo: '^2.0.0',
+            [
+                {
+                    dependencies: {
+                        foo: '^2.0.0',
+                    },
                 },
-            },
-        ] as unknown as ProjectDefinition[])
+            ],
+            [],
+        ] as unknown as [before: ProjectDefinition[], after: ProjectDefinition[]])
 
         linter.lintDependencies()
         expect(packagejson).toMatchInlineSnapshot(`
@@ -661,12 +705,15 @@ describe('lint devDependencies', () => {
             },
         } as unknown as ProjectDefinition)
         jest.spyOn(linter, 'links', 'get').mockReturnValue([
-            {
-                devDependencies: {
-                    foo: '^2.0.0',
+            [
+                {
+                    devDependencies: {
+                        foo: '^2.0.0',
+                    },
                 },
-            },
-        ] as unknown as ProjectDefinition[])
+            ],
+            [],
+        ] as unknown as [before: ProjectDefinition[], after: ProjectDefinition[]])
 
         linter.lintDevDependencies()
         expect(packagejson).toMatchInlineSnapshot(`

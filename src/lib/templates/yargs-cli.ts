@@ -6,11 +6,6 @@ export const YargsCliTemplate: ProjectTemplateBuilder = {
     type: 'yargs-cli',
     template: (config) => ({
         repositoryUrl,
-        scripts: undefined,
-        publishConfig: {
-            registry: 'https://registry.npmjs.org',
-            access: 'public',
-        },
         files: ['bin', '.main.js', '.main.js.map', 'index.d.ts', 'src/**/*.d.ts', 'package.json'],
         dependencies: {
             tslib: dependencies.tslib,
