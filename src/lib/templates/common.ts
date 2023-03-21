@@ -1,28 +1,24 @@
 import type { ProjectTemplate, ProjectTemplateBuilder } from './types'
 
 import { dependencies, peerDependencies, repositoryUrl, rootDirectory } from '../constants'
-import { PackageType } from '../types'
 
 export const CommonTemplate: ProjectTemplate = {
-    type: PackageType.Common,
+    type: 'common',
     template: {
         repositoryUrl,
         scripts: {
             ['prepare']: 'npx husky install || true',
         },
-        files: undefined,
-        dependencies: undefined,
         devDependencies: {},
         definition: {
             node: '>=14',
         },
-        links: undefined,
         roots: [rootDirectory],
     },
 }
 
 export const CommonTypescriptTemplate: ProjectTemplateBuilder = {
-    type: PackageType.CommonTypescript,
+    type: 'common-typescript',
     template: () => ({
         repositoryUrl,
         scripts: {
@@ -43,7 +39,6 @@ export const CommonTypescriptTemplate: ProjectTemplateBuilder = {
             ['package']: 'rm -rf .dist && npm run build',
             ['test']: 'npx jest',
         },
-        files: undefined,
         dependencies: {
             tslib: dependencies.tslib,
         },
@@ -54,7 +49,7 @@ export const CommonTypescriptTemplate: ProjectTemplateBuilder = {
         definition: {
             node: '>=14',
         },
-        links: [PackageType.Common],
         roots: [rootDirectory],
+        links: ['common'],
     }),
 }

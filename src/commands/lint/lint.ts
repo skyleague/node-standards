@@ -1,7 +1,6 @@
 import { getAllFiles } from '../../common'
 import { Project } from '../../lib/project'
 import type { ProjectTemplateBuilder } from '../../lib/templates/types'
-import { PackageType } from '../../lib/types'
 
 import LineDiff from 'line-diff'
 import semver from 'semver'
@@ -134,7 +133,7 @@ export class ProjectLinter extends Project {
         const json = JSON.stringify(this.config ?? {})
         if (this.packagejson[this.configurationKey] === undefined) {
             this.packagejson[this.configurationKey] = {
-                type: PackageType.Library,
+                type: 'library',
             }
         }
         if (JSON.stringify(this.packagejson[this.configurationKey]) !== json) {

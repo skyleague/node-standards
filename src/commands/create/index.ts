@@ -3,7 +3,6 @@ import { rootDirectory, version } from '../../lib/constants'
 import { Project } from '../../lib/project'
 import { templates } from '../../lib/templates'
 import type { ProjectTemplateDefinition } from '../../lib/templates/types'
-import { PackageType } from '../../lib/types'
 
 import AdmZip from 'adm-zip'
 import type { Argv } from 'yargs'
@@ -88,13 +87,13 @@ export async function createProject({
     cleanup()
 }
 
-export function builder(yargs: Argv): Argv<{ local: boolean; name: string | undefined; type: PackageType }> {
+export function builder(yargs: Argv): Argv<{ local: boolean; name: string | undefined; type: string }> {
     return yargs
         .option('type', {
             describe: 'package type',
             type: 'string',
-            default: PackageType.Library,
-            choices: [PackageType.Library, PackageType.YargsCli],
+            default: 'library',
+            choices: ['library', 'yargs-cli'],
             demand: true,
         })
         .positional('name', {
