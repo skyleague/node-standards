@@ -5,6 +5,7 @@ export interface PackageConfiguration<PackageType extends string = string> {
         lint?: {
             publishConfig?: boolean
             license?: boolean
+            engines?: boolean
             files?: boolean
             dependencies?: boolean
             devDependencies?: boolean
