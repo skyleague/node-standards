@@ -119,6 +119,7 @@ export class ProjectLinter extends Project {
         this.linDefinition()
         this.lintScripts()
         this.lintPublishConfig()
+        this.lintLicense()
         this.lintPackageFiles()
         this.lintDependencies()
         this.lintDevDependencies()
@@ -179,6 +180,29 @@ export class ProjectLinter extends Project {
             console.warn(
                 `[package.json>publishConfig] missing or outdated publish configuration found:\n${
                     vdiff(JSON.parse(json), this.packagejson.publishConfig).text
+                }`
+            )
+
+            this.fail()
+        }
+    }
+
+    public lintLicense(): void {
+        if (this.config?.template?.lint?.license === false) {
+            return
+        }
+
+        const json = JSON.stringify(this.packagejson.license ?? {})
+        for (const license of this.getRequiredTemplates({ order: 'last' })
+            .map((l) => l.license)
+            .filter((x) => x !== undefined)) {
+            this.packagejson.license = license
+        }
+
+        if (JSON.stringify(this.packagejson.license) !== json) {
+            console.warn(
+                `[package.json>license] missing or outdated publish configuration found:\n${
+                    vdiff(JSON.parse(json), this.packagejson.license).text
                 }`
             )
 

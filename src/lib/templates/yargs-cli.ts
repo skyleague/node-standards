@@ -26,7 +26,7 @@ export const YargsCliTemplate: ProjectTemplateBuilder = {
             main: '.main.js',
             types: 'index.d.ts',
         },
-        links: [...(config?.template?.documentation === 'docusaurus' ? ['docusaurus'] : []), 'common-typescript'],
+        links: [...(config?.template?.documentation === 'docusaurus' ? ['docusaurus'] : []), 'common-typescript', 'license'],
         roots: [rootDirectory],
     }),
 }
