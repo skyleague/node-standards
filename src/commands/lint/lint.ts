@@ -198,13 +198,15 @@ export class ProjectLinter extends Project {
         }
 
         const json = JSON.stringify(this.packagejson.license ?? {})
+        let hasValues = false
         for (const license of this.getRequiredTemplates({ order: 'last' })
             .map((l) => l.license)
             .filter((x) => x !== undefined)) {
             this.packagejson.license = license
+            hasValues = true
         }
 
-        if (JSON.stringify(this.packagejson.license) !== json) {
+        if (JSON.stringify(this.packagejson.license) !== json && hasValues) {
             console.warn(
                 `[package.json>license] missing or outdated publish configuration found:\n${
                     vdiff(JSON.parse(json), this.packagejson.license).text

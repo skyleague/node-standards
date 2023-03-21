@@ -286,6 +286,91 @@ describe('lint publish config', () => {
     })
 })
 
+describe('lint license', () => {
+    let linter: ProjectLinter
+
+    beforeEach(() => {
+        linter = new ProjectLinter({
+            templates: [],
+            configurationKey: 'foo-key',
+            fix: false,
+        })
+    })
+
+    afterEach(() => jest.restoreAllMocks())
+
+    test('explicit ignore skips lint step', () => {
+        const config: PackageConfiguration = {
+            type: 'yargs-cli',
+            template: {
+                lint: {
+                    license: false,
+                },
+            },
+        }
+        const packagejson = { 'foo-key': config } as unknown as PackageJson
+        jest.spyOn(linter, 'packagejson', 'get').mockReturnValue(packagejson)
+        jest.spyOn(linter, 'template', 'get').mockReturnValue({
+            license: 'foobar',
+        } as unknown as ProjectDefinition)
+
+        linter.lintLicense()
+        expect(linter.shouldFail).toBeFalsy()
+    })
+
+    test('does not fail when template isnt found', () => {
+        const packagejson = {} as PackageJson
+        jest.spyOn(linter, 'packagejson', 'get').mockReturnValue(packagejson)
+        jest.spyOn(linter, 'template', 'get').mockReturnValue(undefined)
+
+        linter.lintLicense()
+        expect(packagejson).toMatchInlineSnapshot(`{}`)
+        expect(linter.shouldFail).toBeFalsy()
+    })
+
+    test('fixes the package according to the template', () => {
+        const packagejson = {} as PackageJson
+        jest.spyOn(linter, 'packagejson', 'get').mockReturnValue(packagejson)
+        jest.spyOn(linter, 'template', 'get').mockReturnValue({
+            license: 'UNLICENSED',
+        } as unknown as ProjectDefinition)
+
+        linter.lintLicense()
+        expect(packagejson).toMatchInlineSnapshot(`
+            {
+              "license": "UNLICENSED",
+            }
+        `)
+        expect(linter.shouldFail).toBeTruthy()
+    })
+
+    test('fixes the package according to all linked templates', () => {
+        const packagejson = {
+            license: 'UNLICENSED',
+        } as unknown as PackageJson
+        jest.spyOn(linter, 'packagejson', 'get').mockReturnValue(packagejson)
+        jest.spyOn(linter, 'template', 'get').mockReturnValue({
+            license: 'PROPRIETARY',
+        } as unknown as ProjectDefinition)
+        jest.spyOn(linter, 'links', 'get').mockReturnValue([
+            [
+                {
+                    license: 'MIT',
+                },
+            ],
+            [],
+        ] as unknown as [before: ProjectDefinition[], after: ProjectDefinition[]])
+
+        linter.lintLicense()
+        expect(packagejson).toMatchInlineSnapshot(`
+            {
+              "license": "MIT",
+            }
+        `)
+        expect(linter.shouldFail).toBeTruthy()
+    })
+})
+
 describe('lint script', () => {
     let linter: ProjectLinter
 
