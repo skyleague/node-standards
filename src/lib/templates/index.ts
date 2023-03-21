@@ -1,6 +1,7 @@
 import { CommonTemplate, CommonTypescriptTemplate } from './common'
 import { DocusaurusTemplate } from './docusaurus'
 import { LibraryTemplate } from './library'
+import { DefaultLicense } from './license'
 import type { ProjectTemplate, ProjectTemplateBuilder } from './types'
 import { YargsCliTemplate } from './yargs-cli'
 
@@ -10,7 +11,14 @@ export { LibraryTemplate } from './library'
 export { YargsCliTemplate } from './yargs-cli'
 export { ProjectTemplate } from './types'
 
-export const templates = [CommonTemplate, CommonTypescriptTemplate, LibraryTemplate, YargsCliTemplate, DocusaurusTemplate]
+export const templates = [
+    CommonTemplate,
+    CommonTypescriptTemplate,
+    LibraryTemplate,
+    YargsCliTemplate,
+    DocusaurusTemplate,
+    DefaultLicense,
+]
 
 export function getTemplate(
     xs: ProjectTemplateBuilder[],

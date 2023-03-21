@@ -4,6 +4,7 @@ export interface PackageConfiguration<PackageType extends string = string> {
         exclude?: string[]
         lint?: {
             publishConfig?: boolean
+            license?: boolean
             files?: boolean
             dependencies?: boolean
             devDependencies?: boolean
@@ -16,6 +17,7 @@ export interface PackageConfiguration<PackageType extends string = string> {
 
 export type PackageJson = Record<string, unknown> & {
     version: string
+    license: string | undefined
     publishConfig: { registry: string; access: 'public' | 'restricted' } | undefined
     scripts: Record<string, string | undefined> | undefined
     dependencies: Record<string, string | undefined> | undefined

@@ -11,7 +11,7 @@ export const LibraryTemplate: ProjectTemplateBuilder = {
             main: 'dist/index.js',
             types: 'dist/index.d.ts',
         },
-        links: [...(config?.template?.documentation === 'docusaurus' ? ['docusaurus'] : []), 'common-typescript'],
+        links: [...(config?.template?.documentation === 'docusaurus' ? ['docusaurus'] : []), 'common-typescript', 'license'],
         roots: [rootDirectory],
     }),
 }
