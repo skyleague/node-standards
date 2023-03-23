@@ -49,9 +49,6 @@ export const CommonTypescriptTemplate: ProjectTemplateBuilder = {
             ...peerDependencies,
             tslib: undefined,
         },
-        definition: {
-            node: '>=14',
-        },
         roots: [rootDirectory],
         links: ['common'],
     }),
