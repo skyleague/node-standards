@@ -36,13 +36,14 @@ export class Project {
 
     public getRequiredTemplates({ order }: { order: 'first' | 'last' }): ProjectDefinition[] {
         const safeTemplate = this.template !== undefined ? [this.template] : []
+        const [before, after] = this.links
         if (order === 'first') {
-            return [...safeTemplate, ...this.links.reverse()]
+            return [...after.reverse(), ...safeTemplate, ...before.reverse()]
         }
-        return [...this.links, ...safeTemplate]
+        return [...after, ...safeTemplate, ...before]
     }
 
-    public get links(): ProjectDefinition[] {
+    public get links(): [before: ProjectDefinition[], after: ProjectDefinition[]] {
         const config = this.config
         const templates = this.templates
         const found: Record<string, ProjectDefinition> = {}
@@ -56,17 +57,17 @@ export class Project {
                         })
                     )
                     .filter((x): x is ProjectTemplate => x !== undefined) ?? []
-
             for (const c of children) {
                 if (!(c.type in found)) {
                     found[c.type] = { ...c.template, type: c.type }
+                    _links(c.template.extends, c.overrides)
                     _links(c.template.links, c.overrides)
                 }
             }
             // topological sort (last is first in this case)
             return Object.values(found).reverse()
         }
-        return _links(this.template?.links)
+        return [_links(this.template?.extends), _links(this.template?.links)]
     }
 
     private _packagejson: PackageJson | undefined = undefined
