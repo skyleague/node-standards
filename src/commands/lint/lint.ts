@@ -49,7 +49,8 @@ export class ProjectLinter extends Project {
                 for (const file of getAllFiles(templateRoot)) {
                     const relFile = path.relative(templateRoot, file).replace(/\\/g, '/')
                     if (!this.config?.template?.exclude?.includes(relFile)) {
-                        targets[relFile] ??= () => this.lintFile(`${templateRoot}${relFile}`, relFile)
+                        const target = relFile.replace(/_gitignore$/g, '.gitignore').replace(/_npmrc/g, '.npmrc')
+                        targets[relFile] ??= () => this.lintFile(`${templateRoot}${relFile}`, target)
                     }
                 }
             }
@@ -61,9 +62,6 @@ export class ProjectLinter extends Project {
     }
 
     private lintFile(from: string, target: string): void {
-        target = target.replace(/_gitignore$/g, '.gitignore')
-        target = target.replace(/_npmrc/g, '.npmrc')
-
         const targetBasename = path.basename(target)
         const targetDir = path.dirname(target)
         const provisionNewOnly = targetBasename.startsWith('+')
