@@ -10,6 +10,8 @@ export { CommonTemplate } from './common'
 export { LibraryTemplate } from './library'
 export { YargsCliTemplate } from './yargs-cli'
 export { ProjectTemplate } from './types'
+export { DocusaurusTemplate } from './docusaurus'
+export { ProjectTemplateBuilder } from './types'
 
 export const templates = [
     CommonTemplate,
