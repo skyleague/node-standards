@@ -371,6 +371,103 @@ describe('lint license', () => {
     })
 })
 
+describe('lint engines', () => {
+    let linter: ProjectLinter
+
+    beforeEach(() => {
+        linter = new ProjectLinter({
+            templates: [],
+            configurationKey: 'foo-key',
+            fix: false,
+        })
+    })
+
+    afterEach(() => jest.restoreAllMocks())
+
+    test('explicit ignore skips lint step', () => {
+        const config: PackageConfiguration = {
+            type: 'yargs-cli',
+            template: {
+                lint: {
+                    engines: false,
+                },
+            },
+        }
+        const packagejson = { 'foo-key': config } as unknown as PackageJson
+        jest.spyOn(linter, 'packagejson', 'get').mockReturnValue(packagejson)
+        jest.spyOn(linter, 'template', 'get').mockReturnValue({
+            publishConfig: { foo: 'bar' },
+        } as unknown as ProjectDefinition)
+
+        linter.lintEngines()
+        expect(linter.shouldFail).toBeFalsy()
+    })
+
+    test('does not fail when template isnt found', () => {
+        const packagejson = {} as PackageJson
+        jest.spyOn(linter, 'packagejson', 'get').mockReturnValue(packagejson)
+        jest.spyOn(linter, 'template', 'get').mockReturnValue(undefined)
+
+        linter.lintEngines()
+        expect(packagejson).toMatchInlineSnapshot(`{}`)
+        expect(linter.shouldFail).toBeFalsy()
+    })
+
+    test('fixes the package according to the template', () => {
+        const packagejson = {} as PackageJson
+        jest.spyOn(linter, 'packagejson', 'get').mockReturnValue(packagejson)
+        jest.spyOn(linter, 'template', 'get').mockReturnValue({
+            engines: {
+                node: '>=18',
+            },
+        } as unknown as ProjectDefinition)
+
+        linter.lintEngines()
+        expect(packagejson).toMatchInlineSnapshot(`
+            {
+              "engines": {
+                "node": ">=18",
+              },
+            }
+        `)
+        expect(linter.shouldFail).toBeTruthy()
+    })
+
+    test('fixes the package according to all linked templates', () => {
+        const packagejson = {
+            engines: {
+                node: '>=16',
+            },
+        } as unknown as PackageJson
+        jest.spyOn(linter, 'packagejson', 'get').mockReturnValue(packagejson)
+        jest.spyOn(linter, 'template', 'get').mockReturnValue({
+            engines: {
+                node: '>=14',
+            },
+        } as unknown as ProjectDefinition)
+        jest.spyOn(linter, 'links', 'get').mockReturnValue([
+            [
+                {
+                    engines: {
+                        node: '>=18',
+                    },
+                },
+            ],
+            [],
+        ] as unknown as [before: ProjectDefinition[], after: ProjectDefinition[]])
+
+        linter.lintEngines()
+        expect(packagejson).toMatchInlineSnapshot(`
+            {
+              "engines": {
+                "node": ">=18",
+              },
+            }
+        `)
+        expect(linter.shouldFail).toBeTruthy()
+    })
+})
+
 describe('lint script', () => {
     let linter: ProjectLinter
 

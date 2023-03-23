@@ -13,7 +13,7 @@
     }
   },
   "engines": {
-    "node": ">=14"
+    "node": ">=18"
   },
   "homepage": "https://skyleague.github.io/node-standards/",
   "repository": {
@@ -39,7 +39,7 @@
     "test": "npx jest"
   },
   "dependencies": {
-    "tslib": "^2.4.1"
+    "tslib": "^2.5.0"
   },
   "devDependencies": {
     "@skyleague/node-standards": "^1.0.0",

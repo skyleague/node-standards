@@ -21,6 +21,9 @@ export const CommonTypescriptTemplate: ProjectTemplateBuilder = {
     type: 'common-typescript',
     template: () => ({
         repositoryUrl,
+        engines: {
+            node: '>=18',
+        },
         scripts: {
             ['build']: 'npx ts-node build.config.ts',
             ['build:clean']: 'npx tsc --build --clean && rm .main.js && rm .main.js.map',

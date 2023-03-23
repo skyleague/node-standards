@@ -3,6 +3,7 @@ import type { PackageConfiguration } from '../types'
 export interface ProjectTemplateDefinition {
     repositoryUrl?: string | undefined
     scripts?: Record<string, string | undefined> | undefined
+    engines?: { node: string } | undefined
     license?: string | undefined
     files?: string[] | undefined
     publishConfig?: {
