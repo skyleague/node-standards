@@ -50,7 +50,7 @@ export class ProjectLinter extends Project {
                     const relFile = path.relative(templateRoot, file).replace(/\\/g, '/')
                     if (!this.config?.template?.exclude?.includes(relFile)) {
                         const target = relFile.replace(/_gitignore$/g, '.gitignore').replace(/_npmrc/g, '.npmrc')
-                        targets[relFile] ??= () => this.lintFile(`${templateRoot}${relFile}`, target)
+                        targets[relFile] ??= () => this.lintFile(`${templateRoot}${relFile}`, target, template.type)
                     }
                 }
             }
@@ -61,7 +61,7 @@ export class ProjectLinter extends Project {
         }
     }
 
-    private lintFile(from: string, target: string): void {
+    private lintFile(from: string, target: string, origin: string): void {
         const targetBasename = path.basename(target)
         const targetDir = path.dirname(target)
         const provisionNewOnly = targetBasename.startsWith('+')
@@ -83,9 +83,11 @@ export class ProjectLinter extends Project {
         if (isDifferent && (!provisionNewOnly || !targetExists)) {
             if (isContentDifferent) {
                 if (oldContent !== undefined) {
-                    console.warn(`[${target}]:\n${new LineDiff(oldContent.toString(), newContent.toString()).toString()}`)
+                    console.warn(
+                        `[${target}] (${origin}):\n${new LineDiff(oldContent.toString(), newContent.toString()).toString()}`
+                    )
                 } else {
-                    console.warn(`[${target}]: file not found`)
+                    console.warn(`[${target}] (${origin}): file not found`)
                 }
             }
 
