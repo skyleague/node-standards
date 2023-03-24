@@ -181,6 +181,36 @@ describe('lint package files', () => {
         `)
         expect(linter.shouldFail).toBeTruthy()
     })
+
+    test('fixes the package according to all linked templates', () => {
+        const packagejson = {
+            files: ['src/', 'docs'],
+        } as unknown as PackageJson
+        jest.spyOn(linter, 'packagejson', 'get').mockReturnValue(packagejson)
+        jest.spyOn(linter, 'template', 'get').mockReturnValue({
+            files: ['src/'],
+        } as unknown as ProjectDefinition)
+        jest.spyOn(linter, 'links', 'get').mockReturnValue([
+            [
+                {
+                    files: ['src/', 'docs', 'test'],
+                },
+            ],
+            [],
+        ] as unknown as [before: ProjectDefinition[], after: ProjectDefinition[]])
+
+        linter.lintPackageFiles()
+        expect(packagejson).toMatchInlineSnapshot(`
+            {
+              "files": [
+                "src/",
+                "docs",
+                "test",
+              ],
+            }
+        `)
+        expect(linter.shouldFail).toBeTruthy()
+    })
 })
 
 describe('lint publish config', () => {
