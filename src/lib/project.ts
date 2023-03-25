@@ -5,32 +5,52 @@ import type { ProjectDefinition, ProjectTemplateBuilder } from './templates/type
 import type { PackageConfiguration, PackageJson } from './types'
 
 export class Project {
-    public readonly templates: ProjectTemplate[]
+    private readonly _templates: readonly ProjectTemplateBuilder[]
     public readonly configurationKey: string
+    public readonly cwd: string
 
     public constructor({
         templates,
         configurationKey,
+        configuration,
+        cwd = process.cwd(),
     }: {
-        templates: ProjectTemplateBuilder[]
-        configurationKey?: string | undefined
+        templates: readonly ProjectTemplateBuilder[]
+        configurationKey: string
+        configuration?: PackageConfiguration | undefined
+        cwd?: string | undefined
     }) {
-        this.configurationKey = configurationKey ?? 'node-standards'
-        const config = this.config
-        this.templates = templates.map((t): ProjectTemplate => {
+        this.cwd = cwd
+        this.configurationKey = configurationKey
+        this._configuration = configuration ?? this.configuration
+        this._templates = templates
+    }
+
+    public get templates(): ProjectTemplate[] {
+        return this._templates.map((t): ProjectTemplate => {
             if (typeof t.template === 'function') {
-                return { ...t, template: t.template(config) }
+                return { ...t, template: t.template(this._configuration) }
             }
             return t as ProjectTemplate
         })
     }
 
-    public get config(): PackageConfiguration | undefined {
-        return this.packagejson[this.configurationKey] as PackageConfiguration | undefined
+    public reload(): void {
+        this._configuration = undefined
+        this._packagejson = undefined
+    }
+
+    private _configuration: PackageConfiguration | undefined = undefined
+    public get configuration(): PackageConfiguration | undefined {
+        if (this._configuration !== undefined) {
+            return this._configuration
+        }
+        this._configuration = this.packagejson[this.configurationKey] as PackageConfiguration | undefined
+        return this._configuration
     }
 
     public get template(): ProjectDefinition | undefined {
-        const template = getTemplate(this.templates, this.config)
+        const template = getTemplate(this.templates, this.configuration)
         return template !== undefined ? { ...template.template, type: template.type } : undefined
     }
 
@@ -44,7 +64,7 @@ export class Project {
     }
 
     public get links(): [before: ProjectDefinition[], after: ProjectDefinition[]] {
-        const config = this.config
+        const config = this.configuration
         const templates = this.templates
         const found: Record<string, ProjectDefinition> = {}
         function _links(links: string[] | undefined, overridenBy?: string) {
@@ -75,7 +95,7 @@ export class Project {
         if (this._packagejson !== undefined) {
             return this._packagejson
         }
-        this._packagejson = readPackageJson()
+        this._packagejson = readPackageJson({ cwd: this.cwd })
         return this._packagejson
     }
 }

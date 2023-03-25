@@ -1,6 +1,8 @@
-import { getAllFiles } from '../../common'
-import { Project } from '../../lib/project'
-import type { ProjectTemplateBuilder } from '../../lib/templates/types'
+import { Project } from './project'
+import type { ProjectTemplateBuilder } from './templates'
+import type { PackageConfiguration } from './types'
+
+import { getAllFiles } from '../common'
 
 import LineDiff from 'line-diff'
 import semver from 'semver'
@@ -16,25 +18,30 @@ export class ProjectLinter extends Project {
     public constructor({
         templates,
         configurationKey,
+        configuration,
+        cwd,
         fix = false,
     }: {
-        templates: ProjectTemplateBuilder[]
-        configurationKey?: string
+        templates: readonly ProjectTemplateBuilder[]
+        configurationKey: string
+        configuration?: PackageConfiguration | undefined
         fix?: boolean
+        cwd?: string
     }) {
-        super({ templates, configurationKey })
+        super({ templates, configurationKey, configuration, cwd })
         this.fix = fix
         this.shouldFail = false
     }
 
-    public lint(): void {
+    public lint({ throwOnFail = true }: { throwOnFail?: boolean } = {}): void {
         this.lintPackage()
         this.lintTemplate()
 
-        if (this.shouldFail) {
+        if (this.shouldFail && throwOnFail) {
             throw new Error('Found errors in the project')
         }
     }
+
     private lintTemplate(): void {
         const targets: Record<string, () => undefined | void> = {}
 
@@ -48,8 +55,9 @@ export class ProjectLinter extends Project {
                 }
                 for (const file of getAllFiles(templateRoot)) {
                     const relFile = path.relative(templateRoot, file).replace(/\\/g, '/')
-                    if (!this.config?.template?.exclude?.includes(relFile)) {
+                    if (!this.configuration?.template?.exclude?.includes(relFile)) {
                         const target = relFile.replace(/_gitignore$/g, '.gitignore').replace(/_npmrc/g, '.npmrc')
+
                         targets[relFile] ??= () => this.lintFile(`${templateRoot}${relFile}`, target, template.type)
                     }
                 }
@@ -62,18 +70,19 @@ export class ProjectLinter extends Project {
     }
 
     private lintFile(from: string, target: string, origin: string): void {
+        let fullTarget = path.join(this.cwd, target)
         const targetBasename = path.basename(target)
-        const targetDir = path.dirname(target)
+        const targetDir = path.dirname(fullTarget)
         const provisionNewOnly = targetBasename.startsWith('+')
         if (provisionNewOnly) {
-            target = path.join(targetDir, targetBasename.slice(1))
+            fullTarget = path.join(targetDir, targetBasename.slice(1))
         }
 
-        const oldContent = fs.existsSync(target) ? fs.readFileSync(target) : undefined
+        const oldContent = fs.existsSync(fullTarget) ? fs.readFileSync(fullTarget) : undefined
         const newContent = fs.readFileSync(from)
 
-        const targetExists = fs.existsSync(target)
-        const oldPermissions = targetExists ? fs.statSync(target).mode : undefined
+        const targetExists = fs.existsSync(fullTarget)
+        const oldPermissions = targetExists ? fs.statSync(fullTarget).mode : undefined
         const newPermissions = fs.existsSync(from) ? fs.statSync(from).mode : undefined
 
         const isContentDifferent = oldContent?.toString() !== newContent.toString()
@@ -103,11 +112,11 @@ export class ProjectLinter extends Project {
                     if (!fs.existsSync(targetDir)) {
                         fs.mkdirSync(targetDir, { recursive: true })
                     }
-                    fs.writeFileSync(target, newContent, { mode: newPermissions })
+                    fs.writeFileSync(fullTarget, newContent, { mode: newPermissions })
                 }
                 if (isPermissionsDifferent) {
                     console.log(`Setting permissions ${target} ${newPermissions.toString(8)}`)
-                    fs.chmodSync(target, newPermissions)
+                    fs.chmodSync(fullTarget, newPermissions)
                 }
             }
         }
@@ -132,7 +141,7 @@ export class ProjectLinter extends Project {
         }
     }
     public lintConfiguration(): void {
-        const json = JSON.stringify(this.config ?? {})
+        const json = JSON.stringify(this.configuration ?? {})
         if (this.packagejson[this.configurationKey] === undefined) {
             this.packagejson[this.configurationKey] = {
                 type: 'library',
@@ -150,7 +159,7 @@ export class ProjectLinter extends Project {
     }
 
     public linDefinition(): void {
-        if (this.config?.template?.lint?.definition === false) {
+        if (this.configuration?.template?.lint?.definition === false) {
             return
         }
 
@@ -170,7 +179,7 @@ export class ProjectLinter extends Project {
     }
 
     public lintPublishConfig(): void {
-        if (this.config?.template?.lint?.publishConfig === false) {
+        if (this.configuration?.template?.lint?.publishConfig === false) {
             return
         }
 
@@ -194,7 +203,7 @@ export class ProjectLinter extends Project {
     }
 
     public lintLicense(): void {
-        if (this.config?.template?.lint?.license === false) {
+        if (this.configuration?.template?.lint?.license === false) {
             return
         }
 
@@ -219,7 +228,7 @@ export class ProjectLinter extends Project {
     }
 
     public lintEngines(): void {
-        if (this.config?.template?.lint?.engines === false) {
+        if (this.configuration?.template?.lint?.engines === false) {
             return
         }
 
@@ -244,7 +253,7 @@ export class ProjectLinter extends Project {
     }
 
     public lintPackageFiles(): void {
-        if (this.config?.template?.lint?.files === false) {
+        if (this.configuration?.template?.lint?.files === false) {
             return
         }
 
@@ -272,7 +281,7 @@ export class ProjectLinter extends Project {
     }
 
     public lintScripts(): void {
-        if (this.config?.template?.lint?.scripts === false) {
+        if (this.configuration?.template?.lint?.scripts === false) {
             return
         }
         if (!this.packagejson.scripts) {
@@ -299,7 +308,7 @@ export class ProjectLinter extends Project {
     }
 
     public lintDependencies(): void {
-        if (this.config?.template?.lint?.dependencies === false) {
+        if (this.configuration?.template?.lint?.dependencies === false) {
             return
         }
         this.packagejson.dependencies ??= {}
@@ -332,7 +341,7 @@ export class ProjectLinter extends Project {
     }
 
     public lintDevDependencies(): void {
-        if (this.config?.template?.lint?.devDependencies === false) {
+        if (this.configuration?.template?.lint?.devDependencies === false) {
             return
         }
         this.packagejson.dependencies ??= {}

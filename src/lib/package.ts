@@ -2,10 +2,8 @@ import type { PackageJson } from './types'
 
 import fs from 'fs'
 
-export function readPackageJson(): PackageJson {
+export function readPackageJson({ cwd = process.cwd() }: { cwd?: string } = {}): PackageJson {
     return {
-        ...(fs.existsSync(`${process.cwd()}/package.json`)
-            ? JSON.parse(fs.readFileSync(`${process.cwd()}/package.json`).toString())
-            : {}),
+        ...(fs.existsSync(`${cwd}/package.json`) ? JSON.parse(fs.readFileSync(`${cwd}/package.json`).toString()) : {}),
     } as PackageJson
 }
