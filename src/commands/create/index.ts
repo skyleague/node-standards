@@ -1,7 +1,7 @@
 import { spawn, isIgnored } from '../../common'
-import { Project } from '../../lib/project'
-import { templates } from '../../lib/templates'
-import type { ProjectTemplateDefinition } from '../../lib/templates/types'
+import { ProjectLinter } from '../../lib/linter'
+import { templates as ossTemplates } from '../../lib/templates'
+import type { ProjectTemplateBuilder, ProjectTemplateDefinition } from '../../lib/templates/types'
 
 import fg from 'fast-glob'
 import pLimit from 'p-limit'
@@ -57,13 +57,17 @@ export async function createProject({
     )
 }
 
-export function builder(yargs: Argv): Argv<{ name: string | undefined; type: string }> {
+export function builder(
+    yargs: Argv,
+    _ = null,
+    { templates }: { templates: [string, ...string[]] } = { templates: ['library', 'yargs-cli'] }
+): Argv<{ name: string | undefined; type: string }> {
     return yargs
         .option('type', {
             describe: 'package type',
             type: 'string',
-            default: 'library',
-            choices: ['library', 'yargs-cli'],
+            default: templates[0],
+            choices: templates,
             demand: true,
         })
         .positional('name', {
@@ -73,19 +77,32 @@ export function builder(yargs: Argv): Argv<{ name: string | undefined; type: str
         })
 }
 
-export async function handler(argv: ReturnType<typeof builder>['argv']): Promise<void> {
+export async function handler(
+    argv: ReturnType<typeof builder>['argv'],
+    {
+        templates = ossTemplates,
+        configurationKey = 'node-standards',
+    }: { templates?: readonly ProjectTemplateBuilder[]; configurationKey?: string } = {}
+): Promise<void> {
     const { type, name } = await argv
 
-    const project = new Project({
-        templates,
+    const project = new ProjectLinter({
+        templates: templates,
+        configurationKey,
+        configuration: {
+            type,
+        },
+        cwd: `${process.cwd()}/${name!}`,
     })
-    const template = project.template
 
-    if (template === undefined) {
-        throw new Error(`could not find a template with type ${type}`)
+    if (project.template === undefined) {
+        throw new Error(`Could not find a template with type ${type}`)
     }
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    await createProject({ type, name: name!, template })
+
+    await createProject({ type, name: name!, template: project.template })
+
+    project.reload()
+    project.lint({ throwOnFail: false })
 }
 
 export default {
