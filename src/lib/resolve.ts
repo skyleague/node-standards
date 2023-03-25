@@ -1,6 +1,6 @@
-import type { ProjectTemplate, ProjectTemplateBuilder } from './templates'
+import type { ProjectTemplate, ProjectTemplateBuilder } from './templates/index.js'
 
-import type { PackageConfiguration } from '../config'
+import type { PackageConfiguration } from '../config/index.js'
 
 export function resolveTemplate(
     xs: readonly ProjectTemplateBuilder[],

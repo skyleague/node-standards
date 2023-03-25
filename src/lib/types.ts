@@ -1,6 +1,7 @@
-import type { AnyPackageConfiguration } from '../config/config.type'
+import type { AnyPackageConfiguration } from '../config/config.type.js'
 
 export type PackageJson = Record<string, unknown> & {
+    bin: Record<string, string> | undefined
     version: string
     license: string | undefined
     publishConfig: { registry: string; access: 'public' | 'restricted' } | undefined

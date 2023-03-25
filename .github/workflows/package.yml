@@ -40,6 +40,8 @@ jobs:
           install: npm install --no-script
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - run: npm why ts-jest
+        working-directory: examples/library
       - run: npm run check:full
         working-directory: examples/library
 
@@ -61,6 +63,8 @@ jobs:
           install: npm install --no-script
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - run: npm why ts-jest
+        working-directory: examples/yargs-cli
       - run: npm run check:full
         working-directory: examples/yargs-cli
 
