@@ -1,6 +1,6 @@
-import type { PackageJson } from './types'
+import type { PackageJson } from './types.js'
 
-import fs from 'fs'
+import fs from 'node:fs'
 
 export function readPackageJson({ cwd = process.cwd() }: { cwd?: string } = {}): PackageJson {
     return {

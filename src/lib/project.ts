@@ -1,11 +1,11 @@
-import { readPackageJson } from './package'
-import { resolveTemplate } from './resolve'
-import type { ProjectTemplate } from './templates'
-import type { ProjectDefinition, ProjectTemplateBuilder } from './templates/types'
-import type { PackageJson } from './types'
+import { readPackageJson } from './package.js'
+import { resolveTemplate } from './resolve.js'
+import type { ProjectTemplate } from './templates/index.js'
+import type { ProjectDefinition, ProjectTemplateBuilder } from './templates/types.js'
+import type { PackageJson } from './types.js'
 
-import type { PackageConfiguration } from '../config'
-import type { AnyPackageConfiguration } from '../config/config.type'
+import type { AnyPackageConfiguration } from '../config/config.type.js'
+import type { PackageConfiguration } from '../config/index.js'
 
 export function convertLegacyConfiguration(config: AnyPackageConfiguration | undefined): PackageConfiguration | undefined {
     if (config === undefined) {

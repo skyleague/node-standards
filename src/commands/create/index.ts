@@ -1,14 +1,14 @@
-import { spawn, isIgnored } from '../../common'
-import { templates as ossTemplates } from '../../lib'
-import { ProjectLinter } from '../../lib/linter'
-import type { ProjectTemplateBuilder, ProjectTemplateDefinition } from '../../lib/templates/types'
+import { spawn, isIgnored } from '../../common/index.js'
+import { templates as ossTemplates } from '../../lib/index.js'
+import { ProjectLinter } from '../../lib/linter.js'
+import type { ProjectTemplateBuilder, ProjectTemplateDefinition } from '../../lib/templates/types.js'
 
 import fg from 'fast-glob'
 import pLimit from 'p-limit'
 import type { Argv } from 'yargs'
 
-import { promises, mkdirSync, existsSync } from 'fs'
-import path, { dirname, join } from 'path'
+import { promises, mkdirSync, existsSync } from 'node:fs'
+import path, { dirname, join } from 'node:path'
 
 export async function createProject({
     type,
@@ -99,7 +99,7 @@ export async function handler(
         throw new Error(`Could not find a template with type ${type}`)
     }
 
-    await createProject({ type, name: name!, template: project.layers[0] })
+    await createProject({ type, name: name!, template: project.layers[0]! })
 
     project.reload()
     project.lint({ throwOnFail: false })
