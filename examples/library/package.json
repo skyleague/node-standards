@@ -1,6 +1,6 @@
 {
   "name": "@skyleague/package-name",
-  "description": "",
+  "description": "Package description",
   "version": "0.0.1",
   "license": "MIT",
   "main": "dist/index.js",
