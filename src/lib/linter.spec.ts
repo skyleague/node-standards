@@ -1,8 +1,8 @@
-import { ProjectLinter } from './linter'
-import type { ProjectDefinition } from './templates/types'
-import type { PackageJson } from './types'
+import { ProjectLinter } from './linter.js'
+import type { ProjectDefinition } from './templates/types.js'
+import type { PackageJson } from './types.js'
 
-import type { PackageConfiguration } from '../config'
+import type { PackageConfiguration } from '../config/index.js'
 
 describe('lint configuration', () => {
     let linter: ProjectLinter

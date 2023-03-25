@@ -1,3 +1,3 @@
-export { getAllFiles } from './file'
-export { spawn } from './spawn'
-export { isIgnored } from './ignore'
+export { getAllFiles } from './file.js'
+export { spawn } from './spawn.js'
+export { isIgnored } from './ignore.js'
