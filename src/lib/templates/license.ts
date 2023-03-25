@@ -1,6 +1,6 @@
-import type { ProjectTemplate } from './types'
+import type { ProjectTemplate } from './types.js'
 
-import { rootDirectory } from '../constants'
+import { rootDirectory } from '../constants.js'
 
 export const DefaultLicense: ProjectTemplate = {
     type: 'license',

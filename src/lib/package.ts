@@ -1,4 +1,4 @@
-import type { PackageJson } from './types'
+import type { PackageJson } from './types.js'
 
 import fs from 'fs'
 

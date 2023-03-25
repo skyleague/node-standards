@@ -1,4 +1,4 @@
-import { foo } from './sub'
+import { foo } from './sub/index.js'
 
 export function main(): string {
     foo()

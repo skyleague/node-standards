@@ -1,1 +1,1 @@
-export { PackageConfiguration } from './config.type'
+export { type PackageConfiguration } from './config.type.js'
