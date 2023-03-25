@@ -1,2 +1,2 @@
-export * as create from './create'
-export * as lint from './lint'
+export * as create from './create/index.js'
+export * as lint from './lint/index.js'

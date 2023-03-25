@@ -1,6 +1,13 @@
 name: Typescript Package CI
 
-on: push
+on:
+  push:
+  workflow_dispatch:
+    inputs:
+      beta_release:
+        description: Create beta release
+        required: true
+        type: boolean
 
 jobs:
   typescript:
