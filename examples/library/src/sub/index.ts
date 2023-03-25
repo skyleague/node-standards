@@ -1,1 +1,1 @@
-export { foo } from './sub'
+export { foo } from './sub.js'

@@ -8,49 +8,53 @@
   },
   "license": "MIT",
   "author": "SkyLeague Technologies B.V. <technologies@skyleague.io> (https://skyleague.io)",
-  "main": ".main.js",
-  "types": "index.d.ts",
+  "type": "module",
+  "exports": {
+    ".": "./dist/index.js",
+    "./package.json": "./package.json",
+    "./*.cjs": "./*.cjs",
+    "./.*.cjs": "./.*.cjs",
+    "./tsconfig.base.json": "./tsconfig.base.json"
+  },
+  "types": "./dist/index.d.ts",
   "bin": {
-    "node-standards": "bin/run"
+    "node-standards": "./bin/run.js"
   },
   "files": [
-    ".eslintrc.base.js",
-    ".main.js.map",
-    ".main.js",
-    "babel.config.js",
+    ".eslintrc.base.cjs",
+    "babel.config.cjs",
     "bin",
-    "commitlint.config.js",
-    "esbuild.plugins.js",
-    "index.d.ts",
-    "jest.config.js",
-    "lint-staged.config.js",
+    "dist",
+    "commitlint.config.cjs",
+    "esbuild.plugins.cjs",
+    "jest.config.cjs",
+    "lint-staged.config.cjs",
     "package.json",
-    "prettier.config.js",
-    "release.config.js",
-    "src/**/*.d.ts",
+    "prettier.config.cjs",
+    "release.config.cjs",
     "templates",
     "examples",
     "tsconfig.base.json",
-    "typedoc.js"
+    "typedoc.cjs"
   ],
   "scripts": {
-    "build": "npx ts-node build.config.ts",
-    "build:clean": "npx tsc --build --clean && rm .main.js && rm .main.js.map",
+    "build": "npx ts-node --esm build.config.ts",
+    "build:clean": "npx tsc --build --clean && rm -rf dist",
     "build:docs": "npx typedoc",
     "check:cost": "npx cost-of-modules --no-install --include-dev",
-    "check:coverage": "npx jest --collectCoverage=true",
+    "check:coverage": "NODE_OPTIONS=\"$NODE_OPTIONS --experimental-vm-modules\" npx jest --collectCoverage=true",
     "check:full": "npm run lint && npm run check:types && npm run check:coverage && npm run build && npm run check:project",
     "check:project": "npx node-standards lint",
     "check:types": "npx tsc -p tsconfig.json",
-    "format": "npx prettier \"**/*.{ts,js,json,yml,yaml,md}\" --ignore-path .gitignore --write",
-    "lint": "npx eslint \"{src,test,typing}/**/*.ts\" --no-eslintrc --cache -c .eslintrc.js --ignore-path .gitignore",
+    "format": "npx prettier \"**/*.{ts,js,json,yml,yaml,md}\" --write",
+    "lint": "npx eslint \"./{src,test,typings}/**/*.ts\" --cache --no-eslintrc --config .eslintrc.cjs",
     "lint:fix": "npm run lint -- --fix",
     "lint:full": "bash -c \"FULL_LINT=true npm run lint\"",
     "package": "rm -rf .dist && npm run build",
     "postyalcpublish": "cd examples/library && npx yalc add @skyleague/node-standards && cd ../yargs-cli && npx yalc add @skyleague/node-standards",
     "prepare": "npx husky install || true",
     "preyalcpublish": "npm run build",
-    "test": "npx jest"
+    "test": "NODE_OPTIONS=\"$NODE_OPTIONS --experimental-vm-modules\" npx jest"
   },
   "dependencies": {
     "@babel/core": "^7.21.3",
@@ -59,6 +63,7 @@
     "@commitlint/cli": "^17.5.0",
     "@commitlint/config-conventional": "^17.4.4",
     "@semantic-release/changelog": "^6.0.3",
+    "@tsconfig/node18-strictest-esm": "^1.0.1",
     "@types/jest": "^29.5.0",
     "@types/node": "^18.15.9",
     "@types/semver": "^7.3.13",
@@ -66,6 +71,7 @@
     "@typescript-eslint/parser": "^5.56.0",
     "conventional-changelog": "^3.1.25",
     "esbuild": "^0.17.13",
+    "esbuild-jest": "^0.5.0",
     "eslint": "^8.36.0",
     "eslint-config-prettier": "^8.8.0",
     "eslint-import-resolver-typescript": "^3.5.3",
@@ -94,12 +100,12 @@
     "@types/find-root": "^1.1.2",
     "@types/is-ci": "^3.0.0",
     "@types/source-map-support": "^0.5.6",
-    "@types/yargs": "^17.0.23",
+    "@types/yargs": "^17.0.24",
     "ts-node": "^10.9.1",
-    "typescript": "^4.9.3"
+    "typescript": "^5.0.2"
   },
   "peerDependencies": {
-    "typescript": "^4.9.3"
+    "typescript": "^5.0.2"
   },
   "engines": {
     "node": ">=18"
@@ -111,20 +117,21 @@
   "node-standards": {
     "extends": "yargs-cli",
     "ignorePatterns": [
-      ".eslintrc.js",
-      "babel.config.js",
-      "commitlint.config.js",
+      ".eslintrc.cjs",
+      "babel.config.cjs",
+      "commitlint.config.cjs",
       "build.config.ts",
-      "lint-staged.config.js",
-      "prettier.config.js",
-      "release.config.js",
+      "lint-staged.config.cjs",
+      "prettier.config.cjs",
+      "release.config.cjs",
       "tsconfig.dist.json",
       "tsconfig.json",
-      "typedoc.js",
+      "typedoc.cjs",
       ".github/workflows/package.yml"
     ],
     "rules": {
-      "files": false
+      "files": false,
+      "exports": false
     }
   }
 }
