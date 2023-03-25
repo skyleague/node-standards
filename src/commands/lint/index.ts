@@ -1,6 +1,6 @@
-import { templates as ossTemplates } from '../../lib'
-import { ProjectLinter } from '../../lib/linter'
-import type { ProjectTemplateBuilder } from '../../lib/templates'
+import { templates as ossTemplates } from '../../lib/index.js'
+import { ProjectLinter } from '../../lib/linter.js'
+import type { ProjectTemplateBuilder } from '../../lib/templates/index.js'
 
 import type { Argv } from 'yargs'
 
