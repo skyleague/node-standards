@@ -28,7 +28,7 @@ export async function createProject({
 
     const limit = pLimit(255)
 
-    const entries = await fg('**/*', { dot: true, cwd: fromDir, followSymbolicLinks: false })
+    const entries = await fg('**/*', { dot: true, cwd: fromDir, followSymbolicLinks: false, ignore: ['**/node_modules/**'] })
 
     const directories = new Set<string>()
     for (const dir of entries.map((f) => dirname(join(targetDir, f)))) {
