@@ -1,18 +1,12 @@
 {
   "name": "@skyleague/package-name",
-  "description": "A package description",
   "version": "0.0.1",
+  "description": "A package description",
   "license": "MIT",
   "main": ".main.js",
   "types": "index.d.ts",
   "bin": {
     "example-cli": "./bin/run"
-  },
-  "engines": {
-    "node": ">=18"
-  },
-  "node-standards": {
-    "type": "yargs-cli"
   },
   "files": ["bin", ".main.js", ".main.js.map", "index.d.ts", "src/**/*.d.ts", "package.json"],
   "scripts": {
@@ -32,18 +26,24 @@
     "prepare": "npx husky install || true",
     "test": "npx jest"
   },
-  "publishConfig": {
-    "registry": "https://registry.npmjs.org",
-    "access": "public"
-  },
-  "devDependencies": {
-    "@types/source-map-support": "^0.5.6",
-    "@skyleague/node-standards": "^1.0.0",
-    "typescript": "^4.9.3"
-  },
   "dependencies": {
     "source-map-support": "^0.5.21",
     "tslib": "^2.5.0",
     "yargs": "^17.7.1"
+  },
+  "devDependencies": {
+    "@skyleague/node-standards": "^1.0.0",
+    "@types/source-map-support": "^0.5.6",
+    "typescript": "^4.9.3"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
+  },
+  "node-standards": {
+    "extends": "yargs-cli"
   }
 }

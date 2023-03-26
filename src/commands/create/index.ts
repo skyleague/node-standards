@@ -1,6 +1,6 @@
 import { spawn, isIgnored } from '../../common'
+import { templates as ossTemplates } from '../../lib'
 import { ProjectLinter } from '../../lib/linter'
-import { templates as ossTemplates } from '../../lib/templates'
 import type { ProjectTemplateBuilder, ProjectTemplateDefinition } from '../../lib/templates/types'
 
 import fg from 'fast-glob'
@@ -95,11 +95,11 @@ export async function handler(
         cwd: `${process.cwd()}/${name!}`,
     })
 
-    if (project.template === undefined) {
+    if (project.layers === undefined) {
         throw new Error(`Could not find a template with type ${type}`)
     }
 
-    await createProject({ type, name: name!, template: project.template })
+    await createProject({ type, name: name!, template: project.layers[0] })
 
     project.reload()
     project.lint({ throwOnFail: false })

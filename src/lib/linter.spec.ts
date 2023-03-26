@@ -1,6 +1,8 @@
 import { ProjectLinter } from './linter'
 import type { ProjectDefinition } from './templates/types'
-import type { PackageConfiguration, PackageJson } from './types'
+import type { PackageJson } from './types'
+
+import type { PackageConfiguration } from '../config'
 
 describe('lint configuration', () => {
     let linter: ProjectLinter
@@ -32,10 +34,8 @@ describe('lint configuration', () => {
 
     test('dont modify a valid configuration', () => {
         const config: PackageConfiguration = {
-            type: 'yargs-cli',
-            template: {
-                exclude: ['foofile'],
-            },
+            extends: 'yargs-cli',
+            ignorePatterns: ['foofile'],
         }
         const packagejson = { 'foo-key': config } as unknown as PackageJson
         jest.spyOn(linter, 'packagejson', 'get').mockReturnValue(packagejson)
@@ -44,77 +44,36 @@ describe('lint configuration', () => {
         expect(packagejson).toMatchInlineSnapshot(`
             {
               "foo-key": {
-                "template": {
-                  "exclude": [
-                    "foofile",
-                  ],
-                },
-                "type": "yargs-cli",
+                "extends": "yargs-cli",
+                "ignorePatterns": [
+                  "foofile",
+                ],
               },
             }
         `)
         expect(linter.shouldFail).toBeFalsy()
     })
-})
 
-describe('lint definition', () => {
-    let linter: ProjectLinter
-
-    beforeEach(() => {
-        linter = new ProjectLinter({
-            templates: [],
-            configurationKey: 'foo-key',
-            fix: false,
-        })
-    })
-
-    afterEach(() => jest.restoreAllMocks())
-
-    test('explicit ignore skips lint step', () => {
+    test('upgrade a legacy configuration', () => {
         const config: PackageConfiguration = {
-            type: 'yargs-cli',
-            template: {
-                lint: {
-                    definition: false,
-                },
-            },
+            extends: 'yargs-cli',
+            ignorePatterns: ['foofile'],
         }
         const packagejson = { 'foo-key': config } as unknown as PackageJson
-        jest.spyOn(linter, 'template', 'get').mockReturnValue({
-            definition: { foo: 'bar' },
-        } as unknown as ProjectDefinition)
         jest.spyOn(linter, 'packagejson', 'get').mockReturnValue(packagejson)
 
-        linter.linDefinition()
-        expect(linter.shouldFail).toBeFalsy()
-    })
-
-    test('does not fail when template isnt found', () => {
-        const packagejson = {} as PackageJson
-        jest.spyOn(linter, 'packagejson', 'get').mockReturnValue(packagejson)
-        jest.spyOn(linter, 'template', 'get').mockReturnValue(undefined)
-
-        linter.linDefinition()
-        expect(packagejson).toMatchInlineSnapshot(`{}`)
-        expect(linter.shouldFail).toBeFalsy()
-    })
-
-    test('fixes the package according to the template', () => {
-        const packagejson = {} as PackageJson
-        jest.spyOn(linter, 'packagejson', 'get').mockReturnValue(packagejson)
-        jest.spyOn(linter, 'template', 'get').mockReturnValue({
-            definition: {
-                engine: 'nodefoo',
-            },
-        } as unknown as ProjectDefinition)
-
-        linter.linDefinition()
+        linter.lintConfiguration()
         expect(packagejson).toMatchInlineSnapshot(`
             {
-              "engine": "nodefoo",
+              "foo-key": {
+                "extends": "yargs-cli",
+                "ignorePatterns": [
+                  "foofile",
+                ],
+              },
             }
         `)
-        expect(linter.shouldFail).toBeTruthy()
+        expect(linter.shouldFail).toBeFalsy()
     })
 })
 
@@ -133,16 +92,14 @@ describe('lint package files', () => {
 
     test('explicit ignore skips lint step', () => {
         const config: PackageConfiguration = {
-            type: 'yargs-cli',
-            template: {
-                lint: {
-                    files: false,
-                },
+            extends: 'yargs-cli',
+            rules: {
+                files: false,
             },
         }
         const packagejson = { 'foo-key': config } as unknown as PackageJson
         jest.spyOn(linter, 'packagejson', 'get').mockReturnValue(packagejson)
-        jest.spyOn(linter, 'template', 'get').mockReturnValue({ files: ['foo', 'bar'] } as unknown as ProjectDefinition)
+        jest.spyOn(linter, 'layers', 'get').mockReturnValue([{ files: ['foo', 'bar'] } as unknown as ProjectDefinition])
 
         linter.lintPackageFiles()
         expect(linter.shouldFail).toBeFalsy()
@@ -151,7 +108,7 @@ describe('lint package files', () => {
     test('does not fail when template isnt found', () => {
         const packagejson = {} as PackageJson
         jest.spyOn(linter, 'packagejson', 'get').mockReturnValue(packagejson)
-        jest.spyOn(linter, 'template', 'get').mockReturnValue(undefined)
+        jest.spyOn(linter, 'layers', 'get').mockReturnValue(undefined)
 
         linter.lintPackageFiles()
         expect(packagejson).toMatchInlineSnapshot(`
@@ -165,9 +122,11 @@ describe('lint package files', () => {
     test('fixes the package according to the template', () => {
         const packagejson = {} as PackageJson
         jest.spyOn(linter, 'packagejson', 'get').mockReturnValue(packagejson)
-        jest.spyOn(linter, 'template', 'get').mockReturnValue({
-            files: ['src/', 'docs'],
-        } as unknown as ProjectDefinition)
+        jest.spyOn(linter, 'links', 'get').mockReturnValue([
+            {
+                files: ['src/', 'docs'],
+            } as unknown as ProjectDefinition,
+        ])
 
         linter.lintPackageFiles()
         expect(packagejson).toMatchInlineSnapshot(`
@@ -186,17 +145,16 @@ describe('lint package files', () => {
             files: ['src/', 'docs'],
         } as unknown as PackageJson
         jest.spyOn(linter, 'packagejson', 'get').mockReturnValue(packagejson)
-        jest.spyOn(linter, 'template', 'get').mockReturnValue({
-            files: ['src/'],
-        } as unknown as ProjectDefinition)
+        jest.spyOn(linter, 'layers', 'get').mockReturnValue([
+            {
+                files: ['src/'],
+            } as unknown as ProjectDefinition,
+        ])
         jest.spyOn(linter, 'links', 'get').mockReturnValue([
-            [
-                {
-                    files: ['src/', 'docs', 'test'],
-                },
-            ],
-            [],
-        ] as unknown as [before: ProjectDefinition[], after: ProjectDefinition[]])
+            {
+                files: ['src/', 'docs', 'test'],
+            },
+        ] as unknown as ProjectDefinition[])
 
         linter.lintPackageFiles()
         expect(packagejson).toMatchInlineSnapshot(`
@@ -227,18 +185,18 @@ describe('lint publish config', () => {
 
     test('explicit ignore skips lint step', () => {
         const config: PackageConfiguration = {
-            type: 'yargs-cli',
-            template: {
-                lint: {
-                    publishConfig: false,
-                },
+            extends: 'yargs-cli',
+            rules: {
+                publishConfig: false,
             },
         }
         const packagejson = { 'foo-key': config } as unknown as PackageJson
         jest.spyOn(linter, 'packagejson', 'get').mockReturnValue(packagejson)
-        jest.spyOn(linter, 'template', 'get').mockReturnValue({
-            publishConfig: { foo: 'bar' },
-        } as unknown as ProjectDefinition)
+        jest.spyOn(linter, 'links', 'get').mockReturnValue([
+            {
+                publishConfig: { foo: 'bar' },
+            } as unknown as ProjectDefinition,
+        ])
 
         linter.lintPublishConfig()
         expect(linter.shouldFail).toBeFalsy()
@@ -247,7 +205,6 @@ describe('lint publish config', () => {
     test('does not fail when template isnt found', () => {
         const packagejson = {} as PackageJson
         jest.spyOn(linter, 'packagejson', 'get').mockReturnValue(packagejson)
-        jest.spyOn(linter, 'template', 'get').mockReturnValue(undefined)
 
         linter.lintPublishConfig()
         expect(packagejson).toMatchInlineSnapshot(`{}`)
@@ -257,12 +214,14 @@ describe('lint publish config', () => {
     test('fixes the package according to the template', () => {
         const packagejson = {} as PackageJson
         jest.spyOn(linter, 'packagejson', 'get').mockReturnValue(packagejson)
-        jest.spyOn(linter, 'template', 'get').mockReturnValue({
-            publishConfig: {
-                registry: 'https://registry.npmjs.org',
-                access: 'public',
-            },
-        } as unknown as ProjectDefinition)
+        jest.spyOn(linter, 'links', 'get').mockReturnValue([
+            {
+                publishConfig: {
+                    registry: 'https://registry.npmjs.org',
+                    access: 'public',
+                },
+            } as unknown as ProjectDefinition,
+        ])
 
         linter.lintPublishConfig()
         expect(packagejson).toMatchInlineSnapshot(`
@@ -284,23 +243,20 @@ describe('lint publish config', () => {
             },
         } as unknown as PackageJson
         jest.spyOn(linter, 'packagejson', 'get').mockReturnValue(packagejson)
-        jest.spyOn(linter, 'template', 'get').mockReturnValue({
-            publishConfig: {
-                access: 'restricted',
-                registry: 'https://registry.npmjs.org',
-            },
-        } as unknown as ProjectDefinition)
         jest.spyOn(linter, 'links', 'get').mockReturnValue([
-            [
-                {
-                    publishConfig: {
-                        access: 'restricted',
-                        registry: 'https://npm.pkg.github.com/',
-                    },
+            {
+                publishConfig: {
+                    access: 'restricted',
+                    registry: 'https://registry.npmjs.org',
                 },
-            ],
-            [],
-        ] as unknown as [before: ProjectDefinition[], after: ProjectDefinition[]])
+            },
+            {
+                publishConfig: {
+                    access: 'restricted',
+                    registry: 'https://npm.pkg.github.com/',
+                },
+            },
+        ] as unknown as ProjectDefinition[])
 
         linter.lintPublishConfig()
         expect(packagejson).toMatchInlineSnapshot(`
@@ -330,18 +286,18 @@ describe('lint license', () => {
 
     test('explicit ignore skips lint step', () => {
         const config: PackageConfiguration = {
-            type: 'yargs-cli',
-            template: {
-                lint: {
-                    license: false,
-                },
+            extends: 'yargs-cli',
+            rules: {
+                license: false,
             },
         }
         const packagejson = { 'foo-key': config } as unknown as PackageJson
         jest.spyOn(linter, 'packagejson', 'get').mockReturnValue(packagejson)
-        jest.spyOn(linter, 'template', 'get').mockReturnValue({
-            license: 'foobar',
-        } as unknown as ProjectDefinition)
+        jest.spyOn(linter, 'links', 'get').mockReturnValue([
+            {
+                license: 'foobar',
+            } as unknown as ProjectDefinition,
+        ])
 
         linter.lintLicense()
         expect(linter.shouldFail).toBeFalsy()
@@ -350,7 +306,6 @@ describe('lint license', () => {
     test('does not fail when template isnt found', () => {
         const packagejson = {} as PackageJson
         jest.spyOn(linter, 'packagejson', 'get').mockReturnValue(packagejson)
-        jest.spyOn(linter, 'template', 'get').mockReturnValue(undefined)
 
         linter.lintLicense()
         expect(packagejson).toMatchInlineSnapshot(`{}`)
@@ -360,9 +315,11 @@ describe('lint license', () => {
     test('fixes the package according to the template', () => {
         const packagejson = {} as PackageJson
         jest.spyOn(linter, 'packagejson', 'get').mockReturnValue(packagejson)
-        jest.spyOn(linter, 'template', 'get').mockReturnValue({
-            license: 'UNLICENSED',
-        } as unknown as ProjectDefinition)
+        jest.spyOn(linter, 'links', 'get').mockReturnValue([
+            {
+                license: 'UNLICENSED',
+            } as unknown as ProjectDefinition,
+        ])
 
         linter.lintLicense()
         expect(packagejson).toMatchInlineSnapshot(`
@@ -378,17 +335,14 @@ describe('lint license', () => {
             license: 'UNLICENSED',
         } as unknown as PackageJson
         jest.spyOn(linter, 'packagejson', 'get').mockReturnValue(packagejson)
-        jest.spyOn(linter, 'template', 'get').mockReturnValue({
-            license: 'PROPRIETARY',
-        } as unknown as ProjectDefinition)
         jest.spyOn(linter, 'links', 'get').mockReturnValue([
-            [
-                {
-                    license: 'MIT',
-                },
-            ],
-            [],
-        ] as unknown as [before: ProjectDefinition[], after: ProjectDefinition[]])
+            {
+                license: 'PROPRIETARY',
+            },
+            {
+                license: 'MIT',
+            },
+        ] as unknown as ProjectDefinition[])
 
         linter.lintLicense()
         expect(packagejson).toMatchInlineSnapshot(`
@@ -415,18 +369,18 @@ describe('lint engines', () => {
 
     test('explicit ignore skips lint step', () => {
         const config: PackageConfiguration = {
-            type: 'yargs-cli',
-            template: {
-                lint: {
-                    engines: false,
-                },
+            extends: 'yargs-cli',
+            rules: {
+                engines: false,
             },
         }
         const packagejson = { 'foo-key': config } as unknown as PackageJson
         jest.spyOn(linter, 'packagejson', 'get').mockReturnValue(packagejson)
-        jest.spyOn(linter, 'template', 'get').mockReturnValue({
-            publishConfig: { foo: 'bar' },
-        } as unknown as ProjectDefinition)
+        jest.spyOn(linter, 'links', 'get').mockReturnValue([
+            {
+                publishConfig: { foo: 'bar' },
+            } as unknown as ProjectDefinition,
+        ])
 
         linter.lintEngines()
         expect(linter.shouldFail).toBeFalsy()
@@ -435,7 +389,6 @@ describe('lint engines', () => {
     test('does not fail when template isnt found', () => {
         const packagejson = {} as PackageJson
         jest.spyOn(linter, 'packagejson', 'get').mockReturnValue(packagejson)
-        jest.spyOn(linter, 'template', 'get').mockReturnValue(undefined)
 
         linter.lintEngines()
         expect(packagejson).toMatchInlineSnapshot(`{}`)
@@ -445,11 +398,13 @@ describe('lint engines', () => {
     test('fixes the package according to the template', () => {
         const packagejson = {} as PackageJson
         jest.spyOn(linter, 'packagejson', 'get').mockReturnValue(packagejson)
-        jest.spyOn(linter, 'template', 'get').mockReturnValue({
-            engines: {
-                node: '>=18',
-            },
-        } as unknown as ProjectDefinition)
+        jest.spyOn(linter, 'links', 'get').mockReturnValue([
+            {
+                engines: {
+                    node: '>=18',
+                },
+            } as unknown as ProjectDefinition,
+        ])
 
         linter.lintEngines()
         expect(packagejson).toMatchInlineSnapshot(`
@@ -469,21 +424,18 @@ describe('lint engines', () => {
             },
         } as unknown as PackageJson
         jest.spyOn(linter, 'packagejson', 'get').mockReturnValue(packagejson)
-        jest.spyOn(linter, 'template', 'get').mockReturnValue({
-            engines: {
-                node: '>=14',
-            },
-        } as unknown as ProjectDefinition)
         jest.spyOn(linter, 'links', 'get').mockReturnValue([
-            [
-                {
-                    engines: {
-                        node: '>=18',
-                    },
+            {
+                engines: {
+                    node: '>=14',
                 },
-            ],
-            [],
-        ] as unknown as [before: ProjectDefinition[], after: ProjectDefinition[]])
+            },
+            {
+                engines: {
+                    node: '>=18',
+                },
+            },
+        ] as unknown as ProjectDefinition[])
 
         linter.lintEngines()
         expect(packagejson).toMatchInlineSnapshot(`
@@ -512,16 +464,14 @@ describe('lint script', () => {
 
     test('explicit ignore skips lint step', () => {
         const config: PackageConfiguration = {
-            type: 'yargs-cli',
-            template: {
-                lint: {
-                    scripts: false,
-                },
+            extends: 'yargs-cli',
+            rules: {
+                scripts: false,
             },
         }
         const packagejson = { 'foo-key': config } as unknown as PackageJson
         jest.spyOn(linter, 'packagejson', 'get').mockReturnValue(packagejson)
-        jest.spyOn(linter, 'template', 'get').mockReturnValue({ scripts: { foo: 'bar' } } as unknown as ProjectDefinition)
+        jest.spyOn(linter, 'links', 'get').mockReturnValue([{ scripts: { foo: 'bar' } } as unknown as ProjectDefinition])
 
         linter.lintScripts()
         expect(linter.shouldFail).toBeFalsy()
@@ -530,7 +480,6 @@ describe('lint script', () => {
     test('does not fail when template isnt found', () => {
         const packagejson = {} as PackageJson
         jest.spyOn(linter, 'packagejson', 'get').mockReturnValue(packagejson)
-        jest.spyOn(linter, 'template', 'get').mockReturnValue(undefined)
 
         linter.lintScripts()
         expect(packagejson).toMatchInlineSnapshot(`
@@ -548,12 +497,14 @@ describe('lint script', () => {
             },
         } as unknown as PackageJson
         jest.spyOn(linter, 'packagejson', 'get').mockReturnValue(packagejson)
-        jest.spyOn(linter, 'template', 'get').mockReturnValue({
-            scripts: {
-                fooz: 'npx bar',
-                foo: undefined,
-            },
-        } as unknown as ProjectDefinition)
+        jest.spyOn(linter, 'links', 'get').mockReturnValue([
+            {
+                scripts: {
+                    fooz: 'npx bar',
+                    foo: undefined,
+                },
+            } as unknown as ProjectDefinition,
+        ])
 
         linter.lintScripts()
         expect(packagejson).toMatchInlineSnapshot(`
@@ -574,23 +525,20 @@ describe('lint script', () => {
             },
         } as unknown as PackageJson
         jest.spyOn(linter, 'packagejson', 'get').mockReturnValue(packagejson)
-        jest.spyOn(linter, 'template', 'get').mockReturnValue({
-            scripts: {
-                fooz: 'npx bar2',
-                foo: undefined,
-            },
-        } as unknown as ProjectDefinition)
         jest.spyOn(linter, 'links', 'get').mockReturnValue([
-            [],
-            [
-                {
-                    scripts: {
-                        fooz: 'npx bar',
-                        foo: 'npx baz',
-                    },
+            {
+                scripts: {
+                    fooz: 'npx bar',
+                    foo: 'npx baz',
                 },
-            ],
-        ] as unknown as [before: ProjectDefinition[], after: ProjectDefinition[]])
+            },
+            {
+                scripts: {
+                    fooz: 'npx bar2',
+                    foo: undefined,
+                },
+            },
+        ] as unknown as ProjectDefinition[])
 
         linter.lintScripts()
         expect(packagejson).toMatchInlineSnapshot(`
@@ -619,20 +567,20 @@ describe('lint dependencies', () => {
 
     test('explicit ignore skips lint step', () => {
         const config: PackageConfiguration = {
-            type: 'yargs-cli',
-            template: {
-                lint: {
-                    dependencies: false,
-                },
+            extends: 'yargs-cli',
+            rules: {
+                dependencies: false,
             },
         }
         const packagejson = { 'foo-key': config } as unknown as PackageJson
         jest.spyOn(linter, 'packagejson', 'get').mockReturnValue(packagejson)
-        jest.spyOn(linter, 'template', 'get').mockReturnValue({
-            dependencies: {
-                foo: 'bar',
-            },
-        } as unknown as ProjectDefinition)
+        jest.spyOn(linter, 'links', 'get').mockReturnValue([
+            {
+                dependencies: {
+                    foo: 'bar',
+                },
+            } as unknown as ProjectDefinition,
+        ])
 
         linter.lintDependencies()
         expect(linter.shouldFail).toBeFalsy()
@@ -641,7 +589,6 @@ describe('lint dependencies', () => {
     test('does not fail when template isnt found', () => {
         const packagejson = {} as PackageJson
         jest.spyOn(linter, 'packagejson', 'get').mockReturnValue(packagejson)
-        jest.spyOn(linter, 'template', 'get').mockReturnValue(undefined)
 
         linter.lintDependencies()
         expect(packagejson).toMatchInlineSnapshot(`
@@ -660,12 +607,14 @@ describe('lint dependencies', () => {
             },
         } as unknown as PackageJson
         jest.spyOn(linter, 'packagejson', 'get').mockReturnValue(packagejson)
-        jest.spyOn(linter, 'template', 'get').mockReturnValue({
-            dependencies: {
-                fooz: '^1.0.0',
-                foo: undefined,
-            },
-        } as unknown as ProjectDefinition)
+        jest.spyOn(linter, 'links', 'get').mockReturnValue([
+            {
+                dependencies: {
+                    fooz: '^1.0.0',
+                    foo: undefined,
+                },
+            } as unknown as ProjectDefinition,
+        ])
 
         linter.lintDependencies()
         expect(packagejson).toMatchInlineSnapshot(`
@@ -686,11 +635,13 @@ describe('lint dependencies', () => {
             },
         } as unknown as PackageJson
         jest.spyOn(linter, 'packagejson', 'get').mockReturnValue(packagejson)
-        jest.spyOn(linter, 'template', 'get').mockReturnValue({
-            dependencies: {
-                foo: '^1.0.0',
-            },
-        } as unknown as ProjectDefinition)
+        jest.spyOn(linter, 'links', 'get').mockReturnValue([
+            {
+                dependencies: {
+                    foo: '^1.0.0',
+                },
+            } as unknown as ProjectDefinition,
+        ])
 
         linter.lintDependencies()
         expect(packagejson).toMatchInlineSnapshot(`
@@ -714,12 +665,14 @@ describe('lint dependencies', () => {
             },
         } as unknown as PackageJson
         jest.spyOn(linter, 'packagejson', 'get').mockReturnValue(packagejson)
-        jest.spyOn(linter, 'template', 'get').mockReturnValue({
-            dependencies: {
-                fooz: '^1.0.0',
-                foo: undefined,
-            },
-        } as unknown as ProjectDefinition)
+        jest.spyOn(linter, 'links', 'get').mockReturnValue([
+            {
+                dependencies: {
+                    fooz: '^1.0.0',
+                    foo: undefined,
+                },
+            } as unknown as ProjectDefinition,
+        ])
 
         linter.lintDependencies()
         expect(packagejson).toMatchInlineSnapshot(`
@@ -742,21 +695,18 @@ describe('lint dependencies', () => {
             },
         } as unknown as PackageJson
         jest.spyOn(linter, 'packagejson', 'get').mockReturnValue(packagejson)
-        jest.spyOn(linter, 'template', 'get').mockReturnValue({
-            dependencies: {
-                fooz: '^1.0.0',
-            },
-        } as unknown as ProjectDefinition)
         jest.spyOn(linter, 'links', 'get').mockReturnValue([
-            [
-                {
-                    dependencies: {
-                        foo: '^2.0.0',
-                    },
+            {
+                dependencies: {
+                    fooz: '^1.0.0',
                 },
-            ],
-            [],
-        ] as unknown as [before: ProjectDefinition[], after: ProjectDefinition[]])
+            },
+            {
+                dependencies: {
+                    foo: '^2.0.0',
+                },
+            },
+        ] as unknown as ProjectDefinition[])
 
         linter.lintDependencies()
         expect(packagejson).toMatchInlineSnapshot(`
@@ -787,20 +737,20 @@ describe('lint devDependencies', () => {
 
     test('explicit ignore skips lint step', () => {
         const config: PackageConfiguration = {
-            type: 'yargs-cli',
-            template: {
-                lint: {
-                    devDependencies: false,
-                },
+            extends: 'yargs-cli',
+            rules: {
+                devDependencies: false,
             },
         }
         const packagejson = { 'foo-key': config } as unknown as PackageJson
         jest.spyOn(linter, 'packagejson', 'get').mockReturnValue(packagejson)
-        jest.spyOn(linter, 'template', 'get').mockReturnValue({
-            devDependencies: {
-                foo: 'bar',
-            },
-        } as unknown as ProjectDefinition)
+        jest.spyOn(linter, 'links', 'get').mockReturnValue([
+            {
+                devDependencies: {
+                    foo: 'bar',
+                },
+            } as unknown as ProjectDefinition,
+        ])
 
         linter.lintDevDependencies()
         expect(linter.shouldFail).toBeFalsy()
@@ -809,7 +759,6 @@ describe('lint devDependencies', () => {
     test('does not fail when template isnt found', () => {
         const packagejson = {} as PackageJson
         jest.spyOn(linter, 'packagejson', 'get').mockReturnValue(packagejson)
-        jest.spyOn(linter, 'template', 'get').mockReturnValue(undefined)
 
         linter.lintDevDependencies()
         expect(packagejson).toMatchInlineSnapshot(`
@@ -828,11 +777,13 @@ describe('lint devDependencies', () => {
             },
         } as unknown as PackageJson
         jest.spyOn(linter, 'packagejson', 'get').mockReturnValue(packagejson)
-        jest.spyOn(linter, 'template', 'get').mockReturnValue({
-            devDependencies: {
-                foo: '^1.0.0',
-            },
-        } as unknown as ProjectDefinition)
+        jest.spyOn(linter, 'links', 'get').mockReturnValue([
+            {
+                devDependencies: {
+                    foo: '^1.0.0',
+                },
+            } as unknown as ProjectDefinition,
+        ])
 
         linter.lintDevDependencies()
         expect(packagejson).toMatchInlineSnapshot(`
@@ -853,12 +804,14 @@ describe('lint devDependencies', () => {
             },
         } as unknown as PackageJson
         jest.spyOn(linter, 'packagejson', 'get').mockReturnValue(packagejson)
-        jest.spyOn(linter, 'template', 'get').mockReturnValue({
-            devDependencies: {
-                fooz: '^1.0.0',
-                foo: undefined,
-            },
-        } as unknown as ProjectDefinition)
+        jest.spyOn(linter, 'links', 'get').mockReturnValue([
+            {
+                devDependencies: {
+                    fooz: '^1.0.0',
+                    foo: undefined,
+                },
+            } as unknown as ProjectDefinition,
+        ])
 
         linter.lintDevDependencies()
         expect(packagejson).toMatchInlineSnapshot(`
@@ -882,12 +835,14 @@ describe('lint devDependencies', () => {
             },
         } as unknown as PackageJson
         jest.spyOn(linter, 'packagejson', 'get').mockReturnValue(packagejson)
-        jest.spyOn(linter, 'template', 'get').mockReturnValue({
-            devDependencies: {
-                fooz: '^1.0.0',
-                foo: undefined,
-            },
-        } as unknown as ProjectDefinition)
+        jest.spyOn(linter, 'layers', 'get').mockReturnValue([
+            {
+                devDependencies: {
+                    fooz: '^1.0.0',
+                    foo: undefined,
+                },
+            } as unknown as ProjectDefinition,
+        ])
 
         linter.lintDevDependencies()
         expect(packagejson).toMatchInlineSnapshot(`
@@ -910,21 +865,18 @@ describe('lint devDependencies', () => {
             },
         } as unknown as PackageJson
         jest.spyOn(linter, 'packagejson', 'get').mockReturnValue(packagejson)
-        jest.spyOn(linter, 'template', 'get').mockReturnValue({
-            devDependencies: {
-                fooz: '^1.0.0',
-            },
-        } as unknown as ProjectDefinition)
         jest.spyOn(linter, 'links', 'get').mockReturnValue([
-            [
-                {
-                    devDependencies: {
-                        foo: '^2.0.0',
-                    },
+            {
+                devDependencies: {
+                    fooz: '^1.0.0',
                 },
-            ],
-            [],
-        ] as unknown as [before: ProjectDefinition[], after: ProjectDefinition[]])
+            },
+            {
+                devDependencies: {
+                    foo: '^2.0.0',
+                },
+            },
+        ] as unknown as ProjectDefinition[])
 
         linter.lintDevDependencies()
         expect(packagejson).toMatchInlineSnapshot(`
