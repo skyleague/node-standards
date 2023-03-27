@@ -1,9 +1,8 @@
-import { ProjectLinter } from './lint'
-
-import { templates } from '../../lib/templates'
+import { ProjectLinter } from '../../lib/linter'
+import type { ProjectTemplateBuilder } from '../../lib/templates'
+import { templates as ossTemplates } from '../../lib/templates'
 
 import type { Argv } from 'yargs'
-export { ProjectLinter } from './lint'
 
 export function builder(yargs: Argv): Argv<{ fix: boolean }> {
     return yargs.option('fix', {
@@ -13,10 +12,17 @@ export function builder(yargs: Argv): Argv<{ fix: boolean }> {
     })
 }
 
-export async function handler(argv: ReturnType<typeof builder>['argv']): Promise<void> {
+export async function handler(
+    argv: ReturnType<typeof builder>['argv'],
+    {
+        templates = ossTemplates,
+        configurationKey = 'node-standards',
+    }: { templates?: readonly ProjectTemplateBuilder[]; configurationKey?: string } = {}
+): Promise<void> {
     const { fix } = await argv
 
     new ProjectLinter({
+        configurationKey,
         templates,
         fix,
     }).lint()
