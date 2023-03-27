@@ -253,9 +253,14 @@ export class ProjectLinter extends Project {
         }
 
         const json = JSON.stringify(this.packagejson.files)
-
-        this.packagejson.files = this.template?.files ?? []
-        if (JSON.stringify(this.packagejson.files) !== json) {
+        let hasValues = false
+        for (const files of this.getRequiredTemplates({ order: 'last' })
+            .map((l) => l.files)
+            .filter((x) => x !== undefined)) {
+            this.packagejson.files = files
+            hasValues = true
+        }
+        if (JSON.stringify(this.packagejson.files) !== json && hasValues) {
             console.warn(
                 `[package.json>files] missing or outdated files entries found:\n${
                     vdiff(JSON.parse(json), this.packagejson.files).text
