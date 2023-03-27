@@ -4,7 +4,7 @@ import { dependencies, devDependencies, repositoryUrl, rootDirectory } from '../
 
 export const YargsCliTemplate: ProjectTemplateBuilder = {
     type: 'yargs-cli',
-    template: (config) => ({
+    template: {
         repositoryUrl,
         files: ['bin', '.main.js', '.main.js.map', 'index.d.ts', 'src/**/*.d.ts', 'package.json'],
         dependencies: {
@@ -21,7 +21,7 @@ export const YargsCliTemplate: ProjectTemplateBuilder = {
             main: '.main.js',
             types: 'index.d.ts',
         },
-        links: [...(config?.template?.documentation === 'docusaurus' ? ['docusaurus'] : []), 'common-typescript', 'license'],
+        links: ['common-typescript', 'license'],
         roots: [rootDirectory],
-    }),
+    },
 }

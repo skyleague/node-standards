@@ -1,6 +1,6 @@
+import { templates as ossTemplates } from '../../lib'
 import { ProjectLinter } from '../../lib/linter'
 import type { ProjectTemplateBuilder } from '../../lib/templates'
-import { templates as ossTemplates } from '../../lib/templates'
 
 import type { Argv } from 'yargs'
 

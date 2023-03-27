@@ -1,4 +1,5 @@
 import * as commands from './commands'
+export * from './config'
 export * from './lib'
 export * from './commands'
 

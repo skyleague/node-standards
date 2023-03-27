@@ -1,8 +1,9 @@
-import { Project } from './project'
+import { convertLegacyConfiguration, Project } from './project'
 import type { ProjectTemplateBuilder } from './templates'
-import type { PackageConfiguration } from './types'
+import type { ProjectTemplateDefinition } from './templates/types'
 
 import { getAllFiles } from '../common'
+import type { AnyPackageConfiguration } from '../config/config.type'
 
 import LineDiff from 'line-diff'
 import semver from 'semver'
@@ -24,7 +25,7 @@ export class ProjectLinter extends Project {
     }: {
         templates: readonly ProjectTemplateBuilder[]
         configurationKey: string
-        configuration?: PackageConfiguration | undefined
+        configuration?: AnyPackageConfiguration | undefined
         fix?: boolean
         cwd?: string
     }) {
@@ -55,7 +56,7 @@ export class ProjectLinter extends Project {
                 }
                 for (const file of getAllFiles(templateRoot)) {
                     const relFile = path.relative(templateRoot, file).replace(/\\/g, '/')
-                    if (!this.configuration?.template?.exclude?.includes(relFile)) {
+                    if (!this.configuration?.ignorePatterns?.includes(relFile)) {
                         const target = relFile.replace(/_gitignore$/g, '.gitignore').replace(/_npmrc/g, '.npmrc')
 
                         targets[relFile] ??= () => this.lintFile(`${templateRoot}${relFile}`, target, template.type)
@@ -125,7 +126,6 @@ export class ProjectLinter extends Project {
     private lintPackage(): void {
         const json = JSON.stringify(this.packagejson, null, 2)
         this.lintConfiguration()
-        this.linDefinition()
         this.lintScripts()
         this.lintPublishConfig()
         this.lintLicense()
@@ -140,12 +140,17 @@ export class ProjectLinter extends Project {
             console.log('fixed entries')
         }
     }
+
     public lintConfiguration(): void {
         const json = JSON.stringify(this.configuration ?? {})
         if (this.packagejson[this.configurationKey] === undefined) {
             this.packagejson[this.configurationKey] = {
                 type: 'library',
             }
+        } else {
+            this.packagejson[this.configurationKey] = convertLegacyConfiguration(
+                this.packagejson[this.configurationKey] as AnyPackageConfiguration
+            )
         }
         if (JSON.stringify(this.packagejson[this.configurationKey]) !== json) {
             console.warn(
@@ -158,102 +163,32 @@ export class ProjectLinter extends Project {
         }
     }
 
-    public linDefinition(): void {
-        if (this.configuration?.template?.lint?.definition === false) {
-            return
-        }
-
-        const json = JSON.stringify(this.packagejson)
-        for (const [entry, value] of Object.entries(this.template?.definition ?? {})) {
-            this.packagejson[entry] = value
-        }
-        if (JSON.stringify(this.packagejson) !== json) {
-            console.warn(
-                `[package.json>${this.configurationKey}] missing or outdated script entries found:\n${
-                    vdiff(JSON.parse(json), this.packagejson).text
-                }`
-            )
-
-            this.fail()
-        }
-    }
-
     public lintPublishConfig(): void {
-        if (this.configuration?.template?.lint?.publishConfig === false) {
+        if (this.configuration?.rules?.publishConfig === false) {
             return
         }
 
-        const json = JSON.stringify(this.packagejson.publishConfig ?? {})
-        let hasValues = false
-        for (const publishConfig of this.getRequiredTemplates({ order: 'last' })
-            .map((l) => l.publishConfig)
-            .filter((x) => x !== undefined)) {
-            this.packagejson.publishConfig = publishConfig
-            hasValues = true
-        }
-        if (JSON.stringify(this.packagejson.publishConfig) !== json && hasValues) {
-            console.warn(
-                `[package.json>publishConfig] missing or outdated publish configuration found:\n${
-                    vdiff(JSON.parse(json), this.packagejson.publishConfig).text
-                }`
-            )
-
-            this.fail()
-        }
+        this.lintPackageJsonKey({ key: 'publishConfig', order: 'last' })
     }
 
     public lintLicense(): void {
-        if (this.configuration?.template?.lint?.license === false) {
+        if (this.configuration?.rules?.license === false) {
             return
         }
 
-        const json = JSON.stringify(this.packagejson.license ?? {})
-        let hasValues = false
-        for (const license of this.getRequiredTemplates({ order: 'last' })
-            .map((l) => l.license)
-            .filter((x) => x !== undefined)) {
-            this.packagejson.license = license
-            hasValues = true
-        }
-
-        if (JSON.stringify(this.packagejson.license) !== json && hasValues) {
-            console.warn(
-                `[package.json>license] missing or outdated publish configuration found:\n${
-                    vdiff(JSON.parse(json), this.packagejson.license).text
-                }`
-            )
-
-            this.fail()
-        }
+        this.lintPackageJsonKey({ key: 'license', order: 'last' })
     }
 
     public lintEngines(): void {
-        if (this.configuration?.template?.lint?.engines === false) {
+        if (this.configuration?.rules?.engines === false) {
             return
         }
 
-        const json = JSON.stringify(this.packagejson.engines ?? {})
-        let hasValues = false
-        for (const engines of this.getRequiredTemplates({ order: 'last' })
-            .map((l) => l.engines)
-            .filter((x) => x !== undefined)) {
-            this.packagejson.engines = engines
-            hasValues = true
-        }
-
-        if (JSON.stringify(this.packagejson.engines) !== json && hasValues) {
-            console.warn(
-                `[package.json>engines] missing or outdated publish configuration found:\n${
-                    vdiff(JSON.parse(json), this.packagejson.engines).text
-                }`
-            )
-
-            this.fail()
-        }
+        this.lintPackageJsonKey({ key: 'engines', order: 'last' })
     }
 
     public lintPackageFiles(): void {
-        if (this.configuration?.template?.lint?.files === false) {
+        if (this.configuration?.rules?.files === false) {
             return
         }
 
@@ -261,36 +196,20 @@ export class ProjectLinter extends Project {
             this.packagejson.files = []
         }
 
-        const json = JSON.stringify(this.packagejson.files)
-        let hasValues = false
-        for (const files of this.getRequiredTemplates({ order: 'last' })
-            .map((l) => l.files)
-            .filter((x) => x !== undefined)) {
-            this.packagejson.files = files
-            hasValues = true
-        }
-        if (JSON.stringify(this.packagejson.files) !== json && hasValues) {
-            console.warn(
-                `[package.json>files] missing or outdated files entries found:\n${
-                    vdiff(JSON.parse(json), this.packagejson.files).text
-                }`
-            )
-
-            this.fail()
-        }
+        this.lintPackageJsonKey({ key: 'files', order: 'last' })
     }
 
     public lintScripts(): void {
-        if (this.configuration?.template?.lint?.scripts === false) {
+        if (this.configuration?.rules?.scripts === false) {
             return
         }
         if (!this.packagejson.scripts) {
             this.packagejson.scripts = {}
         }
         const json = JSON.stringify(this.packagejson.scripts)
-        for (const [entry, value] of this.getRequiredTemplates({ order: 'last' }).flatMap((l) =>
-            Object.entries(l.scripts ?? {})
-        )) {
+        for (const [entry, value] of this.getRequiredTemplates({ order: 'last' }).flatMap((l) => {
+            return Object.entries(l.scripts ?? {})
+        })) {
             this.packagejson.scripts[entry] = value
         }
         this.packagejson.scripts = Object.fromEntries(
@@ -308,7 +227,7 @@ export class ProjectLinter extends Project {
     }
 
     public lintDependencies(): void {
-        if (this.configuration?.template?.lint?.dependencies === false) {
+        if (this.configuration?.rules?.dependencies === false) {
             return
         }
         this.packagejson.dependencies ??= {}
@@ -341,7 +260,7 @@ export class ProjectLinter extends Project {
     }
 
     public lintDevDependencies(): void {
-        if (this.configuration?.template?.lint?.devDependencies === false) {
+        if (this.configuration?.rules?.devDependencies === false) {
             return
         }
         this.packagejson.dependencies ??= {}
@@ -367,6 +286,28 @@ export class ProjectLinter extends Project {
             console.warn(
                 `[package.json>devDependencies] missing or outdated script entries found:\n${
                     vdiff(JSON.parse(json), this.packagejson.devDependencies).text
+                }`
+            )
+
+            this.fail()
+        }
+    }
+
+    private lintPackageJsonKey({ key, order }: { key: keyof ProjectTemplateDefinition; order: 'first' | 'last' }) {
+        const json = JSON.stringify(this.packagejson[key] ?? {})
+        let hasValues = false
+        for (const value of this.getRequiredTemplates({ order })
+            .map((l) => l[key])
+            .filter((x) => x !== undefined)) {
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any
+            this.packagejson[key] = value as any
+            hasValues = true
+        }
+
+        if (JSON.stringify(this.packagejson[key]) !== json && hasValues) {
+            console.warn(
+                `[package.json>${key}] missing or outdated publish configuration found:\n${
+                    vdiff(JSON.parse(json), this.packagejson[key]).text
                 }`
             )
 

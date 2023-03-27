@@ -89,6 +89,7 @@
     "yargs": "^17.7.1"
   },
   "devDependencies": {
+    "@skyleague/therefore": "^1.24.2",
     "@types/concurrently": "^7.0.0",
     "@types/find-root": "^1.1.2",
     "@types/is-ci": "^3.0.0",
@@ -108,24 +109,22 @@
     "registry": "https://registry.npmjs.org"
   },
   "node-standards": {
-    "type": "yargs-cli",
-    "template": {
-      "exclude": [
-        ".eslintrc.js",
-        "babel.config.js",
-        "commitlint.config.js",
-        "build.config.ts",
-        "lint-staged.config.js",
-        "prettier.config.js",
-        "release.config.js",
-        "tsconfig.dist.json",
-        "tsconfig.json",
-        "typedoc.js",
-        ".github/workflows/package.yml"
-      ],
-      "lint": {
-        "files": false
-      }
+    "extends": "yargs-cli",
+    "ignorePatterns": [
+      ".eslintrc.js",
+      "babel.config.js",
+      "commitlint.config.js",
+      "build.config.ts",
+      "lint-staged.config.js",
+      "prettier.config.js",
+      "release.config.js",
+      "tsconfig.dist.json",
+      "tsconfig.json",
+      "typedoc.js",
+      ".github/workflows/package.yml"
+    ],
+    "rules": {
+      "files": false
     }
   }
 }

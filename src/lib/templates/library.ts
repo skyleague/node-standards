@@ -4,14 +4,14 @@ import { repositoryUrl, rootDirectory } from '../constants'
 
 export const LibraryTemplate: ProjectTemplateBuilder = {
     type: 'library',
-    template: (config) => ({
+    template: {
         repositoryUrl,
         files: ['dist', 'package.json'],
         definition: {
             main: 'dist/index.js',
             types: 'dist/index.d.ts',
         },
-        links: [...(config?.template?.documentation === 'docusaurus' ? ['docusaurus'] : []), 'common-typescript', 'license'],
+        links: ['common-typescript', 'license'],
         roots: [rootDirectory],
-    }),
+    },
 }

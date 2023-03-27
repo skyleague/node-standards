@@ -1,11 +1,31 @@
 import { readPackageJson } from './package'
+import { resolveTemplate } from './resolve'
 import type { ProjectTemplate } from './templates'
-import { getTemplate } from './templates'
 import type { ProjectDefinition, ProjectTemplateBuilder } from './templates/types'
-import type { PackageConfiguration, PackageJson } from './types'
+import type { PackageJson } from './types'
+
+import type { PackageConfiguration } from '../config'
+import type { AnyPackageConfiguration } from '../config/config.type'
+
+export function convertLegacyConfiguration(config: AnyPackageConfiguration | undefined): PackageConfiguration | undefined {
+    if (config === undefined) {
+        return undefined
+    }
+    if ('type' in config) {
+        const { type, template } = config
+        const { documentation, exclude, lint } = template ?? {}
+        return {
+            extends: documentation !== undefined ? [type, documentation] : type,
+            ...(exclude !== undefined ? { ignorePatterns: exclude } : {}),
+            ...(lint !== undefined ? { rules: lint } : {}),
+        }
+    }
+
+    return config
+}
 
 export class Project {
-    private readonly _templates: readonly ProjectTemplateBuilder[]
+    public readonly templates: readonly ProjectTemplateBuilder[]
     public readonly configurationKey: string
     public readonly cwd: string
 
@@ -17,22 +37,13 @@ export class Project {
     }: {
         templates: readonly ProjectTemplateBuilder[]
         configurationKey: string
-        configuration?: PackageConfiguration | undefined
+        configuration?: AnyPackageConfiguration | undefined
         cwd?: string | undefined
     }) {
         this.cwd = cwd
         this.configurationKey = configurationKey
-        this._configuration = configuration ?? this.configuration
-        this._templates = templates
-    }
-
-    public get templates(): ProjectTemplate[] {
-        return this._templates.map((t): ProjectTemplate => {
-            if (typeof t.template === 'function') {
-                return { ...t, template: t.template(this._configuration) }
-            }
-            return t as ProjectTemplate
-        })
+        this._configuration = convertLegacyConfiguration(configuration ?? this.configuration)
+        this.templates = templates
     }
 
     public reload(): void {
@@ -45,49 +56,70 @@ export class Project {
         if (this._configuration !== undefined) {
             return this._configuration
         }
-        this._configuration = this.packagejson[this.configurationKey] as PackageConfiguration | undefined
+        this._configuration = convertLegacyConfiguration(
+            this.packagejson[this.configurationKey] as PackageConfiguration | undefined
+        )
         return this._configuration
     }
 
-    public get template(): ProjectDefinition | undefined {
-        const template = getTemplate(this.templates, this.configuration)
-        return template !== undefined ? { ...template.template, type: template.type } : undefined
+    public get layers(): ProjectDefinition[] | undefined {
+        return resolveTemplate(this.templates, { configuration: this.configuration })?.map((x) => ({
+            ...x.template,
+            type: x.type,
+        }))
     }
 
     public getRequiredTemplates({ order }: { order: 'first' | 'last' }): ProjectDefinition[] {
-        const safeTemplate = this.template !== undefined ? [this.template] : []
-        const [before, after] = this.links
-        if (order === 'first') {
-            return [...after.reverse(), ...safeTemplate, ...before.reverse()]
-        }
-        return [...after, ...safeTemplate, ...before]
+        return order === 'first' ? this.links.reverse() ?? [] : this.links ?? []
     }
 
-    public get links(): [before: ProjectDefinition[], after: ProjectDefinition[]] {
-        const config = this.configuration
+    private _links: ProjectDefinition[] | undefined = undefined
+    public get links(): ProjectDefinition[] {
+        if (this._links !== undefined) {
+            return this._links
+        }
+
+        const configuration = this.configuration
         const templates = this.templates
-        const found: Record<string, ProjectDefinition> = {}
-        function _links(links: string[] | undefined, overridenBy?: string) {
+        const layers = this.layers ?? []
+        const found: Record<string, [number, number, ProjectDefinition]> = {}
+        function _links({
+            links,
+            overridenBy,
+            ignore = new Set<string>(),
+            depth = 0,
+        }: {
+            links: string[] | undefined
+            overridenBy?: string | undefined
+            ignore?: Set<string>
+            depth?: number
+        }): ProjectDefinition[] {
             const children =
                 links
-                    ?.map((type) =>
-                        getTemplate(templates, config, {
-                            type,
+                    ?.flatMap((type) =>
+                        resolveTemplate(templates, {
+                            configuration: configuration,
+                            types: [type],
                             allowOverrides: overridenBy === undefined || overridenBy !== type,
                         })
                     )
                     .filter((x): x is ProjectTemplate => x !== undefined) ?? []
+            let i = 0
             for (const c of children) {
-                if (!(c.type in found)) {
-                    found[c.type] = { ...c.template, type: c.type }
-                    _links(c.template.extends, c.overrides)
-                    _links(c.template.links, c.overrides)
+                if (!(c.type in found) && !ignore.has(c.type)) {
+                    found[c.type] = [depth, ++i, { ...c.template, type: c.type }]
+                    _links({ links: c.template.extends, overridenBy: c.overrides, depth: depth + 1 })
+                    _links({ links: c.template.links, overridenBy: c.overrides, depth: depth + 1 })
                 }
             }
             // topological sort (last is first in this case)
-            return Object.values(found).reverse()
+            return Object.values(found)
+                .sort((a, b) => a[0] - b[0] || a[1] - b[1])
+                .reverse()
+                .map((x) => x[2])
         }
-        return [_links(this.template?.extends), _links(this.template?.links)]
+        this._links = _links({ links: layers.map((l) => l.type) })
+        return this._links
     }
 
     private _packagejson: PackageJson | undefined = undefined

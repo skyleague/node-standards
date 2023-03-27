@@ -1,5 +1,3 @@
-import type { PackageConfiguration } from '../types'
-
 export interface ProjectTemplateDefinition {
     repositoryUrl?: string | undefined
     scripts?: Record<string, string | undefined> | undefined
@@ -21,7 +19,7 @@ export interface ProjectTemplateDefinition {
 export interface ProjectTemplateBuilder {
     type: string
     overrides?: string
-    template: ProjectTemplateDefinition | ((config?: PackageConfiguration) => ProjectTemplateDefinition)
+    template: ProjectTemplateDefinition
 }
 
 export type ProjectTemplate = Omit<ProjectTemplateBuilder, 'template'> & { template: ProjectTemplateDefinition }

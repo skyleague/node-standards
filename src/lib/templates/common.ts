@@ -9,17 +9,13 @@ export const CommonTemplate: ProjectTemplate = {
         scripts: {
             ['prepare']: 'npx husky install || true',
         },
-        devDependencies: {},
-        definition: {
-            node: '>=14',
-        },
         roots: [rootDirectory],
     },
 }
 
 export const CommonTypescriptTemplate: ProjectTemplateBuilder = {
     type: 'common-typescript',
-    template: () => ({
+    template: {
         repositoryUrl,
         engines: {
             node: '>=18',
@@ -51,5 +47,5 @@ export const CommonTypescriptTemplate: ProjectTemplateBuilder = {
         },
         roots: [rootDirectory],
         links: ['common'],
-    }),
+    },
 }

@@ -1,4 +1,5 @@
 export { ProjectTemplate } from './templates'
-export * as templates from './templates'
-export { PackageConfiguration } from './types'
+export * from './templates'
+export { templates } from './definition'
 export { Project } from './project'
+export { ProjectLinter } from './linter'
