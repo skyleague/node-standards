@@ -1,6 +1,7 @@
 import { convertLegacyConfiguration, Project } from './project'
 import type { ProjectTemplateBuilder } from './templates'
 import type { ProjectTemplateDefinition } from './templates/types'
+import type { PackageJson } from './types'
 
 import { getAllFiles } from '../common'
 import type { AnyPackageConfiguration } from '../config/config.type'
@@ -74,27 +75,32 @@ export class ProjectLinter extends Project {
         let fullTarget = path.join(this.cwd, target)
         const targetBasename = path.basename(target)
         const targetDir = path.dirname(fullTarget)
+
+        const removeExisting = targetBasename.startsWith('-')
         const provisionNewOnly = targetBasename.startsWith('+')
-        if (provisionNewOnly) {
+        if (provisionNewOnly || removeExisting) {
             fullTarget = path.join(targetDir, targetBasename.slice(1))
         }
 
         const oldContent = fs.existsSync(fullTarget) ? fs.readFileSync(fullTarget) : undefined
-        const newContent = fs.readFileSync(from)
+        const newContent = removeExisting ? undefined : fs.readFileSync(from)
 
         const targetExists = fs.existsSync(fullTarget)
         const oldPermissions = targetExists ? fs.statSync(fullTarget).mode : undefined
         const newPermissions = fs.existsSync(from) ? fs.statSync(from).mode : undefined
 
-        const isContentDifferent = oldContent?.toString() !== newContent.toString()
+        const isContentDifferent = oldContent?.toString() !== newContent?.toString()
         const isPermissionsDifferent =
             oldPermissions !== undefined && newPermissions !== oldPermissions && newPermissions !== undefined
         const isDifferent = isContentDifferent || isPermissionsDifferent
-        if (isDifferent && (!provisionNewOnly || !targetExists)) {
+        if (isDifferent && (!provisionNewOnly || !targetExists || removeExisting)) {
             if (isContentDifferent) {
                 if (oldContent !== undefined) {
                     console.warn(
-                        `[${target}] (${origin}):\n${new LineDiff(oldContent.toString(), newContent.toString()).toString()}`
+                        `[${target}] (${origin}):\n${new LineDiff(
+                            oldContent.toString(),
+                            newContent?.toString() ?? ''
+                        ).toString()}`
                     )
                 } else {
                     console.warn(`[${target}] (${origin}): file not found`)
@@ -108,14 +114,16 @@ export class ProjectLinter extends Project {
             this.fail()
 
             if (this.fix) {
-                if (isContentDifferent) {
+                if (removeExisting || newContent === undefined) {
+                    fs.unlinkSync(fullTarget)
+                } else if (isContentDifferent) {
                     console.log(`Writing ${target}`)
                     if (!fs.existsSync(targetDir)) {
                         fs.mkdirSync(targetDir, { recursive: true })
                     }
                     fs.writeFileSync(fullTarget, newContent, { mode: newPermissions })
                 }
-                if (isPermissionsDifferent) {
+                if (isPermissionsDifferent && !removeExisting) {
                     console.log(`Setting permissions ${target} ${newPermissions.toString(8)}`)
                     fs.chmodSync(fullTarget, newPermissions)
                 }
@@ -133,6 +141,10 @@ export class ProjectLinter extends Project {
         this.lintPackageFiles()
         this.lintDependencies()
         this.lintDevDependencies()
+        this.lintPackageType()
+        this.lintTypes()
+        this.lintExports()
+        this.lintMain()
 
         const fixed = JSON.stringify(this.packagejson, null, 2)
         if (this.fix && json !== fixed) {
@@ -185,6 +197,38 @@ export class ProjectLinter extends Project {
         }
 
         this.lintPackageJsonKey({ key: 'engines', order: 'last' })
+    }
+
+    public lintTypes(): void {
+        if (this.configuration?.rules?.types === false) {
+            return
+        }
+
+        this.lintPackageJsonKey({ key: 'types', order: 'last' })
+    }
+
+    public lintMain(): void {
+        if (this.configuration?.rules?.main === false) {
+            return
+        }
+
+        this.lintPackageJsonKey({ key: 'main', order: 'last' })
+    }
+
+    public lintExports(): void {
+        if (this.configuration?.rules?.exports === false) {
+            return
+        }
+
+        this.lintPackageJsonKey({ key: 'exports', order: 'last' })
+    }
+
+    public lintPackageType(): void {
+        if (this.configuration?.rules?.packageType === false) {
+            return
+        }
+
+        this.lintPackageJsonKey({ key: 'packageType', packageJsonKey: 'type', order: 'last' })
     }
 
     public lintPackageFiles(): void {
@@ -293,21 +337,29 @@ export class ProjectLinter extends Project {
         }
     }
 
-    private lintPackageJsonKey({ key, order }: { key: keyof ProjectTemplateDefinition; order: 'first' | 'last' }) {
-        const json = JSON.stringify(this.packagejson[key] ?? {})
+    private lintPackageJsonKey({
+        key,
+        packageJsonKey = key,
+        order,
+    }: {
+        key: keyof ProjectTemplateDefinition
+        packageJsonKey?: keyof PackageJson
+        order: 'first' | 'last'
+    }) {
+        const json = JSON.stringify(this.packagejson[packageJsonKey] ?? {})
         let hasValues = false
         for (const value of this.getRequiredTemplates({ order })
-            .map((l) => l[key])
-            .filter((x) => x !== undefined)) {
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any
-            this.packagejson[key] = value as any
+            .filter((l) => key in l)
+            .map((l) => l[key])) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            this.packagejson[packageJsonKey] = value as any
             hasValues = true
         }
 
-        if (JSON.stringify(this.packagejson[key]) !== json && hasValues) {
+        if (JSON.stringify(this.packagejson[packageJsonKey] ?? {}) !== json && hasValues) {
             console.warn(
-                `[package.json>${key}] missing or outdated publish configuration found:\n${
-                    vdiff(JSON.parse(json), this.packagejson[key]).text
+                `[package.json>${packageJsonKey}] missing or outdated configuration found:\n${
+                    vdiff(JSON.parse(json), this.packagejson[packageJsonKey]).text
                 }`
             )
 

@@ -15,6 +15,10 @@ export interface PackageConfiguration {
         dependencies?: boolean
         devDependencies?: boolean
         scripts?: boolean
+        packageType?: boolean
+        exports?: boolean
+        types?: boolean
+        main?: boolean
     }
 }
 
@@ -48,6 +52,10 @@ export type AnyPackageConfiguration =
               dependencies?: boolean
               devDependencies?: boolean
               scripts?: boolean
+              packageType?: boolean
+              exports?: boolean
+              types?: boolean
+              main?: boolean
           }
       }
     | {

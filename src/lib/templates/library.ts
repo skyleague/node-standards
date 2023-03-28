@@ -7,10 +7,8 @@ export const LibraryTemplate: ProjectTemplateBuilder = {
     template: {
         repositoryUrl,
         files: ['dist', 'package.json'],
-        definition: {
-            main: 'dist/index.js',
-            types: 'dist/index.d.ts',
-        },
+        main: 'dist/index.js',
+        types: 'dist/index.d.ts',
         links: ['common-typescript', 'license'],
         roots: [rootDirectory],
     },
