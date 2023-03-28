@@ -2,8 +2,8 @@ import packageJson from '../../package.json' assert { type: 'json' }
 
 import findRoot from 'find-root'
 
-import path from 'path'
-import { fileURLToPath } from 'url'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 
 const { peerDependencies, devDependencies, dependencies, version, repository } = packageJson
 const [, repositoryUrl] = /(https:\/\/.*?)(?:\.git)?$/.exec(repository.url) ?? []

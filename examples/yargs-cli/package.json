@@ -41,7 +41,7 @@
     "yargs": "^17.7.1"
   },
   "devDependencies": {
-    "@skyleague/node-standards": "^1.0.0",
+    "@skyleague/node-standards": "1.22.0-beta-bf65b937.1",
     "@types/source-map-support": "^0.5.6",
     "@types/yargs": "^17.0.24",
     "typescript": "^5.0.2"

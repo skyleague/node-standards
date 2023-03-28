@@ -10,8 +10,8 @@ import LineDiff from 'line-diff'
 import semver from 'semver'
 import vdiff from 'variable-diff'
 
-import fs from 'fs'
-import path from 'path'
+import fs from 'node:fs'
+import path from 'node:path'
 
 export class ProjectLinter extends Project {
     public readonly fix: boolean

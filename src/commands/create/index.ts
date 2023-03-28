@@ -7,8 +7,8 @@ import fg from 'fast-glob'
 import pLimit from 'p-limit'
 import type { Argv } from 'yargs'
 
-import { promises, mkdirSync, existsSync } from 'fs'
-import path, { dirname, join } from 'path'
+import { promises, mkdirSync, existsSync } from 'node:fs'
+import path, { dirname, join } from 'node:path'
 
 export async function createProject({
     type,

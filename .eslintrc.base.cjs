@@ -7,7 +7,7 @@ module.exports = {
         project: 'tsconfig.json',
     },
     reportUnusedDisableDirectives: true,
-    plugins: ['@typescript-eslint', 'import', 'unused-imports'],
+    plugins: ['@typescript-eslint', 'import', 'unused-imports', 'unicorn'],
     extends: [
         'eslint:recommended',
         'plugin:@typescript-eslint/recommended',
@@ -16,6 +16,7 @@ module.exports = {
         'plugin:prettier/recommended',
     ],
     rules: {
+        'unicorn/prefer-node-protocol': 'error',
         '@typescript-eslint/no-invalid-void-type': 'off',
         '@typescript-eslint/consistent-indexed-object-style': 'error',
         '@typescript-eslint/consistent-type-imports': 'error',

@@ -41,7 +41,7 @@
     "tslib": "^2.5.0"
   },
   "devDependencies": {
-    "@skyleague/node-standards": "^1.0.0",
+    "@skyleague/node-standards": "1.22.0-beta-bf65b937.1",
     "typescript": "^5.0.2"
   },
   "engines": {
