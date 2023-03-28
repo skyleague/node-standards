@@ -10,10 +10,13 @@ export interface ProjectTemplateDefinition {
     }
     dependencies?: Record<string, string | undefined> | undefined
     devDependencies?: Record<string, string | undefined> | undefined
-    definition?: Record<string, string> | undefined
     roots: [string, ...string[]]
     links?: string[] | undefined
     extends?: string[] | undefined
+    packageType?: 'commonjs' | 'module' | undefined
+    exports?: Record<string, string | undefined> | undefined
+    main?: string | undefined
+    types?: string | undefined
 }
 
 export interface ProjectTemplateBuilder {

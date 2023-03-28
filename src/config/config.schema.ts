@@ -12,6 +12,10 @@ export const packageConfiguration = $object({
             dependencies: $optional($boolean),
             devDependencies: $optional($boolean),
             scripts: $optional($boolean),
+            packageType: $optional($boolean),
+            exports: $optional($boolean),
+            types: $optional($boolean),
+            main: $optional($boolean),
         })
     ),
 })

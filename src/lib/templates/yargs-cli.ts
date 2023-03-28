@@ -17,10 +17,8 @@ export const YargsCliTemplate: ProjectTemplateBuilder = {
             yargs: undefined,
             'source-map-support': undefined,
         },
-        definition: {
-            main: '.main.js',
-            types: 'index.d.ts',
-        },
+        main: '.main.js',
+        types: 'index.d.ts',
         links: ['common-typescript', 'license'],
         roots: [rootDirectory],
     },
