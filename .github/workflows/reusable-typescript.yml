@@ -22,6 +22,11 @@ on:
         description: Postinstall command to run on the standards job
         type: string
         required: false
+      postinstall:
+        description: Postinstall command to run on jobs
+        type: string
+        required: false
+        default: '{}'
       working-directory:
         type: string
         required: false
@@ -49,6 +54,7 @@ jobs:
       - uses: skyleague/node-standards/.github/actions/setup-node@main
         with:
           working-directory: ${{ inputs.working-directory }}
+          postinstall: ${{ fromJson(inputs.postinstall)['check'] }}
         env:
           GITHUB_NPM_TOKEN: ${{ secrets.GITHUB_NPM_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
@@ -65,7 +71,7 @@ jobs:
       - uses: skyleague/node-standards/.github/actions/setup-node@main
         with:
           working-directory: ${{ inputs.working-directory }}
-          postinstall: ${{ inputs.standards_postinstall }}
+          postinstall: ${{ inputs.standards_postinstall || fromJson(inputs.postinstall)['standards'] }}
         env:
           GITHUB_NPM_TOKEN: ${{ secrets.GITHUB_NPM_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
@@ -82,6 +88,7 @@ jobs:
       - uses: skyleague/node-standards/.github/actions/setup-node@main
         with:
           working-directory: ${{ inputs.working-directory }}
+          postinstall: ${{ fromJson(inputs.postinstall)['types'] }}
         env:
           GITHUB_NPM_TOKEN: ${{ secrets.GITHUB_NPM_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
@@ -98,6 +105,7 @@ jobs:
       - uses: skyleague/node-standards/.github/actions/setup-node@main
         with:
           working-directory: ${{ inputs.working-directory }}
+          postinstall: ${{ fromJson(inputs.postinstall)['test'] }}
         env:
           GITHUB_NPM_TOKEN: ${{ secrets.GITHUB_NPM_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
