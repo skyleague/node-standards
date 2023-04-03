@@ -1,17 +1,17 @@
-import { convertLegacyConfiguration, Project } from './project'
-import type { ProjectTemplateBuilder } from './templates'
-import type { ProjectTemplateDefinition } from './templates/types'
-import type { PackageJson } from './types'
+import { convertLegacyConfiguration, Project } from './project.js'
+import type { ProjectTemplateBuilder } from './templates/index.js'
+import type { ProjectTemplateDefinition } from './templates/types.js'
+import type { PackageJson } from './types.js'
 
-import { getAllFiles } from '../common'
-import type { AnyPackageConfiguration } from '../config/config.type'
+import { getAllFiles } from '../common/index.js'
+import type { AnyPackageConfiguration } from '../config/config.type.js'
 
 import LineDiff from 'line-diff'
 import semver from 'semver'
 import vdiff from 'variable-diff'
 
-import fs from 'fs'
-import path from 'path'
+import fs from 'node:fs'
+import path from 'node:path'
 
 export class ProjectLinter extends Project {
     public readonly fix: boolean

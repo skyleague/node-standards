@@ -1,5 +1,5 @@
-import type { SpawnOptions } from 'child_process'
-import { spawn as cbSpawn } from 'child_process'
+import type { SpawnOptions } from 'node:child_process'
+import { spawn as cbSpawn } from 'node:child_process'
 
 export async function spawn(
     command: string,

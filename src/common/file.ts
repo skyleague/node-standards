@@ -1,5 +1,5 @@
-import fs from 'fs'
-import path from 'path'
+import fs from 'node:fs'
+import path from 'node:path'
 
 export function getAllFiles(dirPath: string): string[] {
     const result: string[] = []

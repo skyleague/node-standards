@@ -1,6 +1,6 @@
-import type { ProjectTemplate } from './types'
+import type { ProjectTemplate } from './types.js'
 
-import { repositoryUrl, rootDirectory } from '../constants'
+import { repositoryUrl, rootDirectory } from '../constants.js'
 
 export const DocusaurusTemplate: ProjectTemplate = {
     type: 'docusaurus',
