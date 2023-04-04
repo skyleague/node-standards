@@ -1,14 +1,11 @@
 {
-  "extends": "@tsconfig/node18-strictest-esm/tsconfig.json",
   "compilerOptions": {
-    "ignoreDeprecations": "5.0",
     "allowSyntheticDefaultImports": true,
     "alwaysStrict": true,
     "checkJs": false,
     "declaration": true,
     "downlevelIteration": true,
     "emitDecoratorMetadata": true,
-    "esModuleInterop": true,
     "experimentalDecorators": true,
     "importHelpers": true,
     "lib": ["esnext.asynciterable", "esnext"],
@@ -23,8 +20,20 @@
     "target": "es2022",
     "useUnknownInCatchVariables": true,
     "allowJs": true,
-    "importsNotUsedAsValues": "preserve",
     "noUnusedLocals": false,
-    "noUnusedParameters": false
+    "noUnusedParameters": false,
+
+    "strict": true,
+    "allowUnusedLabels": false,
+    "allowUnreachableCode": false,
+    "exactOptionalPropertyTypes": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitOverride": true,
+    "noImplicitReturns": true,
+    "noUncheckedIndexedAccess": true,
+
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
   }
 }

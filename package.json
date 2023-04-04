@@ -57,13 +57,12 @@
     "test": "NODE_OPTIONS=\"$NODE_OPTIONS --experimental-vm-modules\" npx jest"
   },
   "dependencies": {
-    "@babel/core": "^7.21.3",
-    "@babel/preset-env": "^7.20.2",
-    "@babel/preset-typescript": "^7.21.0",
     "@commitlint/cli": "^17.5.0",
     "@commitlint/config-conventional": "^17.4.4",
     "@semantic-release/changelog": "^6.0.3",
-    "@tsconfig/node18-strictest-esm": "^1.0.1",
+    "@tsconfig/esm": "^1.0.2",
+    "@tsconfig/node18": "^1.0.1",
+    "@tsconfig/strictest": "^2.0.0",
     "@types/jest": "^29.5.0",
     "@types/node": "^18.15.9",
     "@types/semver": "^7.3.13",
