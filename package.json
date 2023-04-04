@@ -95,7 +95,7 @@
     "yargs": "^17.7.1"
   },
   "devDependencies": {
-    "@skyleague/therefore": "^1.24.2",
+    "@skyleague/therefore": "^2.0.0",
     "@types/concurrently": "^7.0.0",
     "@types/find-root": "^1.1.2",
     "@types/is-ci": "^3.0.0",

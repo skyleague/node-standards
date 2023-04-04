@@ -4,42 +4,6 @@
  */
 /* eslint-disable */
 
-export interface PackageConfiguration {
-    extends: [string, ...string[]] | string
-    ignorePatterns?: string[]
-    rules?: {
-        publishConfig?: boolean
-        license?: boolean
-        engines?: boolean
-        files?: boolean
-        dependencies?: boolean
-        devDependencies?: boolean
-        scripts?: boolean
-        packageType?: boolean
-        exports?: boolean
-        types?: boolean
-        main?: boolean
-    }
-}
-
-export interface LegacyPackageConfiguration {
-    type: string
-    template?: {
-        exclude?: string[]
-        lint?: {
-            publishConfig?: boolean
-            license?: boolean
-            engines?: boolean
-            files?: boolean
-            dependencies?: boolean
-            devDependencies?: boolean
-            scripts?: boolean
-            definition?: boolean
-        }
-        documentation?: string
-    }
-}
-
 export type AnyPackageConfiguration =
     | {
           extends: [string, ...string[]] | string
@@ -75,3 +39,39 @@ export type AnyPackageConfiguration =
               documentation?: string
           }
       }
+
+export interface LegacyPackageConfiguration {
+    type: string
+    template?: {
+        exclude?: string[]
+        lint?: {
+            publishConfig?: boolean
+            license?: boolean
+            engines?: boolean
+            files?: boolean
+            dependencies?: boolean
+            devDependencies?: boolean
+            scripts?: boolean
+            definition?: boolean
+        }
+        documentation?: string
+    }
+}
+
+export interface PackageConfiguration {
+    extends: [string, ...string[]] | string
+    ignorePatterns?: string[]
+    rules?: {
+        publishConfig?: boolean
+        license?: boolean
+        engines?: boolean
+        files?: boolean
+        dependencies?: boolean
+        devDependencies?: boolean
+        scripts?: boolean
+        packageType?: boolean
+        exports?: boolean
+        types?: boolean
+        main?: boolean
+    }
+}
