@@ -1,8 +1,10 @@
 import { updateEsmImports } from './esm.js'
 
+import { expect, describe, beforeEach, vi, it } from 'vitest'
+
 describe('update ESM imports', () => {
     const _fs = {
-        existsSync: jest.fn(),
+        existsSync: vi.fn(),
     }
     beforeEach(() => {
         _fs.existsSync.mockReset()
@@ -16,7 +18,7 @@ import type {
     const singleLineImport = `
 import type { Foo, Bar } from './types'`
 
-    test('single line import', () => {
+    it('single line import', () => {
         _fs.existsSync.mockReturnValueOnce(true)
 
         expect(
@@ -46,7 +48,7 @@ import type { Foo, Bar } from './types'`
         ).toMatchInlineSnapshot(`"import type { Foo, Bar } from './types/index.js'"`)
     })
 
-    test('multiline import', () => {
+    it('multiline import', () => {
         _fs.existsSync.mockReturnValueOnce(true)
 
         expect(
@@ -86,7 +88,7 @@ import type { Foo, Bar } from './types'`
         `)
     })
 
-    test('mixed', () => {
+    it('mixed', () => {
         _fs.existsSync.mockReturnValueOnce(true).mockReturnValueOnce(false).mockReturnValueOnce(true)
 
         expect(

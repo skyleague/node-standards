@@ -1,5 +1,7 @@
 import { run } from '../src/index.js'
 
-test('main', () => {
+import { expect, it } from 'vitest'
+
+it('main', () => {
     expect(run).toBeDefined()
 })

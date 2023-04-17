@@ -1,3 +1,14 @@
-import { jest } from '@jest/globals'
+import { vi } from 'vitest'
 
-global.jest = jest as typeof global.jest
+console.log()
+
+const consoleMock = {
+    ...console,
+    error: vi.fn(),
+    log: vi.fn(),
+    warn: vi.fn(),
+}
+
+vi.stubGlobal('console', consoleMock)
+
+vi.useFakeTimers()

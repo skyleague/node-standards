@@ -1,10 +1,12 @@
 import { run } from '../src/index.js'
 
-test('main', () => {
+import { expect, it } from 'vitest'
+
+it('main', () => {
     expect(run).toBeTruthy()
 })
 
-test('maintwo', () => {
+it('maintwo', () => {
     expect({ foo: 'bar' }).toMatchInlineSnapshot(`
         {
           "foo": "bar",
@@ -12,6 +14,6 @@ test('maintwo', () => {
     `)
 })
 
-test('timer', () => {
+it('timer', () => {
     expect(new Date()).toEqual(new Date(2022, 1, 10))
 })

@@ -1,5 +1,7 @@
 import { main } from '../src/index.js'
 
-test('main', () => {
+import { expect, it } from 'vitest'
+
+it('main', () => {
     expect(main()).toEqual('yay')
 })
