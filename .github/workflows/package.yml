@@ -67,6 +67,9 @@ jobs:
   release:
     needs: [library, yargs, typescript, build]
     uses: skyleague/node-standards/.github/workflows/reusable-release.yml@main
+    permissions:
+      contents: read
+      id-token: write
     with:
       build_artifact_name: ${{ needs.build.outputs.artifact_name }}
       beta_release: ${{ inputs.beta_release || false }}
