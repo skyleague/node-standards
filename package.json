@@ -109,8 +109,9 @@
     "node": ">=18"
   },
   "publishConfig": {
+    "registry": "https://registry.npmjs.org",
     "access": "public",
-    "registry": "https://registry.npmjs.org"
+    "provenance": true
   },
   "node-standards": {
     "extends": "yargs-cli",
