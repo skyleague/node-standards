@@ -30,8 +30,6 @@ runs:
         GIT_COMMITTER_NAME: ${{ inputs.git_author }}
         GIT_AUTHOR_EMAIL: ${{ inputs.git_email }}
         GIT_COMMITTER_EMAIL: ${{ inputs.git_email }}
-        # https://docs.npmjs.com/generating-provenance-statements#using-third-party-package-publishing-tools
-        NPM_CONFIG_PROVENANCE: true
     - if: ${{ inputs.dry_run == 'true' }}
       run: npx semantic-release --dry-run
       shell: bash

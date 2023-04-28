@@ -7,6 +7,7 @@ export interface ProjectTemplateDefinition {
     publishConfig?: {
         registry: string
         access: 'public' | 'restricted'
+        provenance?: boolean
     }
     dependencies?: Record<string, string | undefined> | undefined
     devDependencies?: Record<string, string | undefined> | undefined

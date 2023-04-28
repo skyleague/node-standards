@@ -38,6 +38,11 @@ export const CommonTypescriptTemplate: ProjectTemplateBuilder = {
             ['package']: 'rm -rf .dist && npm run build',
             ['test']: 'npx vitest run',
         },
+        publishConfig: {
+            registry: 'https://registry.npmjs.org',
+            access: 'public',
+            provenance: true,
+        },
         dependencies: {
             tslib: dependencies.tslib,
         },
