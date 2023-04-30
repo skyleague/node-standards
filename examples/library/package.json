@@ -1,5 +1,5 @@
 {
-  "name": "__package-name__",
+  "name": "__package_name__",
   "version": "1.0.0",
   "description": "Package description",
   "homepage": "https://skyleague.github.io/node-standards/",
@@ -48,9 +48,9 @@
     "node": ">=18"
   },
   "publishConfig": {
-    "registry": "https://registry.npmjs.org",
     "access": "public",
-    "provenance": true
+    "provenance": true,
+    "registry": "https://registry.npmjs.org"
   },
   "node-standards": {
     "extends": [
