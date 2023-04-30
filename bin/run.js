@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { execFile } from 'child_process'
+import { spawn } from 'child_process'
 import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
@@ -11,24 +11,27 @@ const dev = fs.existsSync(project) && process.env.DEBUG != 'false'
 
 if (dev && !process.env.NODE_OPTIONS?.includes('--loader ts-node/esm')) {
     await new Promise((resolve, reject) => {
-        const res = execFile(
+        const subprocess = spawn(
             process.argv[0],
             [...process.argv.slice(1)],
             {
                 cwd: process.cwd(),
                 env: { ...process.env, NODE_OPTIONS: `${process.env.NODE_OPTIONS ?? ''} --loader ts-node/esm/transpile-only` },
                 stdio: 'inherit',
-            },
-            (err, stdout, stderr) => {
-                if (err) {
-                    reject(process.exit(err.code))
-                } else {
-                    resolve({ stdout, stderr })
-                }
             }
         )
-        res.stdout.pipe(process.stdout)
-        res.stderr.pipe(process.stderr)
+
+        subprocess.on('exit', (code) => {
+            if (code === 0) {
+                resolve()
+            } else {
+                reject(process.exit(code))
+            }
+        })
+
+        subprocess.on('error', (err) => {
+            reject(err)
+        })
     })
     process.exit(0)
 }
