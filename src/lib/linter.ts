@@ -1,4 +1,5 @@
 import { convertLegacyConfiguration, Project } from './project.js'
+import type { ProjectTemplateVariables } from './template.js'
 import type { ProjectTemplateBuilder } from './templates/index.js'
 import type { ProjectTemplateDefinition } from './templates/types.js'
 import type { PackageJson } from './types.js'
@@ -42,6 +43,37 @@ export class ProjectLinter extends Project {
         if (this.shouldFail && throwOnFail) {
             throw new Error('Found errors in the project')
         }
+    }
+
+    public projectTemplateVariables(name: string): ProjectTemplateVariables {
+        const templateVariables: ProjectTemplateVariables = {
+            package_name: {
+                prompt: {
+                    initial: name,
+                    message: 'What is the package name (example: @skyleague/node-standards)?',
+                },
+            },
+            project_name: {
+                prompt: {
+                    initial: name.split('/').at(-1)!,
+                    message: 'What is the project name (example: node-standards)?',
+                },
+            },
+        }
+
+        for (const value of this.getRequiredTemplates({ order: 'first' }).map((l) => l.templateVariables)) {
+            for (const [key, variable] of Object.entries(value ?? {})) {
+                // allow overriding of the template literal
+                if (!('prompt' in variable)) {
+                    templateVariables[key] ??= { prompt: {} }
+                    templateVariables[key]!.literal = variable.literal
+                } else if (templateVariables[key] === undefined) {
+                    templateVariables[key] = variable
+                }
+            }
+        }
+
+        return templateVariables
     }
 
     private lintTemplate(): void {

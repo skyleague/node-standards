@@ -39,9 +39,9 @@ export const CommonTypescriptTemplate: ProjectTemplateBuilder = {
             ['test']: 'npx vitest run',
         },
         publishConfig: {
-            registry: 'https://registry.npmjs.org',
             access: 'public',
             provenance: true,
+            registry: 'https://registry.npmjs.org',
         },
         dependencies: {
             tslib: dependencies.tslib,

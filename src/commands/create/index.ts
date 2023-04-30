@@ -1,6 +1,8 @@
 import { spawn, isIgnored } from '../../common/index.js'
 import { templates as ossTemplates } from '../../lib/index.js'
 import { ProjectLinter } from '../../lib/linter.js'
+import type { EvaluatedProjectTemplateVariables } from '../../lib/template.js'
+import { evaluateProjectTemplateVariables } from '../../lib/template.js'
 import type { ProjectTemplateBuilder, ProjectTemplateDefinition } from '../../lib/templates/types.js'
 
 import fg from 'fast-glob'
@@ -10,16 +12,26 @@ import type { Argv } from 'yargs'
 import { promises, mkdirSync, existsSync } from 'node:fs'
 import path, { dirname, join } from 'node:path'
 
+export function replaceTemplateVariables(template: EvaluatedProjectTemplateVariables, content: string) {
+    for (const [key, { value, literal }] of Object.entries(template)) {
+        content = content.replace(new RegExp(`__${key}(__w+)?__`, 'g'), value)
+        if (literal !== undefined) {
+            content = content.replace(new RegExp(literal, 'g'), value)
+        }
+    }
+    return content
+}
+
 export async function createProject({
     type,
-    name,
     template,
+    templateVariables,
 }: {
     type: string
-    name: string
     template: ProjectTemplateDefinition
+    templateVariables: EvaluatedProjectTemplateVariables
 }): Promise<void> {
-    const targetDir = path.resolve(process.cwd(), name)
+    const targetDir = path.resolve(process.cwd(), templateVariables.project_name.value)
     const fromDir = path.join(template.roots[0], `examples/${type}`)
 
     await spawn('git', ['init', targetDir])
@@ -46,10 +58,15 @@ export async function createProject({
 
     await Promise.allSettled(
         entries.map((f) =>
-            limit(() => {
+            limit(async () => {
                 if (!isIgnored(f, { cwd: targetDir })) {
                     console.log(`Copying ${f}`)
-                    return promises.copyFile(join(fromDir, f), join(targetDir, f))
+
+                    const content = await promises.readFile(join(fromDir, f), 'utf8')
+
+                    const newContent = replaceTemplateVariables(templateVariables, content)
+
+                    return promises.writeFile(join(targetDir, f), newContent, 'utf8')
                 }
                 return
             })
@@ -99,7 +116,10 @@ export async function handler(
         throw new Error(`Could not find a template with type ${type}`)
     }
 
-    await createProject({ type, name: name!, template: project.layers[0]! })
+    const templateVariables = project.projectTemplateVariables(name!)
+    const evaluatedProjectTemplateVariables = await evaluateProjectTemplateVariables(templateVariables)
+
+    await createProject({ type, template: project.layers[0]!, templateVariables: evaluatedProjectTemplateVariables })
 
     project.reload()
     project.lint({ throwOnFail: false })

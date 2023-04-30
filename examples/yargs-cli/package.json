@@ -1,5 +1,5 @@
 {
-  "name": "__package-name__",
+  "name": "__package_name__",
   "version": "1.0.0",
   "description": "A package description",
   "license": "MIT",
@@ -50,9 +50,9 @@
     "node": ">=18"
   },
   "publishConfig": {
-    "registry": "https://registry.npmjs.org",
     "access": "public",
-    "provenance": true
+    "provenance": true,
+    "registry": "https://registry.npmjs.org"
   },
   "node-standards": {
     "extends": "yargs-cli"
