@@ -41,7 +41,7 @@ jobs:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
       - run: npm run build
       - name: Dist artifacts
-        uses: actions/upload-artifact@v3
+        uses: skyleague/node-standards/.github/actions/upload-artifact@main
         with:
           name: ${{ inputs.artifact_name }}
           path: ${{ inputs.artifact_path }}
