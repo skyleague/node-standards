@@ -1,45 +1,45 @@
-name: "Setup Terraform"
-description: "Setup a Terraform environment and restore dependencies"
+name: 'Setup Terraform'
+description: 'Setup a Terraform environment and restore dependencies'
 
 inputs:
   terraform-version:
-    description: "Terraform version to use, default to (1.4.6)"
+    description: 'Terraform version to use, default to (1.4.6)'
     required: true
     default: 1.4.6
   working-directory:
-    description: "From which directory do we need to set this up"
+    description: 'From which directory do we need to set this up'
     required: true
-    default: "./"
+    default: './'
   preinstall:
-    description: "Preinstall command"
+    description: 'Preinstall command'
     required: false
-    default: ""
+    default: ''
   postinstall:
-    description: "Postinstall command"
+    description: 'Postinstall command'
     required: false
-    default: ""
+    default: ''
   cache-hash:
-    description: "Additional hash for caching"
+    description: 'Additional hash for caching'
     required: false
-    default: ""
+    default: ''
   github-app-id:
-    description: "Github App ID"
+    description: 'Github App ID'
     required: false
-    default: ""
+    default: ''
   github-app-pem:
-    description: "Github App PEM"
+    description: 'Github App PEM'
     required: false
-    default: ""
+    default: ''
 outputs:
   cache-hit:
-    description: "Had an exact cache hit"
+    description: 'Had an exact cache hit'
     value: ${{ steps.cache.outputs.cache-hit }}
 
 runs:
-  using: "composite"
+  using: 'composite'
   steps:
     - name: Setup Terraform ${{ inputs.terraform-version }}
-      uses: hashicorp/setup-terraform@v1
+      uses: hashicorp/setup-terraform@v2
       with:
         terraform_version: ${{ inputs.terraform-version }}
     - name: Cache dependencies
