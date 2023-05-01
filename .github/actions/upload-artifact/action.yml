@@ -31,7 +31,9 @@ runs:
   using: composite
   steps:
     - name: Archive artifacts
-      run: tar -cvf ${{ inputs.name }}.tar ${{ inputs.path }}
+      run: |
+        multiline_string="${{ inputs.path }}"
+        (IFS=$'\n'; set -f; tar -cvf "${{ inputs.name }}.tar" --files-from=<(printf '%s\n' $(echo "${multiline_string}")) || true)
       shell: bash
 
     - name: Upload artifacts
