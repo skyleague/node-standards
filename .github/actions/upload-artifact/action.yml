@@ -33,7 +33,7 @@ runs:
     - name: Archive artifacts
       run: |
         multiline_string="${{ inputs.path }}"
-        (IFS=$'\n'; set -f; tar -cvf "${{ inputs.name }}.tar" --files-from=<(printf '%s\n' $(echo "${multiline_string}")) || true)
+        (IFS=$'\n'; set -f; tar -cf "${{ inputs.name }}.tar" --files-from=<(printf '%s\n' $(echo "${multiline_string}")) || true)
       shell: bash
 
     - name: Upload artifacts
