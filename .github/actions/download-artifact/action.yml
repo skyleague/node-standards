@@ -21,7 +21,7 @@ runs:
         path: ${{ inputs.path }}
 
     - name: Extract artifacts
-      run: tar -xvf ${{ inputs.name }}.tar
+      run: tar -xf ${{ inputs.name }}.tar
       shell: bash
       working-directory: ${{ inputs.path }}
 
