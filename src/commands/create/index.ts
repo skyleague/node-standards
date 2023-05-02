@@ -103,14 +103,16 @@ export async function handler(
 ): Promise<void> {
     const { type, name } = await argv
 
-    const project = new ProjectLinter({
+    const linter = {
         templates: templates,
         configurationKey,
         configuration: {
             type,
         },
         cwd: `${process.cwd()}/${name!}`,
-    })
+        fix: true,
+    }
+    const project = new ProjectLinter(linter)
 
     if (project.layers === undefined) {
         throw new Error(`Could not find a template with type ${type}`)
@@ -121,8 +123,7 @@ export async function handler(
 
     await createProject({ type, template: project.layers[0]!, templateVariables: evaluatedProjectTemplateVariables })
 
-    project.reload()
-    project.lint({ throwOnFail: false })
+    new ProjectLinter(linter).lint({ throwOnFail: false })
 }
 
 export default {
