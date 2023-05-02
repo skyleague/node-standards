@@ -107,7 +107,7 @@ export async function handler(
         templates: templates,
         configurationKey,
         configuration: {
-            type,
+            extends: type,
         },
         cwd: `${process.cwd()}/${name!}`,
         fix: true,
@@ -123,7 +123,7 @@ export async function handler(
 
     await createProject({ type, template: project.layers[0]!, templateVariables: evaluatedProjectTemplateVariables })
 
-    new ProjectLinter(linter).lint({ throwOnFail: false })
+    new ProjectLinter({ ...linter, configuration: undefined }).lint({ throwOnFail: false })
 }
 
 export default {

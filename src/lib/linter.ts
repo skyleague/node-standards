@@ -91,8 +91,8 @@ export class ProjectLinter extends Project {
                     const relFile = path.relative(templateRoot, file).replace(/\\/g, '/')
                     if (!this.configuration?.ignorePatterns?.includes(relFile)) {
                         const target = relFile.replace(/_gitignore$/g, '.gitignore').replace(/_npmrc/g, '.npmrc')
-
-                        targets[relFile] ??= () => this.lintFile(`${templateRoot}${relFile}`, target, template.type)
+                        const strippedTarget = target.replace(/[+-]/, '')
+                        targets[strippedTarget] ??= () => this.lintFile(`${templateRoot}${relFile}`, target, template.type)
                     }
                 }
             }
