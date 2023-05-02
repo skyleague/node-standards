@@ -26,6 +26,10 @@ inputs:
     description: 'Postinstall command'
     required: false
     default: ''
+  cache-hash:
+    description: 'Additional hash for caching'
+    required: false
+    default: ''
 outputs:
   cache-hit:
     description: 'Had an exact cache hit'
@@ -43,7 +47,7 @@ runs:
       uses: actions/cache@v3
       with:
         path: ${{ inputs.working-directory }}node_modules
-        key: ${{ inputs.working-directory }}-node-modules-${{ inputs.node-version }}-${{ hashFiles('package-lock.json') }}
+        key: ${{ inputs.working-directory }}-node-modules-${{ inputs.node-version }}-${{ hashFiles('package-lock.json') }}-${{ inputs.cache-hash }}
     - name: Install global dependencies
       if: ${{ inputs.global-packages != '' }}
       run: npm install -g ${{ inputs.global-packages }}
