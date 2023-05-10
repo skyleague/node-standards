@@ -35,7 +35,7 @@ on:
 jobs:
   release:
     runs-on: ubuntu-latest
-    if: github.event.inputs.semantic_release == 'true'
+    if: inputs.semantic_release
     permissions:
       contents: write # to be able to publish a GitHub release
       issues: write # to be able to comment on released issues
