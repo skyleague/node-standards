@@ -34,7 +34,7 @@ export async function createProject({
     const targetDir = path.resolve(process.cwd(), templateVariables.project_name.value)
     const fromDir = path.join(template.roots[0], `examples/${type}`)
 
-    await spawn('git', ['init', targetDir])
+    await spawn('git', ['init', targetDir, '-b', 'main'])
 
     console.log(`Creating a new project in ${targetDir}.`)
 
