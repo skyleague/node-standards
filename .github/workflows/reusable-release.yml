@@ -64,6 +64,7 @@ jobs:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   documentation:
+    concurrency: gh-pages
     runs-on: ubuntu-latest
     permissions:
       contents: read
