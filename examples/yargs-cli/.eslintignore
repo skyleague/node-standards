@@ -1,12 +1,7 @@
 .*
 node_modules
-yalc.lock
-**/*.schema.js
 
 !.github
 !.vscode
-!.npmrc
 
-!.gitignore
-!.gitkeep
 !.eslintrc.*
