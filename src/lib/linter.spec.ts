@@ -594,14 +594,14 @@ describe('lint main', () => {
         vi.spyOn(linter, 'packagejson', 'get').mockReturnValue(packagejson)
         vi.spyOn(linter, 'links', 'get').mockReturnValue([
             {
-                main: './dist/index.js',
+                main: './.dist/index.js',
             } as unknown as ProjectDefinition,
         ])
 
         linter.lintMain()
         expect(packagejson).toMatchInlineSnapshot(`
             {
-              "main": "./dist/index.js",
+              "main": "./.dist/index.js",
             }
         `)
         expect(linter.shouldFail).toBeTruthy()
@@ -617,14 +617,14 @@ describe('lint main', () => {
                 main: './.main.js',
             },
             {
-                main: './dist/index.js',
+                main: './.dist/index.js',
             },
         ] as unknown as ProjectDefinition[])
 
         linter.lintMain()
         expect(packagejson).toMatchInlineSnapshot(`
             {
-              "main": "./dist/index.js",
+              "main": "./.dist/index.js",
             }
         `)
         expect(linter.shouldFail).toBeTruthy()
@@ -679,14 +679,14 @@ describe('lint types', () => {
         vi.spyOn(linter, 'packagejson', 'get').mockReturnValue(packagejson)
         vi.spyOn(linter, 'links', 'get').mockReturnValue([
             {
-                types: './dist/index.d.ts',
+                types: './.dist/index.d.ts',
             } as unknown as ProjectDefinition,
         ])
 
         linter.lintTypes()
         expect(packagejson).toMatchInlineSnapshot(`
             {
-              "types": "./dist/index.d.ts",
+              "types": "./.dist/index.d.ts",
             }
         `)
         expect(linter.shouldFail).toBeTruthy()
@@ -702,14 +702,14 @@ describe('lint types', () => {
                 types: './index.d.ts',
             },
             {
-                types: './dist/index.d.ts',
+                types: './.dist/index.d.ts',
             },
         ] as unknown as ProjectDefinition[])
 
         linter.lintTypes()
         expect(packagejson).toMatchInlineSnapshot(`
             {
-              "types": "./dist/index.d.ts",
+              "types": "./.dist/index.d.ts",
             }
         `)
         expect(linter.shouldFail).toBeTruthy()
@@ -764,14 +764,14 @@ describe('lint exports', () => {
         vi.spyOn(linter, 'packagejson', 'get').mockReturnValue(packagejson)
         vi.spyOn(linter, 'links', 'get').mockReturnValue([
             {
-                exports: './dist/index.js',
+                exports: './.dist/index.js',
             } as unknown as ProjectDefinition,
         ])
 
         linter.lintExports()
         expect(packagejson).toMatchInlineSnapshot(`
             {
-              "exports": "./dist/index.js",
+              "exports": "./.dist/index.js",
             }
         `)
         expect(linter.shouldFail).toBeTruthy()
@@ -783,7 +783,7 @@ describe('lint exports', () => {
         vi.spyOn(linter, 'links', 'get').mockReturnValue([
             {
                 exports: {
-                    '.': './dist/index.js',
+                    '.': './.dist/index.js',
                     './package.json': './package.json',
                 },
             } as unknown as ProjectDefinition,
@@ -793,7 +793,7 @@ describe('lint exports', () => {
         expect(packagejson).toMatchInlineSnapshot(`
             {
               "exports": {
-                ".": "./dist/index.js",
+                ".": "./.dist/index.js",
                 "./package.json": "./package.json",
               },
             }
@@ -812,7 +812,7 @@ describe('lint exports', () => {
             },
             {
                 exports: {
-                    '.': './dist/index.js',
+                    '.': './.dist/index.js',
                     './package.json': './package.json',
                 },
             },
@@ -822,7 +822,7 @@ describe('lint exports', () => {
         expect(packagejson).toMatchInlineSnapshot(`
             {
               "exports": {
-                ".": "./dist/index.js",
+                ".": "./.dist/index.js",
                 "./package.json": "./package.json",
               },
             }

@@ -12,7 +12,7 @@ export const rootDirectory = (() => {
     let root = findRoot(path.dirname(fileURLToPath(import.meta.url)))
 
     // If the root is the dist directory, we're in a production build
-    if (root.endsWith('dist')) {
+    if (root.endsWith('.dist')) {
         // So we need to go up one more level
         root = findRoot(path.dirname(root))
     }

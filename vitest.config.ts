@@ -3,7 +3,6 @@ import { defineConfig } from 'vitest/config'
 export default defineConfig({
     test: {
         setupFiles: ['./test/__test__/setup.ts'],
-        exclude: ['node_modules', 'dist', '.idea', '.git', '.cache', 'examples'],
         include: ['./src/**/*.{test,spec}.{ts,js}', './test/**/*.{test,spec}.{ts,js}'],
         coverage: {
             reportsDirectory: './.coverage',

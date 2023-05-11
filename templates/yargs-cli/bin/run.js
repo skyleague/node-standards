@@ -36,5 +36,5 @@ if (dev && !process.env.NODE_OPTIONS?.includes('--loader ts-node/esm')) {
     process.exit(0)
 }
 
-const { run } = dev ? await import('../src/index.js') : await import('../dist/index.js')
+const { run } = dev ? await import('../src/index.js') : await import('../.dist/index.js')
 await run().catch(console.error)
