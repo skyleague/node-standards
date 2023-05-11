@@ -11,15 +11,11 @@ const dev = fs.existsSync(project) && process.env.DEBUG != 'false'
 
 if (dev && !process.env.NODE_OPTIONS?.includes('--loader ts-node/esm')) {
     await new Promise((resolve, reject) => {
-        const subprocess = spawn(
-            process.argv[0],
-            [...process.argv.slice(1)],
-            {
-                cwd: process.cwd(),
-                env: { ...process.env, NODE_OPTIONS: `${process.env.NODE_OPTIONS ?? ''} --loader ts-node/esm/transpile-only` },
-                stdio: 'inherit',
-            }
-        )
+        const subprocess = spawn(process.argv[0], [...process.argv.slice(1)], {
+            cwd: process.cwd(),
+            env: { ...process.env, NODE_OPTIONS: `${process.env.NODE_OPTIONS ?? ''} --loader ts-node/esm/transpile-only` },
+            stdio: 'inherit',
+        })
 
         subprocess.on('exit', (code) => {
             if (code === 0) {
