@@ -5,17 +5,17 @@
   "license": "MIT",
   "type": "module",
   "exports": {
-    ".": "./dist/index.js",
+    ".": "./.dist/index.js",
     "./package.json": "./package.json",
-    "./*.js": "./dist/*.js"
+    "./*.js": "./.dist/*.js"
   },
-  "types": "./dist/index.d.ts",
+  "types": "./.dist/index.d.ts",
   "bin": {
     "example-cli": "./bin/run"
   },
   "files": [
     "bin",
-    "dist",
+    ".dist",
     "package.json"
   ],
   "scripts": {

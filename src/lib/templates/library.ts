@@ -6,14 +6,14 @@ export const LibraryTemplate: ProjectTemplateBuilder = {
     type: 'library',
     template: {
         repositoryUrl,
-        files: ['dist', 'package.json'],
+        files: ['.dist', 'package.json'],
         exports: {
-            '.': './dist/index.js',
+            '.': './.dist/index.js',
             './package.json': './package.json',
-            './*.js': './dist/*.js',
+            './*.js': './.dist/*.js',
         },
         main: undefined,
-        types: './dist/index.d.ts',
+        types: './.dist/index.d.ts',
         packageType: 'module',
         links: ['common-typescript', 'license'],
         roots: [rootDirectory],

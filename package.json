@@ -10,13 +10,13 @@
   "author": "SkyLeague Technologies B.V. <technologies@skyleague.io> (https://skyleague.io)",
   "type": "module",
   "exports": {
-    ".": "./dist/index.js",
+    ".": "./.dist/index.js",
     "./package.json": "./package.json",
     "./*.cjs": "./*.cjs",
     "./.*.cjs": "./.*.cjs",
     "./tsconfig.base.json": "./tsconfig.base.json"
   },
-  "types": "./dist/index.d.ts",
+  "types": "./.dist/index.d.ts",
   "bin": {
     "node-standards": "./bin/run.js"
   },
@@ -24,7 +24,7 @@
     ".eslintrc.base.cjs",
     "babel.config.cjs",
     "bin",
-    "dist",
+    ".dist",
     "commitlint.config.cjs",
     "esbuild.plugins.cjs",
     "lint-staged.config.cjs",
@@ -126,7 +126,6 @@
       "release.config.cjs",
       "tsconfig.json",
       "typedoc.cjs",
-      "vitest.config.ts",
       ".github/workflows/package.yml"
     ],
     "rules": {
