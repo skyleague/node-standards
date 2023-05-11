@@ -1,6 +1,5 @@
 .*
 node_modules
-yalc.lock
 **/*.schema.js
 
 !.github
