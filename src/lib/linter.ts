@@ -178,6 +178,8 @@ export class ProjectLinter extends Project {
         this.lintExports()
         this.lintMain()
 
+        this.checkCompleteness()
+
         const fixed = JSON.stringify(this.packagejson, null, 2)
         if (this.fix && json !== fixed) {
             fs.writeFileSync(`${process.cwd()}/package.json`, fixed)
@@ -366,6 +368,22 @@ export class ProjectLinter extends Project {
             )
 
             this.fail()
+        }
+    }
+
+    public checkCompleteness(): void {
+        // if provenance is set to true, check if repository is set
+        if (this.packagejson.publishConfig?.provenance === true && this.packagejson.repository === undefined) {
+            console.warn('WARNING: publishConfig is set to add provenance but no repository is setup in package.json')
+            this.fail()
+        }
+
+        // if bin is set, check if files exist
+        for (const entry of Object.entries(this.packagejson.bin ?? {})) {
+            if (!fs.existsSync(`${process.cwd()}/${entry[1]}`)) {
+                console.warn(`WARNING: ${entry[1]} is set as a bin entry for ${entry[0]} but does not exist`)
+                this.fail()
+            }
         }
     }
 
