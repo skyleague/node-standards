@@ -291,7 +291,7 @@ export class ProjectLinter extends Project {
             this.packagejson.scripts[entry] = value
         }
         this.packagejson.scripts = Object.fromEntries(
-            Object.entries(this.packagejson.scripts).sort(([a], [z]) => a.localeCompare(z))
+            Object.entries(this.packagejson.scripts).filter(([_, value]) => value !== undefined)
         )
         if (JSON.stringify(this.packagejson.scripts) !== json) {
             console.warn(
