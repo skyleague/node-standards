@@ -892,12 +892,11 @@ describe('lint script', () => {
 
         linter.lintScripts()
         expect(packagejson).toMatchInlineSnapshot(`
-            {
-              "scripts": {
-                "foo": undefined,
-                "fooz": "npx bar",
-              },
-            }
+          {
+            "scripts": {
+              "fooz": "npx bar",
+            },
+          }
         `)
         expect(linter.shouldFail).toBeTruthy()
     })
@@ -926,12 +925,11 @@ describe('lint script', () => {
 
         linter.lintScripts()
         expect(packagejson).toMatchInlineSnapshot(`
-            {
-              "scripts": {
-                "foo": undefined,
-                "fooz": "npx bar2",
-              },
-            }
+          {
+            "scripts": {
+              "fooz": "npx bar2",
+            },
+          }
         `)
         expect(linter.shouldFail).toBeTruthy()
     })

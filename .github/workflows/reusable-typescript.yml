@@ -9,10 +9,7 @@ on:
         required: false
         default: |
           dist
-          .main.js
-          .main.js.map
-          index.d.ts
-          src/**/*.d.ts
+          .dist
       artifact_name:
         description: Custom name of the build artifacts
         type: string

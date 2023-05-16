@@ -22,7 +22,6 @@
   ],
   "scripts": {
     "build": "npx ts-node --esm build.config.ts",
-    "build:clean": "npx tsc --build --clean && rm -rf dist",
     "build:docs": "(cd docs; npm install; npm run build)",
     "check:cost": "npx cost-of-modules --no-install --include-dev",
     "check:coverage": "npx vitest run --coverage=true",

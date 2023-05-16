@@ -22,7 +22,7 @@ export const CommonTypescriptTemplate: ProjectTemplateBuilder = {
         },
         scripts: {
             ['build']: 'npx ts-node --esm build.config.ts',
-            ['build:clean']: 'npx tsc --build --clean && rm -rf dist',
+            ['build:clean']: undefined,
             ['build:docs']: 'npx typedoc',
             ['check:cost']: 'npx cost-of-modules --no-install --include-dev',
             ['check:coverage']: 'npx vitest run --coverage=true',
