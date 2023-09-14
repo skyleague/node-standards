@@ -13,7 +13,7 @@ if (dev && !process.env.NODE_OPTIONS?.includes('--loader ts-node/esm')) {
     await new Promise((resolve, reject) => {
         const subprocess = spawn(process.argv[0], [...process.argv.slice(1)], {
             cwd: process.cwd(),
-            env: { ...process.env, NODE_OPTIONS: `--loader ts-node/esm/transpile-only ${process.env.NODE_OPTIONS ?? ''}` },
+            env: { ...process.env, NODE_OPTIONS: `--loader ts-node/esm/transpile-only --enable-source-maps ${process.env.NODE_OPTIONS ?? ''}` },
             stdio: 'inherit',
         })
 

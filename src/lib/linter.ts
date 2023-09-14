@@ -77,7 +77,7 @@ export class ProjectLinter extends Project {
     }
 
     private lintTemplate(): void {
-        const targets: Record<string, () => undefined | void> = {}
+        const targets: Record<string, undefined | (() => void)> = {}
 
         for (const template of this.getRequiredTemplates({
             order: 'first',
@@ -92,14 +92,16 @@ export class ProjectLinter extends Project {
                     const target = relFile.replace(/_gitignore$/g, '.gitignore').replace(/_npmrc/g, '.npmrc')
                     const strippedTarget = target.replace(/^[+-]/, '')
                     if (!this.configuration?.ignorePatterns?.includes(strippedTarget)) {
-                        targets[strippedTarget] ??= () => this.lintFile(`${templateRoot}${relFile}`, target, template.type)
+                        targets[strippedTarget] ??= () => {
+                            this.lintFile(`${templateRoot}${relFile}`, target, template.type)
+                        }
                     }
                 }
             }
         }
 
         for (const target of Object.values(targets)) {
-            target()
+            target?.()
         }
     }
 
