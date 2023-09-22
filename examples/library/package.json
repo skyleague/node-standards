@@ -37,11 +37,11 @@
     "test": "npx vitest run"
   },
   "dependencies": {
-    "tslib": "^2.5.0"
+    "tslib": "^2.6.2"
   },
   "devDependencies": {
     "@skyleague/node-standards": "latest",
-    "typescript": "^5.0.2"
+    "typescript": "^5.2.2"
   },
   "engines": {
     "node": ">=18"

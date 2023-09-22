@@ -9,11 +9,12 @@ export const YargsCliTemplate: ProjectTemplateBuilder = {
         files: ['bin', '.dist', 'package.json'],
         dependencies: {
             tslib: dependencies.tslib,
-            'source-map-support': dependencies['source-map-support'],
             yargs: dependencies.yargs,
+            '@types/source-map-support': undefined,
+            'source-map-support': undefined,
         },
         devDependencies: {
-            '@types/source-map-support': devDependencies['@types/source-map-support'],
+            '@types/source-map-support': undefined,
             yargs: undefined,
             'source-map-support': undefined,
             '@types/yargs': devDependencies['@types/yargs'],

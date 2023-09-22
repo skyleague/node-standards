@@ -70,7 +70,7 @@ export class Project {
     }
 
     public getRequiredTemplates({ order }: { order: 'first' | 'last' }): ProjectDefinition[] {
-        return order === 'first' ? this.links.reverse() ?? [] : this.links ?? []
+        return order === 'first' ? this.links.reverse() : this.links
     }
 
     private _links: ProjectDefinition[] | undefined = undefined
@@ -93,7 +93,7 @@ export class Project {
             overridenBy?: string | undefined
             ignore?: Set<string>
             depth?: number
-        }): ProjectDefinition[] {
+        }): ProjectDefinition[] | undefined {
             const children =
                 links
                     ?.flatMap((type) =>
@@ -118,7 +118,7 @@ export class Project {
                 .reverse()
                 .map((x) => x[2])
         }
-        this._links = _links({ links: layers.map((l) => l.type) })
+        this._links = _links({ links: layers.map((l) => l.type) }) ?? []
         return this._links
     }
 

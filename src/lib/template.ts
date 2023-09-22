@@ -16,7 +16,7 @@ export interface ProjetTemplateLiteral {
 export interface ProjectTemplateVariables {
     package_name: ProjectTemplateVariable
     project_name: ProjectTemplateVariable
-    [key: string]: ProjectTemplateVariable
+    [key: string]: ProjectTemplateVariable | undefined
 }
 
 export type EvaluatedProjectTemplateVariable = Omit<ProjectTemplateVariable, 'value'> & { value: string }
@@ -34,7 +34,7 @@ export async function evaluateProjectTemplateVariables(
             name: key,
             type: 'input',
             message: `What is the ${key}?`,
-            ...value.prompt,
+            ...value?.prompt,
         }))
     )
 
