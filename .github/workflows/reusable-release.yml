@@ -98,7 +98,7 @@ jobs:
     name: 'auto-merge'
     needs: [release]
     runs-on: ubuntu-latest
-    if: ${{ github.actor == 'dependabot[bot]' && github.event_name == 'pull_request'}}
+    if: ${{ github.actor == 'dependabot[bot]'}}
     steps:
       - name: Approve a PR
         run: gh pr review --approve "$PR_URL"
