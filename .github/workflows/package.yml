@@ -85,3 +85,4 @@ jobs:
       beta_release: ${{ inputs.beta_release || false }}
     secrets:
       NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      PR_APPROVE_TOKEN: ${{ secrets.PR_APPROVE_TOKEN }}

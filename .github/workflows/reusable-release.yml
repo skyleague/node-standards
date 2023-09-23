@@ -25,6 +25,9 @@ on:
         required: false
         default: 'true'
     secrets:
+      PR_APPROVE_TOKEN:
+        description: Token to approve packages with
+        required: false
       GITHUB_NPM_TOKEN:
         description: Token to install GitHub packages with
         required: false
@@ -97,6 +100,11 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ github.actor == 'dependabot[bot]' && github.event_name == 'pull_request'}}
     steps:
+      - name: Approve a PR
+        run: gh pr review --approve "$PR_URL"
+        env:
+          PR_URL: ${{github.event.pull_request.html_url}}
+          GITHUB_TOKEN: ${{secrets.PR_APPROVE_TOKEN || secrets.GITHUB_TOKEN}}
       - name: Enable auto-merge for Dependabot PRs
         run: gh pr merge --auto --squash "$PR_URL"
         env:
