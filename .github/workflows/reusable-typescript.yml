@@ -47,7 +47,7 @@ jobs:
         working-directory: ${{ inputs.working-directory }}
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: skyleague/node-standards/.github/actions/setup-node@main
         with:
           working-directory: ${{ inputs.working-directory }}
@@ -64,7 +64,7 @@ jobs:
         working-directory: ${{ inputs.working-directory }}
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: skyleague/node-standards/.github/actions/setup-node@main
         with:
           working-directory: ${{ inputs.working-directory }}
@@ -81,7 +81,7 @@ jobs:
         working-directory: ${{ inputs.working-directory }}
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: skyleague/node-standards/.github/actions/setup-node@main
         with:
           working-directory: ${{ inputs.working-directory }}
@@ -98,7 +98,7 @@ jobs:
         working-directory: ${{ inputs.working-directory }}
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: skyleague/node-standards/.github/actions/setup-node@main
         with:
           working-directory: ${{ inputs.working-directory }}

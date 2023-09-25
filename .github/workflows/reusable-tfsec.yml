@@ -45,7 +45,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: setup terraform and cache
         uses: skyleague/node-standards/.github/actions/setup-terraform@main
         with:
@@ -69,7 +69,7 @@ jobs:
         var-file: ${{ fromJson(inputs.tfsec-var-files) }}
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: setup terraform and cache
         uses: skyleague/node-standards/.github/actions/setup-terraform@main
         with:
@@ -90,7 +90,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: setup terraform and cache
         uses: skyleague/node-standards/.github/actions/setup-terraform@main
         with:
@@ -108,7 +108,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: setup terraform and cache
         uses: skyleague/node-standards/.github/actions/setup-terraform@main
         with:
