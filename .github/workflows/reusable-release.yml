@@ -46,7 +46,7 @@ jobs:
       id-token: write # to enable use of OIDC for npm provenance
       packages: write # to be able to publish to github packages
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Download node standards
         uses: skyleague/node-standards/.github/actions/download-artifact@main
         with:
@@ -80,7 +80,7 @@ jobs:
 
     if: ${{ inputs.publish_docs == 'true' && (github.ref == 'refs/heads/next' || github.ref == 'refs/heads/main') }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: skyleague/node-standards/.github/actions/setup-node@main
         env:
           GITHUB_NPM_TOKEN: ${{ secrets.GITHUB_NPM_TOKEN }}
@@ -98,8 +98,14 @@ jobs:
     name: 'auto-merge'
     needs: [release]
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
     if: ${{ github.actor == 'dependabot[bot]'}}
     steps:
+      - name: Dump GitHub context
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: echo "$GITHUB_CONTEXT"
       - name: Approve a PR
         run: gh pr review --approve "$PR_URL"
         env:
