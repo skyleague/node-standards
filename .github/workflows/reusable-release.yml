@@ -102,10 +102,6 @@ jobs:
       pull-requests: write
     if: ${{ github.actor == 'dependabot[bot]'}}
     steps:
-      - name: Dump GitHub context
-        env:
-          GITHUB_CONTEXT: ${{ toJson(github) }}
-        run: echo "$GITHUB_CONTEXT"
       - name: Enable auto-merge for Dependabot PRs
         run: gh pr merge --auto --squash "$PR_URL"
         env:
