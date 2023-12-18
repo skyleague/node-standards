@@ -18,10 +18,10 @@ export const CommonTypescriptTemplate: ProjectTemplateBuilder = {
     template: {
         repositoryUrl,
         engines: {
-            node: '>=18',
+            node: '>=20',
         },
         scripts: {
-            ['build']: 'npx ts-node --esm build.config.ts',
+            ['build']: 'node --import tsx/esm build.config.ts',
             ['build:clean']: undefined,
             ['build:docs']: 'npx typedoc',
             ['check:cost']: 'npx cost-of-modules --no-install --include-dev',
