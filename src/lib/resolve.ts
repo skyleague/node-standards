@@ -10,8 +10,8 @@ export function resolveTemplate(
         types = configuration?.extends !== undefined && Array.isArray(configuration.extends)
             ? configuration.extends
             : configuration?.extends !== undefined
-            ? [configuration.extends]
-            : [],
+              ? [configuration.extends]
+              : [],
     }: { configuration: PackageConfiguration | undefined; allowOverrides?: boolean; types?: string[] }
 ): [ProjectTemplate, ...ProjectTemplate[]] | undefined {
     const results = []
