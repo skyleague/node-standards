@@ -1,6 +1,7 @@
-import type { AnyPackageConfiguration } from '../config/config.type.js'
+import type { PackageConfiguration } from '../config/config.type.js'
 
 export type PackageJson = Record<string, unknown> & {
+    name: string | undefined
     bin: Record<string, string> | undefined
     version: string
     license: string | undefined
@@ -9,5 +10,5 @@ export type PackageJson = Record<string, unknown> & {
     dependencies: Record<string, string | undefined> | undefined
     devDependencies: Record<string, string | undefined> | undefined
     files: string[] | undefined
-    ['node-standards']: AnyPackageConfiguration | undefined
+    ['node-standards']: PackageConfiguration | undefined
 }

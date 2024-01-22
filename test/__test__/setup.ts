@@ -1,7 +1,5 @@
 import { vi } from 'vitest'
 
-console.log()
-
 const consoleMock = {
     ...console,
     error: vi.fn(),

@@ -1,4 +1,4 @@
-import { $object, $string, $array, $union, $optional, $boolean } from '@skyleague/therefore'
+import { $object, $string, $array, $union, $optional, $boolean, $dict } from '@skyleague/therefore'
 
 export const packageConfiguration = $object({
     extends: $union([$array($string, { minItems: 1 }), $string]),
@@ -18,28 +18,5 @@ export const packageConfiguration = $object({
             main: $optional($boolean),
         })
     ),
+    template: $optional($dict($string)),
 })
-
-export const legacyPackageConfiguration = $object({
-    type: $string,
-    template: $optional(
-        $object({
-            exclude: $optional($array($string)),
-            lint: $optional(
-                $object({
-                    publishConfig: $optional($boolean),
-                    license: $optional($boolean),
-                    engines: $optional($boolean),
-                    files: $optional($boolean),
-                    dependencies: $optional($boolean),
-                    devDependencies: $optional($boolean),
-                    scripts: $optional($boolean),
-                    definition: $optional($boolean),
-                })
-            ),
-            documentation: $optional($string),
-        })
-    ),
-})
-
-export const anyPackageConfiguration = $union([packageConfiguration, legacyPackageConfiguration])

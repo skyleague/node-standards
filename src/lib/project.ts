@@ -1,54 +1,53 @@
 import { readPackageJson } from './package.js'
 import { resolveTemplate } from './resolve.js'
+import type { ProjectTemplateVariables } from './template.js'
 import type { ProjectTemplate } from './templates/index.js'
 import type { ProjectDefinition, ProjectTemplateBuilder } from './templates/types.js'
 import type { PackageJson } from './types.js'
 
-import type { AnyPackageConfiguration } from '../config/config.type.js'
-import type { PackageConfiguration } from '../config/index.js'
+import * as create from '../commands/create/index.js'
+import { isIgnored, spawn } from '../common/index.js'
+import type { PackageConfiguration } from '../config/config.type.js'
 
-export function convertLegacyConfiguration(config: AnyPackageConfiguration | undefined): PackageConfiguration | undefined {
-    if (config === undefined) {
-        return undefined
-    }
-    if ('type' in config) {
-        const { type, template } = config
-        const { documentation, exclude, lint } = template ?? {}
-        return {
-            extends: documentation !== undefined ? [type, documentation] : type,
-            ...(exclude !== undefined ? { ignorePatterns: exclude } : {}),
-            ...(lint !== undefined ? { rules: lint } : {}),
-        }
-    }
+import enquirer from 'enquirer'
+import fg from 'fast-glob'
+import pLimit from 'p-limit'
+import yargs from 'yargs'
+import { hideBin } from 'yargs/helpers'
 
-    return config
-}
+import { existsSync, mkdirSync, promises } from 'node:fs'
+import path, { dirname, join } from 'node:path'
 
 export class Project {
     public readonly templates: readonly ProjectTemplateBuilder[]
     public readonly configurationKey: string
+    public readonly name: string | undefined
     public readonly cwd: string
 
     public constructor({
         templates,
         configurationKey,
+        name,
         configuration,
         cwd = process.cwd(),
     }: {
         templates: readonly ProjectTemplateBuilder[]
         configurationKey: string
-        configuration?: AnyPackageConfiguration | undefined
+        name?: string | undefined
+        configuration?: PackageConfiguration | undefined
         cwd?: string | undefined
     }) {
         this.cwd = cwd
         this.configurationKey = configurationKey
-        this._configuration = convertLegacyConfiguration(configuration ?? this.configuration)
+        this.name = name
+        this._configuration = configuration ?? this.configuration
         this.templates = templates
     }
 
     public reload(): void {
         this._configuration = undefined
         this._packagejson = undefined
+        this._templateVariables = undefined
     }
 
     private _configuration: PackageConfiguration | undefined = undefined
@@ -56,10 +55,152 @@ export class Project {
         if (this._configuration !== undefined) {
             return this._configuration
         }
-        this._configuration = convertLegacyConfiguration(
-            this.packagejson[this.configurationKey] as PackageConfiguration | undefined
-        )
+        this._configuration = this.packagejson[this.configurationKey] as PackageConfiguration
         return this._configuration
+    }
+
+    private _templateVariables: ProjectTemplateVariables | undefined = undefined
+    public get templateVariables(): ProjectTemplateVariables {
+        if (this._templateVariables !== undefined) {
+            return this._templateVariables
+        }
+
+        this._templateVariables = {
+            packageName: {
+                literal: '__package_name__',
+                prompt: {
+                    initial: this.name,
+                    message: `What is the package name (example: @skyleague/node-standards)?`,
+                },
+                infer: (packagejson) => packagejson.name,
+                inferOnly: true,
+            },
+            projectName: {
+                literal: '__project_name__',
+                prompt: {
+                    initial: this.name?.split('/')?.at(-1),
+                    message: 'What is the project name (example: node-standards)?',
+                },
+                infer: (packagejson) => packagejson.name?.split('/').at(-1),
+                inferOnly: true,
+            },
+        }
+
+        for (const value of this.getRequiredTemplates({ order: 'first' }).map((l) => l.templateVariables)) {
+            for (const [key, variable] of Object.entries(value ?? {})) {
+                // allow overriding of the template literal
+                if (this._templateVariables[key] !== undefined) {
+                    this._templateVariables[key] = { ...this._templateVariables[key], ...variable }
+                } else {
+                    this._templateVariables[key] = variable
+                }
+            }
+        }
+
+        return this._templateVariables
+    }
+
+    protected async evaluate(argv: Record<string, string> = {}): Promise<void> {
+        const variables = this.templateVariables
+        for (const [name, entry] of Object.entries(variables)) {
+            if (argv[name] !== undefined) {
+                entry.value = argv[name]
+            } else if (entry.infer !== undefined && entry.value === undefined) {
+                entry.value = this.configuration?.template?.[name] ?? entry.infer(this.packagejson, this.cwd)
+            }
+        }
+
+        const answers = await enquirer.prompt(
+            Object.entries(variables)
+                .filter(([, value]) => value.value === undefined)
+                .map(([key, value]) => ({
+                    name: key,
+                    type: 'input',
+                    message: `What is the ${key}?`,
+                    ...value.prompt,
+                }))
+        )
+
+        for (const [key, answer] of Object.entries(answers)) {
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            variables[key]!.value = answer as string
+        }
+    }
+
+    public async create({ type, targetDir }: { type: string; targetDir?: string }): Promise<void> {
+        await yargs(hideBin(process.argv)).command({
+            ...create.default,
+            builder: (y) => {
+                y = create.default.builder(y)
+                const variables = this.templateVariables
+                for (const [name, entry] of Object.entries(variables)) {
+                    if (entry.infer !== undefined && entry.value === undefined) {
+                        entry.value = this.configuration?.template?.[name] ?? entry.infer(this.packagejson, this.cwd)
+                    }
+                    y = y.option(name, { type: 'string' })
+                }
+                return y.help()
+            },
+            handler: async (argv) => {
+                await this.evaluate(argv as Record<string, string>)
+
+                const finalTargetDir = targetDir ?? path.resolve(process.cwd(), this.templateVariables.projectName.value!)
+
+                const template = this.layers![0]!
+                const fromDir = path.join(template.roots[0], `examples/${type}`)
+
+                await spawn('git', ['init', finalTargetDir, '-b', 'main'])
+
+                console.log(`Creating a new project in ${finalTargetDir}.`)
+
+                const limit = pLimit(255)
+
+                const entries = await fg('**/*', {
+                    dot: true,
+                    cwd: fromDir,
+                    followSymbolicLinks: false,
+                    ignore: ['**/node_modules/**'],
+                })
+
+                const directories = new Set<string>()
+                for (const dir of entries.map((f) => dirname(join(finalTargetDir, f)))) {
+                    directories.add(dir)
+                }
+
+                for (const dir of directories) {
+                    mkdirSync(dir, { recursive: true })
+                }
+
+                const fromGitIgnore = join(fromDir, '.gitignore')
+                if (existsSync(fromGitIgnore)) {
+                    await promises.copyFile(fromGitIgnore, join(finalTargetDir, '.gitignore'))
+                }
+
+                await Promise.allSettled(
+                    entries.map((f) =>
+                        limit(async () => {
+                            if (!isIgnored(f, { cwd: finalTargetDir })) {
+                                console.log(`Copying ${f}`)
+
+                                const content = await promises.readFile(join(fromDir, f), 'utf8')
+                                return promises.writeFile(join(finalTargetDir, f), this.renderContent(content), 'utf8')
+                            }
+                            return
+                        })
+                    )
+                )
+            },
+        }).argv
+    }
+
+    public renderContent(content: string): string {
+        for (const [key, { value, literal }] of Object.entries(this.templateVariables)) {
+            if (value !== undefined) {
+                const literalName = literal ?? `__${key}(__w+)?__`
+                content = content.replace(new RegExp(literalName, 'g'), value)
+            }
+        }
+        return content
     }
 
     public get layers(): ProjectDefinition[] | undefined {
@@ -70,7 +211,7 @@ export class Project {
     }
 
     public getRequiredTemplates({ order }: { order: 'first' | 'last' }): ProjectDefinition[] {
-        return order === 'first' ? this.links.reverse() : this.links
+        return order === 'first' ? [...this.links].reverse() : this.links
     }
 
     private _links: ProjectDefinition[] | undefined = undefined
@@ -113,10 +254,11 @@ export class Project {
                 }
             }
             // topological sort (last is first in this case)
-            return Object.values(found)
+            const values = Object.values(found)
                 .sort((a, b) => a[0] - b[0] || a[1] - b[1])
                 .reverse()
                 .map((x) => x[2])
+            return values
         }
         this._links = _links({ links: layers.map((l) => l.type) }) ?? []
         return this._links

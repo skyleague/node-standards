@@ -4,60 +4,6 @@
  */
 /* eslint-disable */
 
-export type AnyPackageConfiguration =
-    | {
-          extends: [string, ...string[]] | string
-          ignorePatterns?: string[]
-          rules?: {
-              publishConfig?: boolean
-              license?: boolean
-              engines?: boolean
-              files?: boolean
-              dependencies?: boolean
-              devDependencies?: boolean
-              scripts?: boolean
-              packageType?: boolean
-              exports?: boolean
-              types?: boolean
-              main?: boolean
-          }
-      }
-    | {
-          type: string
-          template?: {
-              exclude?: string[]
-              lint?: {
-                  publishConfig?: boolean
-                  license?: boolean
-                  engines?: boolean
-                  files?: boolean
-                  dependencies?: boolean
-                  devDependencies?: boolean
-                  scripts?: boolean
-                  definition?: boolean
-              }
-              documentation?: string
-          }
-      }
-
-export interface LegacyPackageConfiguration {
-    type: string
-    template?: {
-        exclude?: string[]
-        lint?: {
-            publishConfig?: boolean
-            license?: boolean
-            engines?: boolean
-            files?: boolean
-            dependencies?: boolean
-            devDependencies?: boolean
-            scripts?: boolean
-            definition?: boolean
-        }
-        documentation?: string
-    }
-}
-
 export interface PackageConfiguration {
     extends: [string, ...string[]] | string
     ignorePatterns?: string[]
@@ -73,5 +19,8 @@ export interface PackageConfiguration {
         exports?: boolean
         types?: boolean
         main?: boolean
+    }
+    template?: {
+        [k: string]: string | undefined
     }
 }
