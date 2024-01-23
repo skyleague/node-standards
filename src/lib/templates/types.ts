@@ -1,4 +1,4 @@
-import type { ProjectTemplateVariable, ProjetTemplateLiteral } from '../template.js'
+import type { ProjectTemplateVariable } from '../template.js'
 
 export interface ProjectTemplateDefinition {
     repositoryUrl?: string | undefined
@@ -20,7 +20,7 @@ export interface ProjectTemplateDefinition {
     exports?: Record<string, string | undefined> | undefined
     main?: string | undefined
     types?: string | undefined
-    templateVariables?: Record<string, ProjectTemplateVariable | ProjetTemplateLiteral>
+    templateVariables?: Record<string, Partial<ProjectTemplateVariable>>
 }
 
 export interface ProjectTemplateBuilder {

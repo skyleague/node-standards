@@ -21,7 +21,7 @@ export async function handler(
 ): Promise<void> {
     const { fix } = await argv
 
-    new ProjectLinter({
+    await new ProjectLinter({
         configurationKey,
         templates,
         fix,

@@ -1,11 +1,10 @@
-import { convertLegacyConfiguration, Project } from './project.js'
-import type { ProjectTemplateVariables } from './template.js'
+import { Project } from './project.js'
 import type { ProjectTemplateBuilder } from './templates/index.js'
 import type { ProjectTemplateDefinition } from './templates/types.js'
 import type { PackageJson } from './types.js'
 
 import { getAllFiles } from '../common/index.js'
-import type { AnyPackageConfiguration } from '../config/config.type.js'
+import type { PackageConfiguration } from '../config/config.type.js'
 
 import LineDiff from 'line-diff'
 import semver from 'semver'
@@ -21,59 +20,30 @@ export class ProjectLinter extends Project {
     public constructor({
         templates,
         configurationKey,
+        name,
         configuration,
         cwd,
         fix = false,
     }: {
         templates: readonly ProjectTemplateBuilder[]
         configurationKey: string
-        configuration?: AnyPackageConfiguration | undefined
+        name?: string
+        configuration?: PackageConfiguration | undefined
         fix?: boolean
         cwd?: string
     }) {
-        super({ templates, configurationKey, configuration, cwd })
+        super({ templates, configurationKey, name, configuration, cwd })
         this.fix = fix
         this.shouldFail = false
     }
 
-    public lint({ throwOnFail = true }: { throwOnFail?: boolean } = {}): void {
-        this.lintPackage()
+    public async lint({ throwOnFail = true }: { throwOnFail?: boolean } = {}): Promise<void> {
+        await this.lintPackage()
         this.lintTemplate()
 
         if (this.shouldFail && throwOnFail) {
             throw new Error('Found errors in the project')
         }
-    }
-
-    public projectTemplateVariables(name: string): ProjectTemplateVariables {
-        const templateVariables: ProjectTemplateVariables = {
-            package_name: {
-                prompt: {
-                    initial: name,
-                    message: 'What is the package name (example: @skyleague/node-standards)?',
-                },
-            },
-            project_name: {
-                prompt: {
-                    initial: name.split('/').at(-1)!,
-                    message: 'What is the project name (example: node-standards)?',
-                },
-            },
-        }
-
-        for (const value of this.getRequiredTemplates({ order: 'first' }).map((l) => l.templateVariables)) {
-            for (const [key, variable] of Object.entries(value ?? {})) {
-                // allow overriding of the template literal
-                if (!('prompt' in variable)) {
-                    templateVariables[key] ??= { prompt: {} }
-                    templateVariables[key]!.literal = variable.literal
-                } else if (templateVariables[key] === undefined) {
-                    templateVariables[key] = variable
-                }
-            }
-        }
-
-        return templateVariables
     }
 
     private lintTemplate(): void {
@@ -116,26 +86,21 @@ export class ProjectLinter extends Project {
             fullTarget = path.join(targetDir, targetBasename.slice(1))
         }
 
-        const oldContent = fs.existsSync(fullTarget) ? fs.readFileSync(fullTarget) : undefined
-        const newContent = removeExisting ? undefined : fs.readFileSync(from)
+        const oldContent = fs.existsSync(fullTarget) ? fs.readFileSync(fullTarget).toString() : undefined
+        const newContent = removeExisting ? undefined : this.renderContent(fs.readFileSync(from).toString())
 
         const targetExists = fs.existsSync(fullTarget)
         const oldPermissions = targetExists ? fs.statSync(fullTarget).mode : undefined
         const newPermissions = fs.existsSync(from) ? fs.statSync(from).mode : undefined
 
-        const isContentDifferent = oldContent?.toString() !== newContent?.toString()
+        const isContentDifferent = oldContent !== newContent
         const isPermissionsDifferent =
             oldPermissions !== undefined && newPermissions !== oldPermissions && newPermissions !== undefined
         const isDifferent = isContentDifferent || isPermissionsDifferent
         if (isDifferent && (!provisionNewOnly || !targetExists || removeExisting)) {
             if (isContentDifferent) {
                 if (oldContent !== undefined) {
-                    console.warn(
-                        `[${target}] (${origin}):\n${new LineDiff(
-                            oldContent.toString(),
-                            newContent?.toString() ?? ''
-                        ).toString()}`
-                    )
+                    console.warn(`[${target}] (${origin}):\n${new LineDiff(oldContent, newContent ?? '').toString()}`)
                 } else {
                     console.warn(`[${target}] (${origin}): file not found`)
                 }
@@ -165,8 +130,9 @@ export class ProjectLinter extends Project {
         }
     }
 
-    private lintPackage(): void {
+    private async lintPackage(): Promise<void> {
         const json = JSON.stringify(this.packagejson, null, 2)
+        await this.evaluate()
         this.lintConfiguration()
         this.lintScripts()
         this.lintPublishConfig()
@@ -195,11 +161,14 @@ export class ProjectLinter extends Project {
             this.packagejson[this.configurationKey] = {
                 type: 'library',
             }
-        } else {
-            this.packagejson[this.configurationKey] = convertLegacyConfiguration(
-                this.packagejson[this.configurationKey] as AnyPackageConfiguration
-            )
         }
+
+        for (const [name, variable] of Object.entries(this.templateVariables).filter(([, v]) => v.inferOnly !== true)) {
+            const config = this.packagejson[this.configurationKey] as PackageConfiguration
+            config.template ??= {}
+            config.template[name] ??= variable.value
+        }
+
         if (JSON.stringify(this.packagejson[this.configurationKey]) !== json) {
             console.warn(
                 `[package.json>${this.configurationKey}] missing or outdated configuration:\n${
