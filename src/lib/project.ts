@@ -5,15 +5,13 @@ import type { ProjectTemplate } from './templates/index.js'
 import type { ProjectDefinition, ProjectTemplateBuilder } from './templates/types.js'
 import type { PackageJson } from './types.js'
 
-import * as create from '../commands/create/index.js'
 import { isIgnored, spawn } from '../common/index.js'
-import type { PackageConfiguration } from '../config/config.type.js'
+import { PackageConfiguration } from '../config/config.type.js'
 
 import enquirer from 'enquirer'
 import fg from 'fast-glob'
 import pLimit from 'p-limit'
-import yargs from 'yargs'
-import { hideBin } from 'yargs/helpers'
+import type { Argv } from 'yargs'
 
 import { existsSync, mkdirSync, promises } from 'node:fs'
 import path, { dirname, join } from 'node:path'
@@ -61,7 +59,13 @@ export class Project {
         if (this._configuration !== undefined) {
             return this._configuration
         }
-        this._configuration = this.packagejson[this.configurationKey] as PackageConfiguration
+        const packagejson = this.packagejson[this.configurationKey]
+        if (PackageConfiguration.is(packagejson)) {
+            this._configuration = packagejson
+        } else if (packagejson !== undefined) {
+            console.error('Given package configuration is not valid', PackageConfiguration.errors)
+            this._configuration = undefined
+        }
         return this._configuration
     }
 
@@ -113,7 +117,7 @@ export class Project {
                 entry.value = argv[name]
             } else if (entry.infer !== undefined && entry.value === undefined) {
                 entry.value =
-                    this.configuration?.template?.[name] ?? entry.infer({ packagejson: this.packagejson, cwd: this.cwd })
+                    this.configuration?.projectSettings?.[name] ?? entry.infer({ packagejson: this.packagejson, cwd: this.cwd })
             }
         }
 
@@ -134,69 +138,72 @@ export class Project {
         }
     }
 
-    public async create({ type, targetDir }: { type: string; targetDir: string }): Promise<void> {
-        await yargs(hideBin(process.argv)).command({
-            ...create.default,
-            builder: (y) => {
-                y = create.default.builder(y)
-                const variables = this.templateVariables
-                for (const [name, entry] of Object.entries(variables)) {
-                    if (entry.infer !== undefined && entry.value === undefined) {
-                        entry.value =
-                            this.configuration?.template?.[name] ?? entry.infer({ packagejson: this.packagejson, cwd: this.cwd })
+    public builder(yargs: Argv) {
+        const variables = this.templateVariables
+        for (const [name, entry] of Object.entries(variables)) {
+            if (entry.infer !== undefined && entry.value === undefined) {
+                entry.value =
+                    this.configuration?.projectSettings?.[name] ?? entry.infer({ packagejson: this.packagejson, cwd: this.cwd })
+            }
+            yargs = yargs.option(name, { type: 'string' })
+        }
+        return yargs
+    }
+
+    public async create({
+        type,
+        targetDir,
+        argv,
+    }: {
+        type: string
+        targetDir: string
+        argv: Record<string, string>
+    }): Promise<void> {
+        await this.evaluate(argv)
+
+        const template = this.layers![0]!
+        const fromDir = path.join(template.roots[0], `examples/${type}`)
+
+        await spawn('git', ['init', targetDir, '-b', 'main'])
+
+        console.log(`Creating a new project in ${targetDir}.`)
+
+        const limit = pLimit(255)
+
+        const entries = await fg('**/*', {
+            dot: true,
+            cwd: fromDir,
+            followSymbolicLinks: false,
+            ignore: ['**/node_modules/**'],
+        })
+
+        const directories = new Set<string>()
+        for (const dir of entries.map((f) => dirname(join(targetDir, f)))) {
+            directories.add(dir)
+        }
+
+        for (const dir of directories) {
+            mkdirSync(dir, { recursive: true })
+        }
+
+        const fromGitIgnore = join(fromDir, '.gitignore')
+        if (existsSync(fromGitIgnore)) {
+            await promises.copyFile(fromGitIgnore, join(targetDir, '.gitignore'))
+        }
+
+        await Promise.allSettled(
+            entries.map((f) =>
+                limit(async () => {
+                    if (!isIgnored(f, { cwd: targetDir })) {
+                        console.log(`Copying ${f}`)
+
+                        const content = await promises.readFile(join(fromDir, f), 'utf8')
+                        return promises.writeFile(join(targetDir, f), this.renderContent(content), 'utf8')
                     }
-                    y = y.option(name, { type: 'string' })
-                }
-                return y.help()
-            },
-            handler: async (argv) => {
-                await this.evaluate(argv as Record<string, string>)
-
-                const template = this.layers![0]!
-                const fromDir = path.join(template.roots[0], `examples/${type}`)
-
-                await spawn('git', ['init', targetDir, '-b', 'main'])
-
-                console.log(`Creating a new project in ${targetDir}.`)
-
-                const limit = pLimit(255)
-
-                const entries = await fg('**/*', {
-                    dot: true,
-                    cwd: fromDir,
-                    followSymbolicLinks: false,
-                    ignore: ['**/node_modules/**'],
+                    return
                 })
-
-                const directories = new Set<string>()
-                for (const dir of entries.map((f) => dirname(join(targetDir, f)))) {
-                    directories.add(dir)
-                }
-
-                for (const dir of directories) {
-                    mkdirSync(dir, { recursive: true })
-                }
-
-                const fromGitIgnore = join(fromDir, '.gitignore')
-                if (existsSync(fromGitIgnore)) {
-                    await promises.copyFile(fromGitIgnore, join(targetDir, '.gitignore'))
-                }
-
-                await Promise.allSettled(
-                    entries.map((f) =>
-                        limit(async () => {
-                            if (!isIgnored(f, { cwd: targetDir })) {
-                                console.log(`Copying ${f}`)
-
-                                const content = await promises.readFile(join(fromDir, f), 'utf8')
-                                return promises.writeFile(join(targetDir, f), this.renderContent(content), 'utf8')
-                            }
-                            return
-                        })
-                    )
-                )
-            },
-        }).argv
+            )
+        )
     }
 
     public renderContent(content: string): string {
