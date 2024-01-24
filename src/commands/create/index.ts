@@ -61,7 +61,7 @@ export async function handler(
 
     await yargs(hideBin(process.argv)).command({
         ...projectCommand,
-        builder: (y) => project.builder(builder(y)).strict(true).help(),
+        builder: (y) => project.builder(projectCommand.builder(y)).strict(true).help(),
         handler: async (_argv) => project.create({ type, targetDir: linter.cwd, argv: _argv as Record<string, string> }),
     }).argv
 
