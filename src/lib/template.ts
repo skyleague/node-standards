@@ -9,9 +9,9 @@ export interface ProjectTemplateVariable {
     value?: string | undefined
     prompt: PromptOptions
     literal: string
-    // do not store this setting
-    inferOnly?: boolean | undefined
+    skipStore?: boolean | undefined
     infer?: ((packagejson: PackageJson, cwd: string) => string | undefined) | undefined
+    render?: (options: { content: string; value: string; literal: string }) => string
 }
 
 export interface ProjectTemplateVariables {

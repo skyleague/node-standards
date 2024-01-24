@@ -1,5 +1,4 @@
-import { Project } from './project.js'
-import type { ProjectTemplateBuilder } from './templates/index.js'
+import { Project, type ProjectOptions } from './project.js'
 import type { ProjectTemplateDefinition } from './templates/types.js'
 import type { PackageJson } from './types.js'
 
@@ -18,21 +17,12 @@ export class ProjectLinter extends Project {
     public shouldFail = false
 
     public constructor({
-        templates,
-        configurationKey,
-        name,
-        configuration,
-        cwd,
         fix = false,
-    }: {
-        templates: readonly ProjectTemplateBuilder[]
-        configurationKey: string
-        name?: string
-        configuration?: PackageConfiguration | undefined
+        ...options
+    }: ProjectOptions & {
         fix?: boolean
-        cwd?: string
     }) {
-        super({ templates, configurationKey, name, configuration, cwd })
+        super(options)
         this.fix = fix
         this.shouldFail = false
     }
@@ -150,7 +140,7 @@ export class ProjectLinter extends Project {
 
         const fixed = JSON.stringify(this.packagejson, null, 2)
         if (this.fix && json !== fixed) {
-            fs.writeFileSync(`${process.cwd()}/package.json`, fixed)
+            fs.writeFileSync(`${this.cwd}/package.json`, fixed)
             console.log('fixed entries')
         }
     }
@@ -163,7 +153,9 @@ export class ProjectLinter extends Project {
             }
         }
 
-        for (const [name, variable] of Object.entries(this.templateVariables).filter(([, v]) => v.inferOnly !== true)) {
+        for (const [name, variable] of Object.entries(this.templateVariables).filter(
+            ([, v]) => v.skipStore !== true || this.forceVarStorage
+        )) {
             const config = this.packagejson[this.configurationKey] as PackageConfiguration
             config.template ??= {}
             config.template[name] ??= variable.value
