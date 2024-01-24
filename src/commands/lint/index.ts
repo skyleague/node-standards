@@ -7,24 +7,24 @@ import type { Argv } from 'yargs'
 export function builder(yargs: Argv) {
     return yargs
         .option('fix', {
-            describe:
-                'Automatically attempt to correct any detected errors. If this option is not provided, the program will only report errors without fixing them.',
+            describe: 'Auto-correct detected errors if not provided, only report.',
             type: 'boolean',
             default: false,
         })
         .option('force-var-storage', {
             alias: 'fvs',
-            describe: 'Enforce variable storage in the package.json file',
+            describe: 'Enforce variable storage in package.json',
             type: 'boolean',
             default: false,
         })
         .option('directory', {
             alias: 'C',
-            describe: 'Define the current working directory where the package will be created.',
+            describe: 'Set working directory for package linting.',
             type: 'string',
             normalize: true,
             default: './',
         })
+        .strict(false)
 }
 
 export async function handler(
@@ -47,8 +47,7 @@ export async function handler(
 
 export default {
     command: 'lint',
-    describe:
-        'Analyze the project configuration for potential errors or deviations from best practices. This command helps maintain the quality and consistency of your project configuration.',
+    describe: 'Analyze project config for errors or deviations from best practices.',
     builder,
     handler,
 }
