@@ -11,20 +11,20 @@ export function builder(
 ) {
     return yargs
         .option('type', {
-            describe: 'Specify the type of the package. This determines the template used for package creation.',
+            describe: 'Specify package type to determine creation template.',
             type: 'string',
             default: templates[0],
             choices: templates,
             demand: true,
         })
         .positional('name', {
-            describe: 'Provide a unique name for the new package. This will be used as the package identifier.',
+            describe: 'Unique name for the new package.',
             type: 'string',
             required: true,
         })
         .option('directory', {
             alias: 'C',
-            describe: 'Define the directory where the package will be created.',
+            describe: 'Directory for package creation.',
             type: 'string',
             normalize: true,
         })
@@ -61,10 +61,10 @@ export async function handler(
     // clean linter configuration
     await new ProjectLinter({ ...linter, configuration: undefined }).lint({ throwOnFail: false })
 }
+
 export default {
     command: 'create <name>',
-    describe:
-        'Initiate the creation of a new project. The <name> parameter should be replaced with the desired name for your new project.',
+    describe: 'Initiate creation of a new project with the provided name.',
     builder,
     handler,
 }
