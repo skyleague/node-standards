@@ -11,16 +11,22 @@ export function builder(
 ) {
     return yargs
         .option('type', {
-            describe: 'package type',
+            describe: 'Specify the type of the package. This determines the template used for package creation.',
             type: 'string',
             default: templates[0],
             choices: templates,
             demand: true,
         })
         .positional('name', {
-            describe: 'the new package name',
+            describe: 'Provide a unique name for the new package. This will be used as the package identifier.',
             type: 'string',
             required: true,
+        })
+        .option('directory', {
+            alias: 'C',
+            describe: 'Define the directory where the package will be created.',
+            type: 'string',
+            normalize: true,
         })
         .strict(false)
 }
@@ -32,7 +38,7 @@ export async function handler(
         configurationKey = 'node-standards',
     }: { templates?: readonly ProjectTemplateBuilder[]; configurationKey?: string } = {}
 ): Promise<void> {
-    const { type, name } = await argv
+    const { type, name, directory } = await argv
 
     const linter = {
         templates: templates,
@@ -41,7 +47,7 @@ export async function handler(
         configuration: {
             extends: type,
         },
-        cwd: `${process.cwd()}/${name!}`,
+        cwd: directory ?? `${process.cwd()}/${name!}`,
         fix: true,
     }
     const project = new ProjectLinter(linter)
@@ -55,10 +61,10 @@ export async function handler(
     // clean linter configuration
     await new ProjectLinter({ ...linter, configuration: undefined }).lint({ throwOnFail: false })
 }
-
 export default {
     command: 'create <name>',
-    describe: 'create a new project',
+    describe:
+        'Initiate the creation of a new project. The <name> parameter should be replaced with the desired name for your new project.',
     builder,
     handler,
 }

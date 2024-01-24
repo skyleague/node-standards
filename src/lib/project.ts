@@ -18,30 +18,36 @@ import { hideBin } from 'yargs/helpers'
 import { existsSync, mkdirSync, promises } from 'node:fs'
 import path, { dirname, join } from 'node:path'
 
+export interface ProjectOptions {
+    templates: readonly ProjectTemplateBuilder[]
+    configurationKey: string
+    name?: string | undefined
+    configuration?: PackageConfiguration | undefined
+    forceVarStorage?: boolean | undefined
+    cwd?: string | undefined
+}
+
 export class Project {
     public readonly templates: readonly ProjectTemplateBuilder[]
     public readonly configurationKey: string
     public readonly name: string | undefined
     public readonly cwd: string
+    public forceVarStorage: boolean
 
     public constructor({
         templates,
         configurationKey,
         name,
         configuration,
+        forceVarStorage,
         cwd = process.cwd(),
-    }: {
-        templates: readonly ProjectTemplateBuilder[]
-        configurationKey: string
-        name?: string | undefined
-        configuration?: PackageConfiguration | undefined
-        cwd?: string | undefined
-    }) {
+    }: ProjectOptions) {
         this.cwd = cwd
         this.configurationKey = configurationKey
         this.name = name
         this._configuration = configuration ?? this.configuration
         this.templates = templates
+        this.forceVarStorage = forceVarStorage ?? false
     }
 
     public reload(): void {
@@ -73,7 +79,7 @@ export class Project {
                     message: `What is the package name (example: @skyleague/node-standards)?`,
                 },
                 infer: (packagejson) => packagejson.name,
-                inferOnly: true,
+                skipStore: true,
             },
             projectName: {
                 literal: '__project_name__',
@@ -82,7 +88,7 @@ export class Project {
                     message: 'What is the project name (example: node-standards)?',
                 },
                 infer: (packagejson) => packagejson.name?.split('/').at(-1),
-                inferOnly: true,
+                skipStore: true,
             },
         }
 
@@ -127,7 +133,7 @@ export class Project {
         }
     }
 
-    public async create({ type, targetDir }: { type: string; targetDir?: string }): Promise<void> {
+    public async create({ type, targetDir }: { type: string; targetDir: string }): Promise<void> {
         await yargs(hideBin(process.argv)).command({
             ...create.default,
             builder: (y) => {
@@ -144,14 +150,12 @@ export class Project {
             handler: async (argv) => {
                 await this.evaluate(argv as Record<string, string>)
 
-                const finalTargetDir = targetDir ?? path.resolve(process.cwd(), this.templateVariables.projectName.value!)
-
                 const template = this.layers![0]!
                 const fromDir = path.join(template.roots[0], `examples/${type}`)
 
-                await spawn('git', ['init', finalTargetDir, '-b', 'main'])
+                await spawn('git', ['init', targetDir, '-b', 'main'])
 
-                console.log(`Creating a new project in ${finalTargetDir}.`)
+                console.log(`Creating a new project in ${targetDir}.`)
 
                 const limit = pLimit(255)
 
@@ -163,7 +167,7 @@ export class Project {
                 })
 
                 const directories = new Set<string>()
-                for (const dir of entries.map((f) => dirname(join(finalTargetDir, f)))) {
+                for (const dir of entries.map((f) => dirname(join(targetDir, f)))) {
                     directories.add(dir)
                 }
 
@@ -173,17 +177,17 @@ export class Project {
 
                 const fromGitIgnore = join(fromDir, '.gitignore')
                 if (existsSync(fromGitIgnore)) {
-                    await promises.copyFile(fromGitIgnore, join(finalTargetDir, '.gitignore'))
+                    await promises.copyFile(fromGitIgnore, join(targetDir, '.gitignore'))
                 }
 
                 await Promise.allSettled(
                     entries.map((f) =>
                         limit(async () => {
-                            if (!isIgnored(f, { cwd: finalTargetDir })) {
+                            if (!isIgnored(f, { cwd: targetDir })) {
                                 console.log(`Copying ${f}`)
 
                                 const content = await promises.readFile(join(fromDir, f), 'utf8')
-                                return promises.writeFile(join(finalTargetDir, f), this.renderContent(content), 'utf8')
+                                return promises.writeFile(join(targetDir, f), this.renderContent(content), 'utf8')
                             }
                             return
                         })
@@ -194,10 +198,15 @@ export class Project {
     }
 
     public renderContent(content: string): string {
-        for (const [key, { value, literal }] of Object.entries(this.templateVariables)) {
+        for (const [key, { value, literal, render }] of Object.entries(this.templateVariables)) {
             if (value !== undefined) {
                 const literalName = literal ?? `__${key}(__w+)?__`
-                content = content.replace(new RegExp(literalName, 'g'), value)
+                content =
+                    render?.({
+                        content,
+                        value,
+                        literal: literalName,
+                    }) ?? content.replace(new RegExp(literalName, 'g'), value)
             }
         }
         return content
