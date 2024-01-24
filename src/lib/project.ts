@@ -78,7 +78,7 @@ export class Project {
                     initial: this.name,
                     message: `What is the package name (example: @skyleague/node-standards)?`,
                 },
-                infer: (packagejson) => packagejson.name,
+                infer: ({ packagejson }) => packagejson.name,
                 skipStore: true,
             },
             projectName: {
@@ -87,7 +87,7 @@ export class Project {
                     initial: this.name?.split('/')?.at(-1),
                     message: 'What is the project name (example: node-standards)?',
                 },
-                infer: (packagejson) => packagejson.name?.split('/').at(-1),
+                infer: ({ packagejson }) => packagejson.name?.split('/').at(-1),
                 skipStore: true,
             },
         }
@@ -112,7 +112,8 @@ export class Project {
             if (argv[name] !== undefined) {
                 entry.value = argv[name]
             } else if (entry.infer !== undefined && entry.value === undefined) {
-                entry.value = this.configuration?.template?.[name] ?? entry.infer(this.packagejson, this.cwd)
+                entry.value =
+                    this.configuration?.template?.[name] ?? entry.infer({ packagejson: this.packagejson, cwd: this.cwd })
             }
         }
 
@@ -141,7 +142,8 @@ export class Project {
                 const variables = this.templateVariables
                 for (const [name, entry] of Object.entries(variables)) {
                     if (entry.infer !== undefined && entry.value === undefined) {
-                        entry.value = this.configuration?.template?.[name] ?? entry.infer(this.packagejson, this.cwd)
+                        entry.value =
+                            this.configuration?.template?.[name] ?? entry.infer({ packagejson: this.packagejson, cwd: this.cwd })
                     }
                     y = y.option(name, { type: 'string' })
                 }
