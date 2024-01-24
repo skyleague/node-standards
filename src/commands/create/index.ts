@@ -2,14 +2,16 @@ import { templates as ossTemplates } from '../../lib/index.js'
 import { ProjectLinter } from '../../lib/linter.js'
 import type { ProjectTemplateBuilder } from '../../lib/templates/types.js'
 
+import yargs from 'yargs'
 import type { Argv } from 'yargs'
+import { hideBin } from 'yargs/helpers'
 
 export function builder(
-    yargs: Argv,
+    y: Argv,
     _ = null,
     { templates }: { templates: [string, ...string[]] } = { templates: ['library', 'yargs-cli'] }
 ) {
-    return yargs
+    return y
         .option('type', {
             describe: 'Specify package type to determine creation template.',
             type: 'string',
@@ -36,7 +38,8 @@ export async function handler(
     {
         templates = ossTemplates,
         configurationKey = 'node-standards',
-    }: { templates?: readonly ProjectTemplateBuilder[]; configurationKey?: string } = {}
+        command: projectCommand = command,
+    }: { templates?: readonly ProjectTemplateBuilder[]; configurationKey?: string; command?: typeof command } = {}
 ): Promise<void> {
     const { type, name, directory } = await argv
 
@@ -56,15 +59,21 @@ export async function handler(
         throw new Error(`Could not find a template with type ${type}`)
     }
 
-    await project.create({ type, targetDir: linter.cwd })
+    await yargs(hideBin(process.argv)).command({
+        ...projectCommand,
+        builder: (y) => project.builder(builder(y)).strict(true).help(),
+        handler: async (_argv) => project.create({ type, targetDir: linter.cwd, argv: _argv as Record<string, string> }),
+    }).argv
 
     // clean linter configuration
     await new ProjectLinter({ ...linter, configuration: undefined }).lint({ throwOnFail: false })
 }
 
-export default {
+export const command = {
     command: 'create <name>',
     describe: 'Initiate creation of a new project with the provided name.',
     builder,
     handler,
 }
+
+export default command

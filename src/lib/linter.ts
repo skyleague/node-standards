@@ -27,8 +27,11 @@ export class ProjectLinter extends Project {
         this.shouldFail = false
     }
 
-    public async lint({ throwOnFail = true }: { throwOnFail?: boolean } = {}): Promise<void> {
-        await this.lintPackage()
+    public async lint({
+        throwOnFail = true,
+        argv = {},
+    }: { throwOnFail?: boolean; argv?: Record<string, string> } = {}): Promise<void> {
+        await this.lintPackage(argv)
         this.lintTemplate()
 
         if (this.shouldFail && throwOnFail) {
@@ -120,9 +123,9 @@ export class ProjectLinter extends Project {
         }
     }
 
-    private async lintPackage(): Promise<void> {
+    private async lintPackage(argv: Record<string, string>): Promise<void> {
         const json = JSON.stringify(this.packagejson, null, 2)
-        await this.evaluate()
+        await this.evaluate(argv)
         this.lintConfiguration()
         this.lintScripts()
         this.lintPublishConfig()
@@ -157,8 +160,8 @@ export class ProjectLinter extends Project {
             ([, v]) => v.skipStore !== true || this.forceVarStorage
         )) {
             const config = this.packagejson[this.configurationKey] as PackageConfiguration
-            config.template ??= {}
-            config.template[name] ??= variable.value
+            config.projectSettings ??= {}
+            config.projectSettings[name] ??= variable.value
         }
 
         if (JSON.stringify(this.packagejson[this.configurationKey]) !== json) {

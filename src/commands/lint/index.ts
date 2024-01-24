@@ -2,10 +2,12 @@ import { templates as ossTemplates } from '../../lib/index.js'
 import { ProjectLinter } from '../../lib/linter.js'
 import type { ProjectTemplateBuilder } from '../../lib/templates/index.js'
 
+import yargs from 'yargs'
 import type { Argv } from 'yargs'
+import { hideBin } from 'yargs/helpers'
 
-export function builder(yargs: Argv) {
-    return yargs
+export function builder(y: Argv) {
+    return y
         .option('fix', {
             describe: 'Auto-correct detected errors if not provided, only report.',
             type: 'boolean',
@@ -32,22 +34,30 @@ export async function handler(
     {
         templates = ossTemplates,
         configurationKey = 'node-standards',
-    }: { templates?: readonly ProjectTemplateBuilder[]; configurationKey?: string } = {}
+        command: projectCommand = command,
+    }: { templates?: readonly ProjectTemplateBuilder[]; configurationKey?: string; command?: typeof command } = {}
 ): Promise<void> {
     const { fix, directory, forceVarStorage } = await argv
 
-    await new ProjectLinter({
+    const project = new ProjectLinter({
         cwd: directory,
         forceVarStorage,
         configurationKey,
         templates,
         fix,
-    }).lint()
+    })
+
+    await yargs(hideBin(process.argv)).command({
+        ...projectCommand,
+        builder: (y) => project.builder(builder(y)).strict(true).help(),
+        handler: async (_argv) => project.lint({ argv: _argv as Record<string, string> }),
+    }).argv
 }
 
-export default {
+export const command = {
     command: 'lint',
     describe: 'Analyze project config for errors or deviations from best practices.',
     builder,
     handler,
 }
+export default command
