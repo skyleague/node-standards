@@ -3,9 +3,9 @@ description: 'Setup a Terraform environment and restore dependencies'
 
 inputs:
   terraform-version:
-    description: 'Terraform version to use, default to (1.4.6)'
+    description: 'Terraform version to use, default to (1.7.1)'
     required: true
-    default: 1.4.6
+    default: 1.7.1
   working-directory:
     description: 'From which directory do we need to set this up'
     required: true
@@ -39,12 +39,12 @@ runs:
   using: 'composite'
   steps:
     - name: Setup Terraform ${{ inputs.terraform-version }}
-      uses: hashicorp/setup-terraform@v2
+      uses: hashicorp/setup-terraform@v3
       with:
         terraform_version: ${{ inputs.terraform-version }}
     - name: Cache dependencies
       id: cache
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: |
           ${{ inputs.working-directory }}.terraform

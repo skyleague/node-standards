@@ -18,6 +18,7 @@ export interface ProjectTemplateDefinition {
     extends?: string[] | undefined
     packageType?: 'commonjs' | 'module' | undefined
     exports?: Record<string, string | undefined> | undefined
+    workspaces?: string[]
     main?: string | undefined
     types?: string | undefined
     templateVariables?: Record<string, Partial<ProjectTemplateVariable>>

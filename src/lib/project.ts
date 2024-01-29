@@ -13,6 +13,7 @@ import fg from 'fast-glob'
 import pLimit from 'p-limit'
 import type { Argv } from 'yargs'
 
+import NodeBuffer from 'node:buffer'
 import { existsSync, mkdirSync, promises } from 'node:fs'
 import path, { dirname, join } from 'node:path'
 
@@ -77,7 +78,7 @@ export class Project {
 
         this._templateVariables = {
             packageName: {
-                literal: '__package_name__',
+                literal: ['@skyleague\\/__package_name__', '__package_name__'],
                 prompt: {
                     initial: this.name,
                     message: `What is the package name (example: @skyleague/node-standards)?`,
@@ -86,7 +87,7 @@ export class Project {
                 skipStore: true,
             },
             projectName: {
-                literal: '__project_name__',
+                literal: ['@skyleague\\/__project_name__', '__project_name__'],
                 prompt: {
                     initial: this.name?.split('/')?.at(-1),
                     message: 'What is the project name (example: node-standards)?',
@@ -197,8 +198,11 @@ export class Project {
                     if (!isIgnored(f, { cwd: targetDir })) {
                         console.log(`Copying ${f}`)
 
-                        const content = await promises.readFile(join(fromDir, f), 'utf8')
-                        return promises.writeFile(join(targetDir, f), this.renderContent(content), 'utf8')
+                        const content = await promises.readFile(join(fromDir, f))
+                        const rendered = NodeBuffer.isUtf8(content)
+                            ? Buffer.from(this.renderContent(content.toString()))
+                            : content
+                        return promises.writeFile(join(targetDir, f), rendered)
                     }
                     return
                 })
@@ -209,13 +213,15 @@ export class Project {
     public renderContent(content: string): string {
         for (const [key, { value, literal, render }] of Object.entries(this.templateVariables)) {
             if (value !== undefined) {
-                const literalName = literal ?? `__${key}(__w+)?__`
-                content =
-                    render?.({
-                        content,
-                        value,
-                        literal: literalName,
-                    }) ?? content.replace(new RegExp(literalName, 'g'), value)
+                for (const lit of Array.isArray(literal) ? literal : [literal]) {
+                    const literalName = lit ?? `__${key}__`
+                    content =
+                        render?.({
+                            content,
+                            value,
+                            literal: literalName,
+                        }) ?? content.replace(new RegExp(`${literalName}(\\w+__)?`, 'g'), value)
+                }
             }
         }
         return content

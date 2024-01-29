@@ -14,6 +14,7 @@ export async function spawn(
         })
         process.on('error', function (err) {
             console.error(err)
+            // eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors
             reject(err)
         })
     })

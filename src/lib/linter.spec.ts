@@ -600,9 +600,9 @@ describe('lint main', () => {
 
         linter.lintMain()
         expect(packagejson).toMatchInlineSnapshot(`
-            {
-              "main": "./.dist/index.js",
-            }
+          {
+            "main": "./.dist/index.js",
+          }
         `)
         expect(linter.shouldFail).toBeTruthy()
     })
@@ -623,9 +623,100 @@ describe('lint main', () => {
 
         linter.lintMain()
         expect(packagejson).toMatchInlineSnapshot(`
+          {
+            "main": "./.dist/index.js",
+          }
+        `)
+        expect(linter.shouldFail).toBeTruthy()
+    })
+})
+
+describe('lint workspaces', () => {
+    let linter: ProjectLinter
+
+    beforeEach(() => {
+        linter = new ProjectLinter({
+            templates: [],
+            configurationKey: 'foo-key',
+            fix: false,
+        })
+    })
+
+    afterEach(() => {
+        vi.restoreAllMocks()
+    })
+
+    it('explicit ignore skips lint step', () => {
+        const config: PackageConfiguration = {
+            extends: ['docusaurus'],
+            rules: {
+                workspaces: false,
+            },
+        }
+        const packagejson = { 'foo-key': config } as unknown as PackageJson
+        vi.spyOn(linter, 'packagejson', 'get').mockReturnValue(packagejson)
+        vi.spyOn(linter, 'links', 'get').mockReturnValue([
             {
-              "main": "./.dist/index.js",
-            }
+                workspaces: ['docs'],
+            } as unknown as ProjectDefinition,
+        ])
+
+        linter.lintWorkspaces()
+        expect(linter.shouldFail).toBeFalsy()
+    })
+
+    it('does not fail when template isnt found', () => {
+        const packagejson = {} as PackageJson
+        vi.spyOn(linter, 'packagejson', 'get').mockReturnValue(packagejson)
+
+        linter.lintWorkspaces()
+        expect(packagejson).toMatchInlineSnapshot(`{}`)
+        expect(linter.shouldFail).toBeFalsy()
+    })
+
+    it('fixes the package according to the template', () => {
+        const packagejson = {} as PackageJson
+        vi.spyOn(linter, 'packagejson', 'get').mockReturnValue(packagejson)
+        vi.spyOn(linter, 'links', 'get').mockReturnValue([
+            {
+                workspaces: ['docs'],
+            } as unknown as ProjectDefinition,
+        ])
+
+        linter.lintWorkspaces()
+        expect(packagejson).toMatchInlineSnapshot(`
+          {
+            "workspaces": [
+              "docs",
+            ],
+          }
+        `)
+        expect(linter.shouldFail).toBeTruthy()
+    })
+
+    it('fixes the package according to all linked templates', () => {
+        const packagejson = {
+            main: './.main.js',
+        } as unknown as PackageJson
+        vi.spyOn(linter, 'packagejson', 'get').mockReturnValue(packagejson)
+        vi.spyOn(linter, 'links', 'get').mockReturnValue([
+            {
+                workspaces: ['docs'],
+            },
+            {
+                workspaces: ['docs', 'foobar'],
+            },
+        ] as unknown as ProjectDefinition[])
+
+        linter.lintWorkspaces()
+        expect(packagejson).toMatchInlineSnapshot(`
+          {
+            "main": "./.main.js",
+            "workspaces": [
+              "docs",
+              "foobar",
+            ],
+          }
         `)
         expect(linter.shouldFail).toBeTruthy()
     })
