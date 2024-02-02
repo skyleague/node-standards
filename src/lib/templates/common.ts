@@ -26,7 +26,7 @@ export const CommonTypescriptTemplate: ProjectTemplateBuilder = {
             ['build:docs']: 'npx typedoc',
             ['check:cost']: undefined,
             ['check:coverage']: 'npx vitest run --coverage=true',
-            ['check:full']: 'npm run lint && npm run check:types && npm run check:coverage && npm run check:project',
+            ['check:full']: undefined,
             ['check:project']: 'npx node-standards lint',
             ['check:types']: 'npx tsc -p tsconfig.json',
             ['format']: 'npx prettier "**/*.{ts,js,json,yml,yaml,md}" --write',

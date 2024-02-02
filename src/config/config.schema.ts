@@ -17,6 +17,7 @@ export const packageConfiguration = $validator(
                 exports: $optional($boolean),
                 types: $optional($boolean),
                 main: $optional($boolean),
+                workspaces: $optional($boolean),
             })
         ),
         projectSettings: $optional($dict($string)),

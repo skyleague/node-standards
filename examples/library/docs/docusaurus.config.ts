@@ -56,7 +56,7 @@ const config: Config = {
             logo: {
                 alt: 'Logo',
                 src: 'img/logo.png',
-                srcDark: 'img/logo.png',
+                srcDark: 'img/logow.png',
             },
             items: [
                 {

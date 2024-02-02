@@ -7,9 +7,10 @@ export const DocusaurusTemplate: ProjectTemplate = {
     template: {
         repositoryUrl,
         scripts: {
-            ['build:docs']: '(cd docs; npm install; npm run build)',
+            ['build:docs']: 'npm run --workspace=docs build',
         },
         devDependencies: {},
+        workspaces: ['docs'],
         roots: [rootDirectory],
     },
 }

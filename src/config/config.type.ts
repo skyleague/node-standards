@@ -21,6 +21,7 @@ export interface PackageConfiguration {
         exports?: boolean
         types?: boolean
         main?: boolean
+        workspaces?: boolean
     }
     projectSettings?: {
         [k: string]: string | undefined

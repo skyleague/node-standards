@@ -129,6 +129,7 @@ export class ProjectLinter extends Project {
         this.lintConfiguration()
         this.lintScripts()
         this.lintPublishConfig()
+        this.lintWorkspaces()
         this.lintLicense()
         this.lintEngines()
         this.lintPackageFiles()
@@ -181,6 +182,14 @@ export class ProjectLinter extends Project {
         }
 
         this.lintPackageJsonKey({ key: 'publishConfig', order: 'last' })
+    }
+
+    public lintWorkspaces(): void {
+        if (this.configuration?.rules?.workspaces === false) {
+            return
+        }
+
+        this.lintPackageJsonKey({ key: 'workspaces', order: 'last' })
     }
 
     public lintLicense(): void {

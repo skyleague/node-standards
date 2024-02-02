@@ -18,71 +18,21 @@ on:
 jobs:
   typescript:
     uses: skyleague/node-standards/.github/workflows/reusable-typescript.yml@main
-    with:
-      standards_postinstall: npm link
     secrets:
       NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+    with:
+      has-workspaces: true
 
   build:
     uses: skyleague/node-standards/.github/workflows/reusable-build.yml@main
     secrets:
       NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-  library:
-    needs: [build]
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v4
-      - name: Download node standards
-        uses: skyleague/node-standards/.github/actions/download-artifact@main
-        with:
-          name: ${{ needs.build.outputs.artifact_name }}
-      - uses: skyleague/node-standards/.github/actions/setup-node@main
-        with:
-          working-directory: examples/library/
-          global-packages: yalc
-          preinstall: yalc publish --script=false && cd examples/library && yalc add @skyleague/node-standards
-          install: npm install --no-script
-        env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-      - run: npm run check:full
-        working-directory: examples/library
-
-  yargs:
-    needs: [build]
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v4
-      - name: Download node standards
-        uses: skyleague/node-standards/.github/actions/download-artifact@main
-        with:
-          name: ${{ needs.build.outputs.artifact_name }}
-      - uses: skyleague/node-standards/.github/actions/setup-node@main
-        with:
-          working-directory: examples/yargs-cli/
-          global-packages: yalc
-          preinstall: yalc publish --script=false && cd examples/yargs-cli && yalc add @skyleague/node-standards
-          install: npm install --no-script
-        env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-      - run: npm run check:full
-        working-directory: examples/yargs-cli
-
   release:
-    needs: [library, yargs, typescript, build]
+    needs: [typescript, build]
     uses: skyleague/node-standards/.github/workflows/reusable-release.yml@main
-    permissions:
-      contents: write # to be able to publish a GitHub release
-      issues: write # to be able to comment on released issues
-      pull-requests: write # to be able to comment on released pull requests
-      id-token: write # to enable use of OIDC for npm provenance
-      pages: write # to be able to publish to github pages
-      packages: write # to be able to publish to github packages
     with:
       build_artifact_name: ${{ needs.build.outputs.artifact_name }}
       beta_release: ${{ inputs.beta_release || false }}
     secrets:
       NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-      PR_APPROVE_TOKEN: ${{ secrets.PR_APPROVE_TOKEN }}
