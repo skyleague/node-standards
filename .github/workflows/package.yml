@@ -17,22 +17,17 @@ on:
 
 jobs:
   typescript:
-    uses: skyleague/node-standards/.github/workflows/reusable-typescript.yml@main
+    uses: skyleague/node-standards/.github/workflows/reusable-typescript.yml@02-02-refactor_cleanup_package_build_config
     secrets:
       NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
     with:
-      has-workspaces: true
-
-  build:
-    uses: skyleague/node-standards/.github/workflows/reusable-build.yml@main
-    secrets:
-      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      npm-args: '--workspaces'
 
   release:
-    needs: [typescript, build]
+    needs: [typescript]
     uses: skyleague/node-standards/.github/workflows/reusable-release.yml@main
     with:
-      build_artifact_name: ${{ needs.build.outputs.artifact_name }}
+      build_artifact_name: ${{ needs.build.typescript.artifact-name }}
       beta_release: ${{ inputs.beta_release || false }}
     secrets:
       NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

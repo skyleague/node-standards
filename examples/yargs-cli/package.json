@@ -24,16 +24,16 @@
   ],
   "scripts": {
     "build": "node --import tsx/esm build.config.ts",
-    "build:docs": "npx typedoc",
-    "check:coverage": "npx vitest run --coverage=true",
-    "check:project": "npx node-standards lint",
-    "check:types": "npx tsc -p tsconfig.json",
-    "format": "npx prettier \"**/*.{ts,js,json,yml,yaml,md}\" --write",
-    "lint": "npx eslint \"./{src,test,typings}/**/*.ts\" --cache --no-eslintrc --config .eslintrc.cjs",
+    "build:docs": "typedoc",
+    "check:coverage": "vitest run --coverage=true",
+    "check:project": "node-standards lint",
+    "check:types": "tsc -p tsconfig.json",
+    "format": "prettier \"**/*.{ts,js,json,yml,yaml,md}\" --write",
+    "lint": "eslint \"./{src,test,typings}/**/*.ts\" --cache --no-eslintrc --config .eslintrc.cjs",
     "lint:fix": "npm run lint -- --fix",
     "package": "rm -rf .dist && npm run build",
-    "prepare": "npx husky install || true",
-    "test": "npx vitest run"
+    "prepare": "husky || true",
+    "test": "vitest run"
   },
   "dependencies": {
     "tslib": "^2.6.2",
