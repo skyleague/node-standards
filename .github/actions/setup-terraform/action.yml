@@ -64,6 +64,7 @@ runs:
     - name: Preinstall
       if: ${{ inputs.preinstall != '' }}
       run: ${{ inputs.preinstall }}
+      working-directory: ${{ inputs.working-directory }}
       shell: bash
     - name: Terraform Init
       id: init
@@ -73,4 +74,5 @@ runs:
     - name: Postinstall
       if: ${{ inputs.postinstall != '' }}
       run: ${{ inputs.postinstall }}
+      working-directory: ${{ inputs.working-directory }}
       shell: bash
