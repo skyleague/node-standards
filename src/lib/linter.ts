@@ -399,7 +399,7 @@ export class ProjectLinter extends Project {
     }
 
     public packageSatisfiesRange(from: string | undefined, value: string | undefined): boolean {
-        const withoutRanges = from?.replace('^', '')?.replace('~', '')
+        const withoutRanges = from?.replace('^', '').replace('~', '')
         const cleaned = withoutRanges !== undefined ? semver.clean(withoutRanges) : undefined
         const satisfiesRange =
             cleaned !== undefined && cleaned !== null && value !== undefined && semver.satisfies(cleaned, value)

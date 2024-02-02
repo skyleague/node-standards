@@ -89,7 +89,7 @@ export class Project {
             projectName: {
                 literal: ['@skyleague\\/__project_name__', '__project_name__'],
                 prompt: {
-                    initial: this.name?.split('/')?.at(-1),
+                    initial: this.name?.split('/').at(-1),
                     message: 'What is the project name (example: node-standards)?',
                 },
                 infer: ({ packagejson }) => packagejson.name?.split('/').at(-1),
