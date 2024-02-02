@@ -48,7 +48,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Download node standards
-        uses: skyleague/node-standards/.github/actions/download-artifact@main
+        uses: actions/download-artifact@v4
         with:
           name: ${{ inputs.build_artifact_name }}
           path: ${{ inputs.build_artifact_path }}
