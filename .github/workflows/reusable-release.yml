@@ -47,7 +47,7 @@ jobs:
       packages: write # to be able to publish to github packages
     steps:
       - uses: actions/checkout@v4
-      - name: Download node standards
+      - name: Download artifacts
         uses: actions/download-artifact@v4
         with:
           name: ${{ inputs.build_artifact_name }}

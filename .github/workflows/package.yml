@@ -27,7 +27,7 @@ jobs:
     needs: [typescript]
     uses: skyleague/node-standards/.github/workflows/reusable-release.yml@main
     with:
-      build_artifact_name: ${{ needs.build.typescript.artifact-name }}
+      build_artifact_name: ${{ needs.typescript.outputs.artifact-name }}
       beta_release: ${{ inputs.beta_release || false }}
     secrets:
       NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
