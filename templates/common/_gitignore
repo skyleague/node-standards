@@ -3,6 +3,7 @@ __pycache__
 
 !.github
 !.vscode
+!.husky
 
 !.gitignore
 !.gitkeep
