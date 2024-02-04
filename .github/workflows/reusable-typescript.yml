@@ -117,9 +117,6 @@ jobs:
         with:
           name: ${{ inputs.artifact-name }}
           path: ${{ inputs.artifact-path }}
-      - name: Set artifact name
-        id: set-artifact-name
-        run: echo "set-artifact-name=${{ inputs.artifact-name }}" >> $GITHUB_OUTPUT
 
     outputs:
-      artifact-name: ${{ steps.set-artifact-name.outputs.artifact-name }}
+      artifact-name: ${{ inputs.artifact-name }}
