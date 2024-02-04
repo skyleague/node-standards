@@ -17,7 +17,7 @@ on:
 
 jobs:
   typescript:
-    uses: skyleague/node-standards/.github/workflows/reusable-typescript.yml@02-02-refactor_cleanup_package_build_config
+    uses: skyleague/node-standards/.github/workflows/reusable-typescript.yml@main
     secrets:
       NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
     with:
