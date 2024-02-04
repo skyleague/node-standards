@@ -38,7 +38,7 @@
   ],
   "scripts": {
     "build": "node --import tsx/esm build.config.ts",
-    "build:docs": "typedoc",
+    "build:docs": "npx typedoc",
     "check:coverage": "vitest run --coverage=true",
     "check:project": "node-standards lint",
     "check:types": "tsc -p tsconfig.json",

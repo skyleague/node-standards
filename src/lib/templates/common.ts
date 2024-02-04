@@ -23,7 +23,7 @@ export const CommonTypescriptTemplate: ProjectTemplateBuilder = {
         scripts: {
             ['build']: 'node --import tsx/esm build.config.ts',
             ['build:clean']: undefined,
-            ['build:docs']: 'typedoc',
+            ['build:docs']: 'npx typedoc',
             ['check:cost']: undefined,
             ['check:coverage']: 'vitest run --coverage=true',
             ['check:full']: undefined,
