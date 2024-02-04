@@ -7,7 +7,7 @@ export const CommonTemplate: ProjectTemplate = {
     template: {
         repositoryUrl,
         scripts: {
-            ['prepare']: 'npx husky install || true',
+            ['prepare']: 'husky || true',
         },
         roots: [rootDirectory],
     },
@@ -23,19 +23,19 @@ export const CommonTypescriptTemplate: ProjectTemplateBuilder = {
         scripts: {
             ['build']: 'node --import tsx/esm build.config.ts',
             ['build:clean']: undefined,
-            ['build:docs']: 'npx typedoc',
+            ['build:docs']: 'typedoc',
             ['check:cost']: undefined,
-            ['check:coverage']: 'npx vitest run --coverage=true',
+            ['check:coverage']: 'vitest run --coverage=true',
             ['check:full']: undefined,
-            ['check:project']: 'npx node-standards lint',
-            ['check:types']: 'npx tsc -p tsconfig.json',
-            ['format']: 'npx prettier "**/*.{ts,js,json,yml,yaml,md}" --write',
+            ['check:project']: 'node-standards lint',
+            ['check:types']: 'tsc -p tsconfig.json',
+            ['format']: 'prettier "**/*.{ts,js,json,yml,yaml,md}" --write',
             ['lint:full']: undefined,
             ['lint:fix']: 'npm run lint -- --fix',
             // The `--no-eslintrc` flag is used to prevent ESLint from loading the nested `.eslintrc.cjs` file in `/examples`.
-            ['lint']: 'npx eslint "./{src,test,typings}/**/*.ts" --cache --no-eslintrc --config .eslintrc.cjs',
+            ['lint']: 'eslint "./{src,test,typings}/**/*.ts" --cache --no-eslintrc --config .eslintrc.cjs',
             ['package']: 'rm -rf .dist && npm run build',
-            ['test']: 'npx vitest run',
+            ['test']: 'vitest run',
         },
         publishConfig: {
             access: 'public',

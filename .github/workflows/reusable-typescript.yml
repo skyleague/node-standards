@@ -3,36 +3,27 @@ name: Reusable Typescript Pipeline
 on:
   workflow_call:
     inputs:
-      artifact_path:
+      artifact-path:
         description: Path of the build artifacts (multi-line)
         type: string
         required: false
         default: |
           dist
           .dist
-      artifact_name:
+      artifact-name:
         description: Custom name of the build artifacts
         type: string
         required: false
         default: build-artifacts
-      standards_postinstall:
-        description: Postinstall command to run on the standards job
-        type: string
-        required: false
-      postinstall:
-        description: Postinstall command to run on jobs
-        type: string
-        required: false
-        default: '{}'
       working-directory:
         type: string
         required: false
         default: './'
-      has-workspaces:
-        description: Whether the project uses workspaces
-        type: boolean
+      npm-args:
+        description: Arguments to pass to npm
+        type: string
         required: false
-        default: false
+        default: ''
     secrets:
       GITHUB_NPM_TOKEN:
         description: Token to install GitHub packages with
@@ -41,8 +32,8 @@ on:
         description: Token to install npm packages with
         required: false
     outputs:
-      artifact_name:
-        value: ${{ jobs.build.outputs.artifact_name }}
+      artifact-name:
+        value: ${{ jobs.build.outputs.artifact-name }}
 
 jobs:
   check:
@@ -56,11 +47,10 @@ jobs:
       - uses: skyleague/node-standards/.github/actions/setup-node@main
         with:
           working-directory: ${{ inputs.working-directory }}
-          postinstall: ${{ fromJson(inputs.postinstall)['check'] }}
         env:
           GITHUB_NPM_TOKEN: ${{ secrets.GITHUB_NPM_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-      - run: npm run lint --workspaces --if-present
+      - run: npm run lint ${{ inputs.npm-args }}
 
   standards:
     runs-on: ubuntu-latest
@@ -73,42 +63,63 @@ jobs:
       - uses: skyleague/node-standards/.github/actions/setup-node@main
         with:
           working-directory: ${{ inputs.working-directory }}
-          postinstall: ${{ inputs.standards_postinstall || fromJson(inputs.postinstall)['standards'] }}
         env:
           GITHUB_NPM_TOKEN: ${{ secrets.GITHUB_NPM_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-      - run: npm run check:project ${{ inputs.has-workspaces && '--workspaces --if-present' || '' }}
+      - run: npm run check:project ${{ inputs.npm-args }}
 
   types:
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: ${{ inputs.working-directory }}
-
     steps:
       - uses: actions/checkout@v4
       - uses: skyleague/node-standards/.github/actions/setup-node@main
         with:
           working-directory: ${{ inputs.working-directory }}
-          postinstall: ${{ fromJson(inputs.postinstall)['types'] }}
         env:
           GITHUB_NPM_TOKEN: ${{ secrets.GITHUB_NPM_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-      - run: npm run check:types ${{ inputs.has-workspaces && '--workspaces --if-present' || '' }}
+      - run: npm run check:types ${{ inputs.npm-args }}
 
   test:
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: ${{ inputs.working-directory }}
-
     steps:
       - uses: actions/checkout@v4
       - uses: skyleague/node-standards/.github/actions/setup-node@main
         with:
           working-directory: ${{ inputs.working-directory }}
-          postinstall: ${{ fromJson(inputs.postinstall)['test'] }}
         env:
           GITHUB_NPM_TOKEN: ${{ secrets.GITHUB_NPM_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-      - run: npm run check:coverage ${{ inputs.has-workspaces && '--workspaces --if-present' || '' }}
+      - run: npm run check:coverage ${{ inputs.npm-args }}
+
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ inputs.working-directory }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: skyleague/node-standards/.github/actions/setup-node@main
+        with:
+          working-directory: ${{ inputs.working-directory }}
+        env:
+          GITHUB_NPM_TOKEN: ${{ secrets.GITHUB_NPM_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - run: npm run build ${{ inputs.npm-args }}
+      - name: Dist artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ inputs.artifact-name }}
+          path: ${{ inputs.artifact-path }}
+      - name: Set artifact name
+        id: set-artifact-name
+        run: echo "set-artifact-name=${{ inputs.artifact-name }}" >> $GITHUB_OUTPUT
+
+    outputs:
+      artifact-name: ${{ steps.set-artifact-name.outputs.artifact-name }}
