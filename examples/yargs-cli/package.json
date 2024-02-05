@@ -23,7 +23,7 @@
     "package.json"
   ],
   "scripts": {
-    "build": "node --import tsx/esm build.config.ts",
+    "build": "tsc -p tsconfig.dist.json",
     "build:docs": "npx typedoc",
     "check:coverage": "vitest run --coverage=true",
     "check:project": "node-standards lint",
