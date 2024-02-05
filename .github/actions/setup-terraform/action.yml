@@ -53,7 +53,7 @@ runs:
     - name: Authenticate Github App
       id: app-token
       if: ${{ inputs.github-app-id != '' && inputs.github-app-pem != '' }}
-      uses: getsentry/action-github-app-token@v2
+      uses: getsentry/action-github-app-token@v3
       with:
         app_id: ${{ inputs.github-app-id }}
         private_key: ${{ inputs.github-app-pem }}
