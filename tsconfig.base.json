@@ -1,34 +1,43 @@
 {
   "compilerOptions": {
-    // base options
+    /* Base Options: */
     "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true,
     "target": "es2022",
-    "verbatimModuleSyntax": true,
     "allowJs": true,
     "resolveJsonModule": true,
     "moduleDetection": "force",
-    "lib": ["es2022"],
-    "declaration": true,
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "importHelpers": true,
+    "isolatedModules": true,
+    /* Strictness */
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
     "noPropertyAccessFromIndexSignature": false,
-    "sourceMap": true,
     "allowUnusedLabels": false,
     "allowUnreachableCode": false,
     "exactOptionalPropertyTypes": true,
     "noFallthroughCasesInSwitch": true,
     "noImplicitOverride": true,
     "noImplicitReturns": true,
-    // strict
-    "strict": true,
-    "allowSyntheticDefaultImports": true,
-    "noUncheckedIndexedAccess": true,
-    // transpiling
-    "moduleResolution": "NodeNext",
-    "module": "NodeNext",
-    "noEmit": true
+    /* If transpiling with TypeScript: */
+    // "module": "NodeNext",
+    // "outDir": ".dist",
+    "sourceMap": true,
+    /* AND if you're building for a library: */
+    "declaration": true,
+    /* AND if you're building for a library in a monorepo: */
+    // "composite": true,
+    "declarationMap": true,
+    /* If NOT transpiling with TypeScript: */
+    "module": "preserve",
+    "noEmit": true,
+    "verbatimModuleSyntax": true,
+    /* If your code runs in the DOM: */
+    // "lib": [
+    //   "es2022",
+    //   "dom",
+    //   "dom.iterable"
+    // ],
+    /* If your code doesn't run in the DOM: */
+    "lib": ["es2022"]
   }
 }
