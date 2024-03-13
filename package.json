@@ -37,7 +37,7 @@
     "typedoc.cjs"
   ],
   "scripts": {
-    "build": "node --import tsx/esm build.config.ts",
+    "build": "tsc -p tsconfig.dist.json",
     "build:docs": "npx typedoc",
     "check:coverage": "vitest run --coverage=true",
     "check:project": "node-standards lint",
@@ -114,7 +114,6 @@
       ".eslintrc.cjs",
       "babel.config.cjs",
       "commitlint.config.cjs",
-      "build.config.ts",
       "lint-staged.config.cjs",
       "prettier.config.cjs",
       "release.config.cjs",
