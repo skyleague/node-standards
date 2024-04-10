@@ -1,6 +1,6 @@
 {
   "vcs": { "clientKind": "git", "enabled": true, "useIgnoreFile": true },
-  "files": { "ignore": ["**/*schema.js"], "ignoreUnknown": true },
+  "files": { "ignore": ["**/*.schema.js"], "ignoreUnknown": true },
   "formatter": {
     "enabled": true,
     "indentStyle": "space",
@@ -16,6 +16,9 @@
         "noNamespace": "error",
         "useConsistentArrayType": "error",
         "useForOf": "error"
+      },
+      "suspicious": {
+        "useAwait": "error"
       }
     }
   },
@@ -41,8 +44,7 @@
       "include": ["tsconfig.*.json"],
       "json": {
         "parser": {
-          "allowComments": true,
-          "allowTrailingCommas": true
+          "allowComments": true
         }
       }
     }
