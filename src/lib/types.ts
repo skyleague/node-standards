@@ -10,5 +10,5 @@ export type PackageJson = Record<string, unknown> & {
     dependencies: Record<string, string | undefined> | undefined
     devDependencies: Record<string, string | undefined> | undefined
     files: string[] | undefined
-    ['node-standards']: PackageConfiguration | undefined
+    'node-standards': PackageConfiguration | undefined
 }

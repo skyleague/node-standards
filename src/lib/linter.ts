@@ -158,7 +158,7 @@ export class ProjectLinter extends Project {
         }
 
         for (const [name, variable] of Object.entries(this.templateVariables).filter(
-            ([, v]) => v.skipStore !== true || this.forceVarStorage
+            ([, v]) => v.skipStore !== true || this.forceVarStorage,
         )) {
             const config = this.packagejson[this.configurationKey] as PackageConfiguration
             config.projectSettings ??= {}
@@ -169,7 +169,7 @@ export class ProjectLinter extends Project {
             console.warn(
                 `[package.json>${this.configurationKey}] missing or outdated configuration:\n${
                     vdiff(JSON.parse(json), this.packagejson[this.configurationKey]).text
-                }`
+                }`,
             )
 
             this.fail()
@@ -266,13 +266,13 @@ export class ProjectLinter extends Project {
             this.packagejson.scripts[entry] = value
         }
         this.packagejson.scripts = Object.fromEntries(
-            Object.entries(this.packagejson.scripts).filter(([_, value]) => value !== undefined)
+            Object.entries(this.packagejson.scripts).filter(([_, value]) => value !== undefined),
         )
         if (JSON.stringify(this.packagejson.scripts) !== json) {
             console.warn(
                 `[package.json>scripts] missing or outdated script entries found:\n${
                     vdiff(JSON.parse(json), this.packagejson.scripts).text
-                }`
+                }`,
             )
 
             this.fail()
@@ -288,7 +288,7 @@ export class ProjectLinter extends Project {
 
         const json = JSON.stringify(this.packagejson.dependencies)
         for (const [entry, value] of this.getRequiredTemplates({ order: 'last' }).flatMap((l) =>
-            Object.entries(l.dependencies ?? {})
+            Object.entries(l.dependencies ?? {}),
         )) {
             // check if semver is correct
             if (this.packageSatisfiesRange(this.packagejson.dependencies[entry], value)) {
@@ -305,7 +305,7 @@ export class ProjectLinter extends Project {
             console.warn(
                 `[package.json>dependencies] missing or outdated script entries found:\n${
                     vdiff(JSON.parse(json), this.packagejson.dependencies).text
-                }`
+                }`,
             )
 
             this.fail()
@@ -321,7 +321,7 @@ export class ProjectLinter extends Project {
         const json = JSON.stringify(this.packagejson.devDependencies)
 
         for (const [entry, value] of this.getRequiredTemplates({ order: 'last' }).flatMap((l) =>
-            Object.entries(l.devDependencies ?? {})
+            Object.entries(l.devDependencies ?? {}),
         )) {
             // check if semver is correct
             if (this.packageSatisfiesRange(this.packagejson.devDependencies[entry], value)) {
@@ -339,7 +339,7 @@ export class ProjectLinter extends Project {
             console.warn(
                 `[package.json>devDependencies] missing or outdated script entries found:\n${
                     vdiff(JSON.parse(json), this.packagejson.devDependencies).text
-                }`
+                }`,
             )
 
             this.fail()
@@ -376,7 +376,7 @@ export class ProjectLinter extends Project {
         for (const value of this.getRequiredTemplates({ order })
             .filter((l) => key in l)
             .map((l) => l[key])) {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            // biome-ignore lint/suspicious/noExplicitAny:
             this.packagejson[packageJsonKey] = value as any
             hasValues = true
         }
@@ -385,7 +385,7 @@ export class ProjectLinter extends Project {
             console.warn(
                 `[package.json>${packageJsonKey}] missing or outdated configuration found:\n${
                     vdiff(JSON.parse(json), this.packagejson[packageJsonKey]).text
-                }`
+                }`,
             )
 
             this.fail()

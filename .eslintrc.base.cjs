@@ -7,15 +7,13 @@ module.exports = {
         project: true,
     },
     reportUnusedDisableDirectives: true,
-    plugins: ['@typescript-eslint', 'import', 'unused-imports', 'unicorn'],
+    plugins: ['@typescript-eslint'],
     extends: [
         'plugin:@typescript-eslint/recommended-type-checked',
         'plugin:@typescript-eslint/strict-type-checked',
         'plugin:@typescript-eslint/stylistic-type-checked',
-        'plugin:prettier/recommended',
     ],
     rules: {
-        'unicorn/prefer-node-protocol': 'error',
         '@typescript-eslint/no-shadow': 'error',
         '@typescript-eslint/consistent-type-imports': 'warn',
         '@typescript-eslint/explicit-module-boundary-types': 'off',
@@ -42,24 +40,6 @@ module.exports = {
         '@typescript-eslint/no-unused-vars': [
             'error',
             { vars: 'all', varsIgnorePattern: '^_', args: 'after-used', argsIgnorePattern: '^_' },
-        ],
-        'unused-imports/no-unused-imports': 'error',
-        'import/order': [
-            'error',
-            {
-                alphabetize: {
-                    order: 'asc',
-                    caseInsensitive: true,
-                },
-                groups: ['index', 'sibling', 'parent', 'internal', 'external', 'builtin'],
-                'newlines-between': 'always',
-                pathGroups: [
-                    {
-                        group: 'internal',
-                        pattern: '~/**',
-                    },
-                ],
-            },
         ],
         'prefer-template': 'error',
         'no-duplicate-imports': 'off',
@@ -123,6 +103,10 @@ module.exports = {
             rules: {
                 '@typescript-eslint/naming-convention': 'off',
             },
+        },
+        {
+            files: ['*.ts', '*.js', '*.tsx', '*.jsx', '*.json'],
+            extends: ['biome'],
         },
     ],
 }
