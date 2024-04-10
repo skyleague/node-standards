@@ -14,7 +14,7 @@ export function resolveTemplate(
               : [],
     }: { configuration: PackageConfiguration | undefined; allowOverrides?: boolean; types?: string[] },
 ): [ProjectTemplate, ...ProjectTemplate[]] | undefined {
-    const results = []
+    const results: ProjectTemplate[] = []
     for (const type of types) {
         const template = xs.find((x) => x.type === type || (allowOverrides && x.overrides === type))
         if (template?.template !== undefined) {
