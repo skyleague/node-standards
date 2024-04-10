@@ -90,7 +90,7 @@ export class ProjectLinter extends Project {
         const isPermissionsDifferent =
             oldPermissions !== undefined && newPermissions !== oldPermissions && newPermissions !== undefined
         const isDifferent = isContentDifferent || isPermissionsDifferent
-        if (isDifferent && (!provisionNewOnly || !targetExists || removeExisting)) {
+        if (isDifferent && (!(provisionNewOnly && targetExists) || removeExisting)) {
             if (isContentDifferent) {
                 if (oldContent !== undefined) {
                     console.warn(`[${target}] (${origin}):\n${new LineDiff(oldContent, newContent ?? '').toString()}`)
