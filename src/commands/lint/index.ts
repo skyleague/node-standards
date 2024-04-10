@@ -35,7 +35,7 @@ export async function handler(
         templates = ossTemplates,
         configurationKey = 'node-standards',
         command: projectCommand = command,
-    }: { templates?: readonly ProjectTemplateBuilder[]; configurationKey?: string; command?: typeof command } = {}
+    }: { templates?: readonly ProjectTemplateBuilder[]; configurationKey?: string; command?: typeof command } = {},
 ): Promise<void> {
     const { fix, directory, forceVarStorage } = await argv
 

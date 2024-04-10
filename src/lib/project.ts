@@ -81,7 +81,7 @@ export class Project {
                 literal: ['@skyleague\\/__package_name__', '__package_name__'],
                 prompt: {
                     initial: this.name,
-                    message: `What is the package name (example: @skyleague/node-standards)?`,
+                    message: 'What is the package name (example: @skyleague/node-standards)?',
                 },
                 infer: ({ packagejson }) => packagejson.name,
                 skipStore: true,
@@ -130,25 +130,26 @@ export class Project {
                     type: 'input',
                     message: `What is the ${key}?`,
                     ...value.prompt,
-                }))
+                })),
         )
 
         for (const [key, answer] of Object.entries(answers)) {
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            // biome-ignore lint/style/noNonNullAssertion: this is a derivative field
             variables[key]!.value = answer as string
         }
     }
 
     public builder(yargs: Argv) {
+        let augmented = yargs
         const variables = this.templateVariables
         for (const [name, entry] of Object.entries(variables)) {
             if (entry.infer !== undefined && entry.value === undefined) {
                 entry.value =
                     this.configuration?.projectSettings?.[name] ?? entry.infer({ packagejson: this.packagejson, cwd: this.cwd })
             }
-            yargs = yargs.option(name, { type: 'string' })
+            augmented = augmented.option(name, { type: 'string' })
         }
-        return yargs
+        return augmented
     }
 
     public async create({
@@ -162,7 +163,11 @@ export class Project {
     }): Promise<void> {
         await this.evaluate(argv)
 
-        const template = this.layers![0]!
+        const template = this.layers?.[0]
+        if (template === undefined) {
+            throw new Error(`Could not find a template with type ${type}`)
+        }
+
         const fromDir = path.join(template.roots[0], `examples/${type}`)
 
         await spawn('git', ['init', targetDir, '-b', 'main'])
@@ -205,26 +210,27 @@ export class Project {
                         return promises.writeFile(join(targetDir, f), rendered)
                     }
                     return
-                })
-            )
+                }),
+            ),
         )
     }
 
     public renderContent(content: string): string {
+        let rendered = content
         for (const [key, { value, literal, render }] of Object.entries(this.templateVariables)) {
             if (value !== undefined) {
                 for (const lit of Array.isArray(literal) ? literal : [literal]) {
                     const literalName = lit ?? `__${key}__`
-                    content =
+                    rendered =
                         render?.({
-                            content,
+                            content: rendered,
                             value,
                             literal: literalName,
-                        }) ?? content.replace(new RegExp(`${literalName}(\\w+__)?`, 'g'), value)
+                        }) ?? rendered.replace(new RegExp(`${literalName}(\\w+__)?`, 'g'), value)
                 }
             }
         }
-        return content
+        return rendered
     }
 
     public get layers(): ProjectDefinition[] | undefined {
@@ -266,7 +272,7 @@ export class Project {
                             configuration: configuration,
                             types: [type],
                             allowOverrides: overridenBy === undefined || overridenBy !== type,
-                        })
+                        }),
                     )
                     .filter((x): x is ProjectTemplate => x !== undefined) ?? []
             let i = 0

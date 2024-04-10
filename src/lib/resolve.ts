@@ -12,7 +12,7 @@ export function resolveTemplate(
             : configuration?.extends !== undefined
               ? [configuration.extends]
               : [],
-    }: { configuration: PackageConfiguration | undefined; allowOverrides?: boolean; types?: string[] }
+    }: { configuration: PackageConfiguration | undefined; allowOverrides?: boolean; types?: string[] },
 ): [ProjectTemplate, ...ProjectTemplate[]] | undefined {
     const results = []
     for (const type of types) {

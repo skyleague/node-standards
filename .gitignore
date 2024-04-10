@@ -10,5 +10,4 @@ node_modules
 !.gitignore
 !.gitkeep
 !.eslintrc.*
-!.prettierignore
 !.eslintignore

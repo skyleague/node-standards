@@ -16,10 +16,7 @@
     "./*.js": "./.dist/*.js"
   },
   "types": "./.dist/index.d.ts",
-  "files": [
-    ".dist",
-    "package.json"
-  ],
+  "files": [".dist", "package.json"],
   "scripts": {
     "build": "tsc -p tsconfig.dist.json",
     "build:docs": "npm run --workspace=docs build",
@@ -47,12 +44,7 @@
     "registry": "https://registry.npmjs.org"
   },
   "node-standards": {
-    "extends": [
-      "library",
-      "docusaurus"
-    ]
+    "extends": ["library", "docusaurus"]
   },
-  "workspaces": [
-    "docs"
-  ]
+  "workspaces": ["docs"]
 }

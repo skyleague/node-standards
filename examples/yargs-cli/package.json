@@ -17,11 +17,7 @@
   "bin": {
     "example-cli": "./bin/run.js"
   },
-  "files": [
-    "bin",
-    ".dist",
-    "package.json"
-  ],
+  "files": ["bin", ".dist", "package.json"],
   "scripts": {
     "build": "tsc -p tsconfig.dist.json",
     "build:docs": "npx typedoc",

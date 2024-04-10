@@ -1,6 +1,6 @@
+import path from 'node:path'
 import type * as Preset from '@docusaurus/preset-classic'
 import type { Config } from '@docusaurus/types'
-import path from 'node:path'
 import { themes } from 'prism-react-renderer'
 import { description, homepage, name, repository } from '../package.json'
 
