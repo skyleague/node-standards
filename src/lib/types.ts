@@ -3,6 +3,7 @@ import type { PackageConfiguration } from '../config/config.type.js'
 export type PackageJson = Record<string, unknown> & {
     name: string | undefined
     bin: Record<string, string> | undefined
+    exports: Record<string, string | undefined> | undefined
     version: string
     license: string | undefined
     publishConfig: { registry: string; access: 'public' | 'restricted'; provenance?: boolean } | undefined
