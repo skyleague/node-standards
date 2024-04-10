@@ -1,14 +1,10 @@
 {
-  "[json]": {
-    "editor.tabSize": 2
-  },
   "debug.javascript.terminalOptions": {
     "remoteRoot": null,
     "skipFiles": ["<node_internals>/**"],
     "sourceMaps": true
   },
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": "explicit",
     "source.organizeImports.biome": "explicit",
     "quickfix.biome": "explicit"
   },

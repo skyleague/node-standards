@@ -90,7 +90,7 @@ export class ProjectLinter extends Project {
         const isPermissionsDifferent =
             oldPermissions !== undefined && newPermissions !== oldPermissions && newPermissions !== undefined
         const isDifferent = isContentDifferent || isPermissionsDifferent
-        if (isDifferent && (!provisionNewOnly || !targetExists || removeExisting)) {
+        if (isDifferent && (!(provisionNewOnly && targetExists) || removeExisting)) {
             if (isContentDifferent) {
                 if (oldContent !== undefined) {
                     console.warn(`[${target}] (${origin}):\n${new LineDiff(oldContent, newContent ?? '').toString()}`)
@@ -229,7 +229,27 @@ export class ProjectLinter extends Project {
             return
         }
 
-        this.lintPackageJsonKey({ key: 'exports', order: 'last' })
+        if (!this.packagejson.exports) {
+            this.packagejson.exports = {}
+        }
+        const json = JSON.stringify(this.packagejson.exports)
+        for (const [entry, value] of this.getRequiredTemplates({ order: 'last' }).flatMap((l) => {
+            return Object.entries(l.exports ?? {})
+        })) {
+            this.packagejson.exports[entry] = value
+        }
+        this.packagejson.exports = Object.fromEntries(
+            Object.entries(this.packagejson.exports).filter(([_, value]) => value !== undefined),
+        )
+        if (JSON.stringify(this.packagejson.exports) !== json) {
+            console.warn(
+                `[package.json>exports] missing or outdated entries found:\n${
+                    vdiff(JSON.parse(json), this.packagejson.exports).text
+                }`,
+            )
+
+            this.fail()
+        }
     }
 
     public lintPackageType(): void {
