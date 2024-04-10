@@ -277,7 +277,7 @@ export class Project {
                     .filter((x): x is ProjectTemplate => x !== undefined) ?? []
             let i = 0
             for (const c of children) {
-                if (!(c.type in found) && !ignore.has(c.type)) {
+                if (!(c.type in found || ignore.has(c.type))) {
                     found[c.type] = [depth, ++i, { ...c.template, type: c.type }]
                     _links({ links: c.template.extends, overridenBy: c.overrides, depth: depth + 1 })
                     _links({ links: c.template.links, overridenBy: c.overrides, depth: depth + 1 })
