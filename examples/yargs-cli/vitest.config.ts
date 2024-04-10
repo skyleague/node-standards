@@ -1,4 +1,4 @@
-import { defineConfig } from 'vitest/config'
+import { coverageConfigDefaults, defineConfig } from 'vitest/config'
 
 export default defineConfig({
     test: {
@@ -6,6 +6,7 @@ export default defineConfig({
         include: ['./src/**/*.{test,spec}.{ts,js}', './test/**/*.{test,spec}.{ts,js}'],
         coverage: {
             reportsDirectory: './.coverage',
+            exclude: ['**/*.schema.js', '**/*.client.ts', '**/*.type.ts', ...coverageConfigDefaults.exclude],
         },
         fakeTimers: {
             now: new Date(2022, 1, 10),

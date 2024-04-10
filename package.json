@@ -11,29 +11,27 @@
   "type": "module",
   "exports": {
     ".": "./.dist/index.js",
+    "./biome": "./biome.json",
     "./package.json": "./package.json",
     "./*.cjs": "./*.cjs",
     "./.*.cjs": "./.*.cjs",
-    "./tsconfig.base.json": "./tsconfig.base.json"
+    "./tsconfig.base.json": "./tsconfig.base.json",
+    "./*.js": "./.dist/*.js"
   },
   "types": "./.dist/index.d.ts",
   "bin": {
     "node-standards": "./bin/run.js"
   },
   "files": [
-    ".eslintrc.base.cjs",
-    "babel.config.cjs",
     "bin",
     ".dist",
-    "commitlint.config.cjs",
+    "biome.json",
     "esbuild.plugins.cjs",
-    "lint-staged.config.cjs",
     "package.json",
     "release.config.cjs",
     "templates",
     "examples",
-    "tsconfig.base.json",
-    "typedoc.cjs"
+    "tsconfig.base.json"
   ],
   "scripts": {
     "build": "tsc -p tsconfig.dist.json",
@@ -41,42 +39,33 @@
     "check:coverage": "vitest run --coverage=true",
     "check:project": "node-standards lint",
     "check:types": "tsc -p tsconfig.json",
-    "format": "prettier \"**/*.{ts,js,json,yml,yaml,md}\" --write",
-    "lint": "eslint \"./{src,test,typings}/**/*.ts\" --cache --no-eslintrc --config .eslintrc.cjs",
-    "lint:fix": "npm run lint -- --fix",
+    "lint": "biome check src test examples",
+    "lint:fix": "npm run lint -- --apply-unsafe",
     "package": "rm -rf .dist && npm run build",
     "prepare": "husky || true",
     "test": "vitest run"
   },
   "dependencies": {
     "@biomejs/biome": "^1.6.4",
-    "@commitlint/cli": "^19.1.0",
-    "@commitlint/config-conventional": "^19.1.0",
+    "@commitlint/cli": "^19.2.2",
+    "@commitlint/config-conventional": "^19.2.2",
     "@semantic-release/changelog": "^6.0.3",
-    "@types/node": "^20.11.26",
-    "@typescript-eslint/eslint-plugin": "^7.2.0",
-    "@typescript-eslint/parser": "^7.2.0",
-    "@vitest/coverage-v8": "^1.3.1",
+    "@types/node": "^20.12.7",
+    "@vitest/coverage-v8": "^1.5.0",
     "conventional-changelog": "^5.1.0",
     "enquirer": "^2.4.1",
-    "esbuild": "^0.20.1",
-    "eslint": "^8.57.0",
-    "eslint-config-biome": "^1.5.3",
-    "eslint-import-resolver-typescript": "^3.6.1",
-    "eslint-plugin-import": "^2.29.1",
-    "eslint-plugin-unicorn": "^51.0.1",
-    "eslint-plugin-unused-imports": "^3.1.0",
+    "esbuild": "^0.20.2",
     "fast-glob": "^3.3.2",
     "find-root": "^1.1.0",
     "husky": "^9.0.11",
     "is-ci": "^3.0.1",
     "line-diff": "^2.1.1",
     "lint-staged": "^15.2.2",
-    "semantic-release": "^23.0.2",
+    "semantic-release": "^23.0.8",
     "semver": "^7.6.0",
-    "tsx": "^4.7.1",
+    "tsx": "^4.7.2",
     "variable-diff": "^2.0.2",
-    "vitest": "^1.3.1",
+    "vitest": "^1.5.0",
     "yargs": "^17.7.2"
   },
   "devDependencies": {
@@ -85,10 +74,10 @@
     "@types/is-ci": "^3.0.4",
     "@types/semver": "^7.5.8",
     "@types/yargs": "^17.0.32",
-    "typescript": "^5.4.2"
+    "typescript": "^5.4.5"
   },
   "peerDependencies": {
-    "typescript": "^5.4.2"
+    "typescript": "^5.4.5"
   },
   "engines": {
     "node": ">=20"
@@ -101,19 +90,9 @@
   "workspaces": ["./", "examples/*"],
   "node-standards": {
     "extends": "yargs-cli",
-    "ignorePatterns": [
-      ".eslintrc.cjs",
-      "babel.config.cjs",
-      "commitlint.config.cjs",
-      "lint-staged.config.cjs",
-      "release.config.cjs",
-      "tsconfig.json",
-      "typedoc.cjs",
-      ".github/workflows/package.yml"
-    ],
+    "ignorePatterns": ["biome.json", "release.config.cjs", "tsconfig.json", ".github/workflows/package.yml"],
     "rules": {
-      "files": false,
-      "exports": false
+      "files": false
     }
   }
 }
