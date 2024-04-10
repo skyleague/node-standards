@@ -1,6 +1,6 @@
 {
   "vcs": { "clientKind": "git", "enabled": true, "useIgnoreFile": true },
-  "files": { "ignore": ["**/*schema.js"], "ignoreUnknown": true },
+  "files": { "ignore": ["**/*.schema.js"], "ignoreUnknown": true },
   "formatter": {
     "enabled": true,
     "indentStyle": "space",
@@ -14,8 +14,26 @@
       "recommended": true,
       "style": {
         "noNamespace": "error",
-        "useConsistentArrayType": "error",
-        "useForOf": "error"
+        "useForOf": "error",
+        "noParameterProperties": "error",
+        "useBlockStatements": "error",
+        "useShorthandArrayType": "error",
+        "useShorthandAssign": "error"
+      },
+      "suspicious": {
+        "useAwait": "error"
+      },
+      "correctness": {
+        "noUnusedImports": "error",
+        "useHookAtTopLevel": "error"
+      },
+      "complexity": {
+        "useSimplifiedLogicExpression": "error",
+        "noUselessLoneBlockStatements": "off"
+      },
+      "nursery": {
+        "noDuplicateJsonKeys": "error",
+        "noEvolvingAny": "error"
       }
     }
   },
@@ -34,15 +52,6 @@
         "rules": {
           "style": { "noNonNullAssertion": "off" },
           "suspicious": { "noExplicitAny": "off" }
-        }
-      }
-    },
-    {
-      "include": ["tsconfig.*.json"],
-      "json": {
-        "parser": {
-          "allowComments": true,
-          "allowTrailingCommas": true
         }
       }
     }
