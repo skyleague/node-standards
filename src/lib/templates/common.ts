@@ -21,7 +21,7 @@ export const CommonTypescriptTemplate: ProjectTemplateBuilder = {
             node: '>=20',
         },
         scripts: {
-            ['build']: 'node --import tsx/esm build.config.ts',
+            ['build']: 'tsc -p tsconfig.dist.json',
             ['build:clean']: undefined,
             ['build:docs']: 'npx typedoc',
             ['check:cost']: undefined,
