@@ -33,12 +33,10 @@
     "prepare": "husky || true",
     "test": "vitest run"
   },
-  "dependencies": {
-    "tslib": "^2.6.2"
-  },
+  "dependencies": {},
   "devDependencies": {
     "@skyleague/node-standards": ">5.0.0",
-    "typescript": "^5.3.3"
+    "typescript": "^5.4.2"
   },
   "engines": {
     "node": ">=20"

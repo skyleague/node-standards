@@ -1,6 +1,6 @@
 import type { ProjectTemplate, ProjectTemplateBuilder } from './types.js'
 
-import { dependencies, peerDependencies, repositoryUrl, rootDirectory } from '../constants.js'
+import { peerDependencies, repositoryUrl, rootDirectory } from '../constants.js'
 
 export const CommonTemplate: ProjectTemplate = {
     type: 'common',
@@ -43,7 +43,7 @@ export const CommonTypescriptTemplate: ProjectTemplateBuilder = {
             registry: 'https://registry.npmjs.org',
         },
         dependencies: {
-            tslib: dependencies.tslib,
+            tslib: undefined,
         },
         devDependencies: {
             ...peerDependencies,

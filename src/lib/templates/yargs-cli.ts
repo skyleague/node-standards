@@ -8,7 +8,7 @@ export const YargsCliTemplate: ProjectTemplateBuilder = {
         repositoryUrl,
         files: ['bin', '.dist', 'package.json'],
         dependencies: {
-            tslib: dependencies.tslib,
+            tslib: undefined,
             yargs: dependencies.yargs,
             '@types/source-map-support': undefined,
             'source-map-support': undefined,
