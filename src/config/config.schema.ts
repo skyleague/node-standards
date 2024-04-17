@@ -1,4 +1,4 @@
-import { $object, $string, $array, $union, $optional, $boolean, $dict, $validator } from '@skyleague/therefore'
+import { $array, $boolean, $dict, $object, $optional, $string, $union, $validator } from '@skyleague/therefore'
 
 export const packageConfiguration = $validator(
     $object({
@@ -18,8 +18,8 @@ export const packageConfiguration = $validator(
                 types: $optional($boolean),
                 main: $optional($boolean),
                 workspaces: $optional($boolean),
-            })
+            }),
         ),
         projectSettings: $optional($dict($string)),
-    })
+    }),
 )

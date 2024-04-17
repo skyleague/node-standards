@@ -16,19 +16,15 @@
     "./*.js": "./.dist/*.js"
   },
   "types": "./.dist/index.d.ts",
-  "files": [
-    ".dist",
-    "package.json"
-  ],
+  "files": [".dist", "package.json"],
   "scripts": {
     "build": "tsc -p tsconfig.dist.json",
     "build:docs": "npm run --workspace=docs build",
     "check:coverage": "vitest run --coverage=true",
     "check:project": "node-standards lint",
     "check:types": "tsc -p tsconfig.json",
-    "format": "prettier \"**/*.{ts,js,json,yml,yaml,md}\" --write",
-    "lint": "eslint \"./{src,test,typings}/**/*.ts\" --cache --no-eslintrc --config .eslintrc.cjs",
-    "lint:fix": "npm run lint -- --fix",
+    "lint": "biome check src test examples",
+    "lint:fix": "npm run lint -- --apply-unsafe",
     "package": "rm -rf .dist && npm run build",
     "prepare": "husky || true",
     "test": "vitest run"
@@ -36,7 +32,7 @@
   "dependencies": {},
   "devDependencies": {
     "@skyleague/node-standards": ">5.0.0",
-    "typescript": "^5.4.2"
+    "typescript": "^5.4.5"
   },
   "engines": {
     "node": ">=20"
@@ -47,12 +43,7 @@
     "registry": "https://registry.npmjs.org"
   },
   "node-standards": {
-    "extends": [
-      "library",
-      "docusaurus"
-    ]
+    "extends": ["library", "docusaurus"]
   },
-  "workspaces": [
-    "docs"
-  ]
+  "workspaces": ["docs"]
 }

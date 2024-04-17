@@ -17,20 +17,15 @@
   "bin": {
     "example-cli": "./bin/run.js"
   },
-  "files": [
-    "bin",
-    ".dist",
-    "package.json"
-  ],
+  "files": ["bin", ".dist", "package.json"],
   "scripts": {
     "build": "tsc -p tsconfig.dist.json",
     "build:docs": "npx typedoc",
     "check:coverage": "vitest run --coverage=true",
     "check:project": "node-standards lint",
     "check:types": "tsc -p tsconfig.json",
-    "format": "prettier \"**/*.{ts,js,json,yml,yaml,md}\" --write",
-    "lint": "eslint \"./{src,test,typings}/**/*.ts\" --cache --no-eslintrc --config .eslintrc.cjs",
-    "lint:fix": "npm run lint -- --fix",
+    "lint": "biome check src test examples",
+    "lint:fix": "npm run lint -- --apply-unsafe",
     "package": "rm -rf .dist && npm run build",
     "prepare": "husky || true",
     "test": "vitest run"
@@ -41,7 +36,7 @@
   "devDependencies": {
     "@skyleague/node-standards": ">5.0.0",
     "@types/yargs": "^17.0.32",
-    "typescript": "^5.4.2"
+    "typescript": "^5.4.5"
   },
   "engines": {
     "node": ">=20"

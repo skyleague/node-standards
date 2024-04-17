@@ -9,7 +9,7 @@ import { hideBin } from 'yargs/helpers'
 export function builder(
     y: Argv,
     _ = null,
-    { templates }: { templates: [string, ...string[]] } = { templates: ['library', 'yargs-cli'] }
+    { templates }: { templates: [string, ...string[]] } = { templates: ['library', 'yargs-cli'] },
 ) {
     return y
         .option('type', {
@@ -17,12 +17,12 @@ export function builder(
             type: 'string',
             default: templates[0],
             choices: templates,
-            demand: true,
+            demandOption: true,
         })
         .positional('name', {
             describe: 'Unique name for the new package.',
             type: 'string',
-            required: true,
+            required: 'true',
         })
         .option('directory', {
             alias: 'C',
@@ -39,18 +39,18 @@ export async function handler(
         templates = ossTemplates,
         configurationKey = 'node-standards',
         command: projectCommand = command,
-    }: { templates?: readonly ProjectTemplateBuilder[]; configurationKey?: string; command?: typeof command } = {}
+    }: { templates?: readonly ProjectTemplateBuilder[]; configurationKey?: string; command?: typeof command } = {},
 ): Promise<void> {
     const { type, name, directory } = await argv
 
     const linter = {
         templates: templates,
         configurationKey,
-        name: name!,
+        name,
         configuration: {
             extends: type,
         },
-        cwd: directory ?? `${process.cwd()}/${name!}`,
+        cwd: directory ?? `${process.cwd()}/${name}`,
         fix: true,
     }
     const project = new ProjectLinter(linter)

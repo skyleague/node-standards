@@ -4,7 +4,7 @@ import type { PackageJson } from './types.js'
 
 import type { PackageConfiguration } from '../config/index.js'
 
-import { expect, describe, beforeEach, afterEach, vi, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 describe('lint configuration', () => {
     let linter: ProjectLinter
@@ -215,7 +215,7 @@ describe('lint publish config', () => {
         vi.spyOn(linter, 'packagejson', 'get').mockReturnValue(packagejson)
 
         linter.lintPublishConfig()
-        expect(packagejson).toMatchInlineSnapshot(`{}`)
+        expect(packagejson).toMatchInlineSnapshot('{}')
         expect(linter.shouldFail).toBeFalsy()
     })
 
@@ -318,7 +318,7 @@ describe('lint license', () => {
         vi.spyOn(linter, 'packagejson', 'get').mockReturnValue(packagejson)
 
         linter.lintLicense()
-        expect(packagejson).toMatchInlineSnapshot(`{}`)
+        expect(packagejson).toMatchInlineSnapshot('{}')
         expect(linter.shouldFail).toBeFalsy()
     })
 
@@ -403,7 +403,7 @@ describe('lint engines', () => {
         vi.spyOn(linter, 'packagejson', 'get').mockReturnValue(packagejson)
 
         linter.lintEngines()
-        expect(packagejson).toMatchInlineSnapshot(`{}`)
+        expect(packagejson).toMatchInlineSnapshot('{}')
         expect(linter.shouldFail).toBeFalsy()
     })
 
@@ -500,7 +500,7 @@ describe('lint package type', () => {
         vi.spyOn(linter, 'packagejson', 'get').mockReturnValue(packagejson)
 
         linter.lintPackageType()
-        expect(packagejson).toMatchInlineSnapshot(`{}`)
+        expect(packagejson).toMatchInlineSnapshot('{}')
         expect(linter.shouldFail).toBeFalsy()
     })
 
@@ -585,7 +585,7 @@ describe('lint main', () => {
         vi.spyOn(linter, 'packagejson', 'get').mockReturnValue(packagejson)
 
         linter.lintMain()
-        expect(packagejson).toMatchInlineSnapshot(`{}`)
+        expect(packagejson).toMatchInlineSnapshot('{}')
         expect(linter.shouldFail).toBeFalsy()
     })
 
@@ -670,7 +670,7 @@ describe('lint workspaces', () => {
         vi.spyOn(linter, 'packagejson', 'get').mockReturnValue(packagejson)
 
         linter.lintWorkspaces()
-        expect(packagejson).toMatchInlineSnapshot(`{}`)
+        expect(packagejson).toMatchInlineSnapshot('{}')
         expect(linter.shouldFail).toBeFalsy()
     })
 
@@ -761,7 +761,7 @@ describe('lint types', () => {
         vi.spyOn(linter, 'packagejson', 'get').mockReturnValue(packagejson)
 
         linter.lintTypes()
-        expect(packagejson).toMatchInlineSnapshot(`{}`)
+        expect(packagejson).toMatchInlineSnapshot('{}')
         expect(linter.shouldFail).toBeFalsy()
     })
 
@@ -846,7 +846,11 @@ describe('lint exports', () => {
         vi.spyOn(linter, 'packagejson', 'get').mockReturnValue(packagejson)
 
         linter.lintExports()
-        expect(packagejson).toMatchInlineSnapshot(`{}`)
+        expect(packagejson).toMatchInlineSnapshot(`
+          {
+            "exports": {},
+          }
+        `)
         expect(linter.shouldFail).toBeFalsy()
     })
 
@@ -855,15 +859,17 @@ describe('lint exports', () => {
         vi.spyOn(linter, 'packagejson', 'get').mockReturnValue(packagejson)
         vi.spyOn(linter, 'links', 'get').mockReturnValue([
             {
-                exports: './.dist/index.js',
+                exports: { '.': './.dist/index.js' },
             } as unknown as ProjectDefinition,
         ])
 
         linter.lintExports()
         expect(packagejson).toMatchInlineSnapshot(`
-            {
-              "exports": "./.dist/index.js",
-            }
+          {
+            "exports": {
+              ".": "./.dist/index.js",
+            },
+          }
         `)
         expect(linter.shouldFail).toBeTruthy()
     })
@@ -894,12 +900,16 @@ describe('lint exports', () => {
 
     it('fixes the package according to all linked templates', () => {
         const packagejson = {
-            exports: './index.js',
+            exports: {
+                '.': './index.js',
+            },
         } as unknown as PackageJson
         vi.spyOn(linter, 'packagejson', 'get').mockReturnValue(packagejson)
         vi.spyOn(linter, 'links', 'get').mockReturnValue([
             {
-                exports: './index.js',
+                exports: {
+                    '.': './index.js',
+                },
             },
             {
                 exports: {
