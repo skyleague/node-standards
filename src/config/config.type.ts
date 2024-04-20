@@ -3,33 +3,39 @@
  * Do not manually touch this
  */
 /* eslint-disable */
-import type { ValidateFunction } from 'ajv'
-import { ValidationError } from 'ajv'
+
+import type { DefinedError, ValidateFunction } from 'ajv'
+
+import { validate as PackageConfigurationValidator } from './schemas/package-configuration.schema.js'
 
 export interface PackageConfiguration {
     extends: [string, ...string[]] | string
-    ignorePatterns?: string[]
-    rules?: {
-        publishConfig?: boolean
-        license?: boolean
-        engines?: boolean
-        files?: boolean
-        dependencies?: boolean
-        devDependencies?: boolean
-        scripts?: boolean
-        packageType?: boolean
-        exports?: boolean
-        types?: boolean
-        main?: boolean
-        workspaces?: boolean
-    }
-    projectSettings?: {
-        [k: string]: string | undefined
-    }
+    ignorePatterns?: string[] | undefined
+    rules?:
+        | {
+              publishConfig?: boolean | undefined
+              license?: boolean | undefined
+              engines?: boolean | undefined
+              files?: boolean | undefined
+              dependencies?: boolean | undefined
+              devDependencies?: boolean | undefined
+              scripts?: boolean | undefined
+              packageType?: boolean | undefined
+              exports?: boolean | undefined
+              types?: boolean | undefined
+              main?: boolean | undefined
+              workspaces?: boolean | undefined
+          }
+        | undefined
+    projectSettings?:
+        | {
+              [k: string]: string | undefined
+          }
+        | undefined
 }
 
 export const PackageConfiguration = {
-    validate: (await import('./schemas/package-configuration.schema.js')).validate as ValidateFunction<PackageConfiguration>,
+    validate: PackageConfigurationValidator as ValidateFunction<PackageConfiguration>,
     get schema() {
         return PackageConfiguration.validate.schema
     },
@@ -37,9 +43,10 @@ export const PackageConfiguration = {
         return PackageConfiguration.validate.errors ?? undefined
     },
     is: (o: unknown): o is PackageConfiguration => PackageConfiguration.validate(o) === true,
-    assert: (o: unknown) => {
-        if (!PackageConfiguration.validate(o)) {
-            throw new ValidationError(PackageConfiguration.errors ?? [])
+    parse: (o: unknown): { right: PackageConfiguration } | { left: DefinedError[] } => {
+        if (PackageConfiguration.is(o)) {
+            return { right: o }
         }
+        return { left: (PackageConfiguration.errors ?? []) as DefinedError[] }
     },
 } as const
