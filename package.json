@@ -69,7 +69,7 @@
     "yargs": "^17.7.2"
   },
   "devDependencies": {
-    "@skyleague/therefore": "^4.1.1",
+    "@skyleague/therefore": "^5.0.4",
     "@types/find-root": "^1.1.4",
     "@types/is-ci": "^3.0.4",
     "@types/semver": "^7.5.8",

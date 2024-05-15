@@ -34,7 +34,7 @@
     "yargs": "^17.7.2"
   },
   "devDependencies": {
-    "@skyleague/node-standards": ">5.0.0",
+    "@skyleague/node-standards": ">=7.0.0",
     "@types/yargs": "^17.0.32",
     "typescript": "^5.4.5"
   },

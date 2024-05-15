@@ -8,16 +8,17 @@
     "resolveJsonModule": true,
     "moduleDetection": "force",
     "isolatedModules": true,
+    "verbatimModuleSyntax": true,
 
     /* Strictness */
     "strict": true,
     "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
 
     "noPropertyAccessFromIndexSignature": false,
     "allowUnusedLabels": false,
     "allowUnreachableCode": false,
     "exactOptionalPropertyTypes": true,
-    "noImplicitOverride": true,
 
     "noFallthroughCasesInSwitch": true,
     "noImplicitReturns": true,
