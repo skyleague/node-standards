@@ -1,6 +1,9 @@
 {
   "vcs": { "clientKind": "git", "enabled": true, "useIgnoreFile": true },
-  "files": { "ignore": ["**/*.schema.js", "**/*.type.ts"], "ignoreUnknown": true },
+  "files": {
+    "ignore": ["**/*.schema.js", "**/*.type.ts"],
+    "ignoreUnknown": true
+  },
   "formatter": {
     "enabled": true,
     "indentStyle": "space",
@@ -33,7 +36,7 @@
       },
       "nursery": {
         "noDuplicateJsonKeys": "error",
-        "noEvolvingAny": "error"
+        "noEvolvingTypes": "error"
       }
     }
   },

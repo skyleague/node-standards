@@ -24,8 +24,8 @@
     "check:coverage": "vitest run --coverage=true",
     "check:project": "node-standards lint",
     "check:types": "tsc -p tsconfig.json",
-    "lint": "biome check src test examples",
-    "lint:fix": "npm run lint -- --apply-unsafe",
+    "lint": "biome check",
+    "lint:fix": "npm run lint -- --write --unsafe",
     "package": "rm -rf .dist && npm run build",
     "prepare": "husky || true",
     "test": "vitest run"
