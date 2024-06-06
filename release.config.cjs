@@ -41,13 +41,13 @@ function gitSha() {
     return (
         process.env.GITHUB_SHA ??
         // Fallback, will not be executed in CI environments
-        require('child_process').execSync('git rev-parse HEAD', { cwd: process.cwd(), encoding: 'utf-8' })
+        require('node:child_process').execSync('git rev-parse HEAD', { cwd: process.cwd(), encoding: 'utf-8' })
     )
 }
 function gitBranch() {
     return (
         process.env.GITHUB_REF_NAME ??
         // Fallback, will not be executed in CI environments
-        require('child_process').execSync('git rev-parse --abbrev-ref HEAD', { cwd: process.cwd(), encoding: 'utf-8' })
+        require('node:child_process').execSync('git rev-parse --abbrev-ref HEAD', { cwd: process.cwd(), encoding: 'utf-8' })
     )
 }
