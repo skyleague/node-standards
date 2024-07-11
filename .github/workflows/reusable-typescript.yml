@@ -117,6 +117,7 @@ jobs:
         with:
           name: ${{ inputs.artifact-name }}
           path: ${{ inputs.artifact-path }}
+          compression-level: 9
 
     outputs:
       artifact-name: ${{ inputs.artifact-name }}
