@@ -42,6 +42,7 @@ jobs:
         with:
           name: ${{ inputs.artifact_name }}
           path: ${{ inputs.artifact_path }}
+          compression-level: 9
       - name: Set artifact name
         id: set_artifact_name
         run: echo "artifact_name=${{ inputs.artifact_name }}" >> $GITHUB_OUTPUT
