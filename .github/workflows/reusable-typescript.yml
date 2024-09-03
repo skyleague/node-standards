@@ -24,6 +24,11 @@ on:
         type: string
         required: false
         default: ''
+      include_hidden_files:
+        description: Include hidden files in the build artifacts
+        type: boolean
+        required: false
+        default: true
     secrets:
       GITHUB_NPM_TOKEN:
         description: Token to install GitHub packages with
@@ -118,6 +123,6 @@ jobs:
           name: ${{ inputs.artifact-name }}
           path: ${{ inputs.artifact-path }}
           compression-level: 9
-
+          include-hidden-files: ${{ inputs.include_hidden_files }}
     outputs:
       artifact-name: ${{ inputs.artifact-name }}
