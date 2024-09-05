@@ -1,10 +1,10 @@
 {
   "vcs": { "clientKind": "git", "enabled": true, "useIgnoreFile": true },
   "files": {
-    "ignore": ["**/*.schema.js", "**/*.type.ts"],
     "ignoreUnknown": true
   },
   "formatter": {
+    "ignore": ["**/*.schema.js"],
     "enabled": true,
     "indentStyle": "space",
     "indentWidth": 4,
@@ -12,6 +12,7 @@
   },
   "organizeImports": { "enabled": true },
   "linter": {
+    "ignore": ["**/*.schema.js", "**/*.type.ts"],
     "enabled": true,
     "rules": {
       "recommended": true,
