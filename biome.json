@@ -10,7 +10,10 @@
     "indentWidth": 4,
     "lineWidth": 130
   },
-  "organizeImports": { "enabled": true },
+  "organizeImports": {
+    "ignore": ["**/*.schema.js"],
+    "enabled": true
+  },
   "linter": {
     "ignore": ["**/*.schema.js", "**/*.type.ts"],
     "enabled": true,
