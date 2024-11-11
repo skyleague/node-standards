@@ -46,38 +46,38 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@biomejs/biome": "^1.8.3",
-    "@commitlint/cli": "^19.4.0",
-    "@commitlint/config-conventional": "^19.2.2",
+    "@biomejs/biome": "^1.9.4",
+    "@commitlint/cli": "^19.5.0",
+    "@commitlint/config-conventional": "^19.5.0",
     "@semantic-release/changelog": "^6.0.3",
-    "@types/node": "^20.16.1",
-    "@vitest/coverage-v8": "^2.0.5",
+    "@types/node": "^20.16.9",
+    "@vitest/coverage-v8": "^2.1.4",
     "conventional-changelog": "^6.0.0",
     "enquirer": "^2.4.1",
-    "esbuild": "^0.23.1",
+    "esbuild": "^0.24.0",
     "fast-glob": "^3.3.2",
     "find-root": "^1.1.0",
-    "husky": "^9.1.5",
+    "husky": "^9.1.6",
     "is-ci": "^3.0.1",
     "line-diff": "^2.1.1",
-    "lint-staged": "^15.2.9",
-    "semantic-release": "^24.1.0",
+    "lint-staged": "^15.2.10",
+    "semantic-release": "^24.2.0",
     "semver": "^7.6.3",
-    "tsx": "^4.17.0",
+    "tsx": "^4.19.1",
     "variable-diff": "^2.0.2",
-    "vitest": "^2.0.5",
+    "vitest": "^2.1.4",
     "yargs": "^17.7.2"
   },
   "devDependencies": {
-    "@skyleague/therefore": "^5.10.2",
+    "@skyleague/therefore": "^5.17.0",
     "@types/find-root": "^1.1.4",
     "@types/is-ci": "^3.0.4",
     "@types/semver": "^7.5.8",
     "@types/yargs": "^17.0.33",
-    "typescript": "^5.5.4"
+    "typescript": "^5.6.3"
   },
   "peerDependencies": {
-    "typescript": "^5.5.4"
+    "typescript": "^5.6.3"
   },
   "engines": {
     "node": ">=20"
