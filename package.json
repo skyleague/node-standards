@@ -45,6 +45,9 @@
     "prepare": "husky || true",
     "test": "vitest run"
   },
+  "overrides": {
+    "npm": "./_EXCLUDED_"
+  },
   "dependencies": {
     "@biomejs/biome": "^1.9.4",
     "@commitlint/cli": "^19.5.0",
