@@ -1,4 +1,4 @@
-export { type ProjectTemplate } from './templates/index.js'
+export type { ProjectTemplate } from './templates/index.js'
 export * from './templates/index.js'
 export { templates } from './definition.js'
 export { Project } from './project.js'

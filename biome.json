@@ -28,7 +28,8 @@
         "useShorthandAssign": "error"
       },
       "suspicious": {
-        "useAwait": "error"
+        "useAwait": "error",
+        "noEvolvingTypes": "error"
       },
       "correctness": {
         "noUnusedVariables": "error",
@@ -37,10 +38,6 @@
       },
       "complexity": {
         "noUselessLoneBlockStatements": "off"
-      },
-      "nursery": {
-        "noDuplicateJsonKeys": "error",
-        "noEvolvingTypes": "error"
       }
     }
   },
