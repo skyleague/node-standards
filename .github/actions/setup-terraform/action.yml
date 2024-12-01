@@ -5,7 +5,7 @@ inputs:
   terraform-version:
     description: 'Terraform version to use, default to (1.7.1)'
     required: true
-    default: 1.7.1
+    default: "1.7.1"
   working-directory:
     description: 'From which directory do we need to set this up'
     required: true

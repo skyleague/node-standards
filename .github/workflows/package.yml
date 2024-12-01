@@ -33,6 +33,8 @@ jobs:
     uses: skyleague/node-standards/.github/workflows/reusable-typescript.yml@main
     secrets:
       NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+    with:
+      npm-args: '--workspaces'
 
   release:
     needs: [typescript,optimize_ci]

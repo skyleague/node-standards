@@ -55,7 +55,10 @@ jobs:
         env:
           GITHUB_NPM_TOKEN: ${{ secrets.GITHUB_NPM_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-      - run: npm run lint ${{ inputs.npm-args }}
+      - if: inputs.npm-args == ''
+        run: node --run lint
+      - if: inputs.npm-args != ''
+        run: npm run lint ${{ inputs.npm-args }}
 
   standards:
     runs-on: ubuntu-latest
@@ -71,7 +74,10 @@ jobs:
         env:
           GITHUB_NPM_TOKEN: ${{ secrets.GITHUB_NPM_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-      - run: npm run check:project ${{ inputs.npm-args }}
+      - if: inputs.npm-args == ''
+        run: node --run check:project
+      - if: inputs.npm-args != ''
+        run: npm run check:project ${{ inputs.npm-args }}
 
   types:
     runs-on: ubuntu-latest
@@ -86,7 +92,10 @@ jobs:
         env:
           GITHUB_NPM_TOKEN: ${{ secrets.GITHUB_NPM_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-      - run: npm run check:types ${{ inputs.npm-args }}
+      - if: inputs.npm-args == ''
+        run: node --run check:types
+      - if: inputs.npm-args != ''
+        run: npm run check:types ${{ inputs.npm-args }}
 
   test:
     runs-on: ubuntu-latest
@@ -101,7 +110,10 @@ jobs:
         env:
           GITHUB_NPM_TOKEN: ${{ secrets.GITHUB_NPM_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-      - run: npm run check:coverage ${{ inputs.npm-args }}
+      - if: inputs.npm-args == ''
+        run: node --run check:coverage
+      - if: inputs.npm-args != ''
+        run: npm run check:coverage ${{ inputs.npm-args }}
 
   build:
     runs-on: ubuntu-latest
@@ -116,7 +128,10 @@ jobs:
         env:
           GITHUB_NPM_TOKEN: ${{ secrets.GITHUB_NPM_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-      - run: npm run build ${{ inputs.npm-args }}
+      - if: inputs.npm-args == ''
+        run: node --run build
+      - if: inputs.npm-args != ''
+        run: npm run build ${{ inputs.npm-args }}
       - name: Dist artifacts
         uses: actions/upload-artifact@v4
         with:
