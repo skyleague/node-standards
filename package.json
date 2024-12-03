@@ -39,9 +39,8 @@
     "@biomejs/biome": "^1.9.4",
     "@commitlint/cli": "^19.6.0",
     "@commitlint/config-conventional": "^19.6.0",
-    "@semantic-release/changelog": "^6.0.3",
-    "@types/node": "^20.16.1",
-    "@vitest/coverage-v8": "^2.1.6",
+    "@types/node": "^22.10.1",
+    "@vitest/coverage-v8": "^2.1.8",
     "conventional-changelog": "^6.0.0",
     "enquirer": "^2.4.1",
     "fast-glob": "^3.3.2",
@@ -50,11 +49,10 @@
     "is-ci": "^3.0.1",
     "line-diff": "^2.1.1",
     "lint-staged": "^15.2.10",
-    "semantic-release": "^24.2.0",
     "semver": "^7.6.3",
     "tsx": "^4.19.2",
     "variable-diff": "^2.0.2",
-    "vitest": "^2.1.6",
+    "vitest": "^2.1.8",
     "yargs": "^17.7.2"
   },
   "devDependencies": {
@@ -64,9 +62,6 @@
     "@types/semver": "^7.5.8",
     "@types/yargs": "^17.0.33",
     "typescript": "^5.7.2"
-  },
-  "overrides": {
-    "npm": "./"
   },
   "peerDependencies": {
     "typescript": "^5.7.2"
