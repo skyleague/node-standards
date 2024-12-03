@@ -65,6 +65,9 @@
     "@types/yargs": "^17.0.33",
     "typescript": "^5.7.2"
   },
+  "overrides": {
+    "npm": "./_EXCLUDED_"
+  },
   "peerDependencies": {
     "typescript": "^5.7.2"
   },
