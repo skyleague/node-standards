@@ -18,7 +18,7 @@ export const CommonTypescriptTemplate: ProjectTemplateBuilder = {
     template: {
         repositoryUrl,
         engines: {
-            node: '>=20',
+            node: '>=22',
         },
         scripts: {
             build: 'tsc -p tsconfig.dist.json',
@@ -33,7 +33,7 @@ export const CommonTypescriptTemplate: ProjectTemplateBuilder = {
             lint: 'biome check',
             'lint:full': undefined,
             'lint:fix': 'node --run lint -- --write --unsafe',
-            package: 'rm -rf .dist && npm --run build',
+            package: 'rm -rf .dist && node --run build',
             test: 'vitest run',
         },
         publishConfig: {
