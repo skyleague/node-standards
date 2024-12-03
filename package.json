@@ -1,6 +1,6 @@
 {
   "name": "@skyleague/node-standards",
-  "version": "8.2.2",
+  "version": "9.0.0",
   "description": "Build tools for SkyLeague packages.",
   "repository": {
     "type": "git",
@@ -34,9 +34,6 @@
     "package": "rm -rf .dist && node --run build",
     "prepare": "husky || true",
     "test": "vitest run"
-  },
-  "overrides": {
-    "npm": "./_EXCLUDED_"
   },
   "dependencies": {
     "@biomejs/biome": "^1.9.4",
