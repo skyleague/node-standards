@@ -32,8 +32,8 @@ export const CommonTypescriptTemplate: ProjectTemplateBuilder = {
             format: undefined,
             lint: 'biome check',
             'lint:full': undefined,
-            'lint:fix': 'npm run lint -- --write --unsafe',
-            package: 'rm -rf .dist && npm run build',
+            'lint:fix': 'node --run lint -- --write --unsafe',
+            package: 'rm -rf .dist && npm --run build',
             test: 'vitest run',
         },
         publishConfig: {

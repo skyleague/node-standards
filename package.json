@@ -22,17 +22,7 @@
   "bin": {
     "node-standards": "./bin/run.js"
   },
-  "files": [
-    "bin",
-    ".dist",
-    "biome.json",
-    "esbuild.plugins.cjs",
-    "package.json",
-    "release.config.cjs",
-    "templates",
-    "examples",
-    "tsconfig.base.json"
-  ],
+  "files": ["bin", ".dist", "biome.json", "package.json", "release.config.cjs", "templates", "examples", "tsconfig.base.json"],
   "scripts": {
     "build": "tsc -p tsconfig.dist.json",
     "build:docs": "npx typedoc",
@@ -40,8 +30,8 @@
     "check:project": "node-standards lint",
     "check:types": "tsc -p tsconfig.json",
     "lint": "biome check",
-    "lint:fix": "npm run lint -- --write --unsafe",
-    "package": "rm -rf .dist && npm run build",
+    "lint:fix": "node --run lint -- --write --unsafe",
+    "package": "rm -rf .dist && node --run build",
     "prepare": "husky || true",
     "test": "vitest run"
   },
@@ -50,17 +40,16 @@
   },
   "dependencies": {
     "@biomejs/biome": "^1.9.4",
-    "@commitlint/cli": "^19.5.0",
-    "@commitlint/config-conventional": "^19.5.0",
+    "@commitlint/cli": "^19.6.0",
+    "@commitlint/config-conventional": "^19.6.0",
     "@semantic-release/changelog": "^6.0.3",
     "@types/node": "^20.16.1",
-    "@vitest/coverage-v8": "^2.1.4",
+    "@vitest/coverage-v8": "^2.1.6",
     "conventional-changelog": "^6.0.0",
     "enquirer": "^2.4.1",
-    "esbuild": "^0.24.0",
     "fast-glob": "^3.3.2",
     "find-root": "^1.1.0",
-    "husky": "^9.1.6",
+    "husky": "^9.1.7",
     "is-ci": "^3.0.1",
     "line-diff": "^2.1.1",
     "lint-staged": "^15.2.10",
@@ -68,22 +57,22 @@
     "semver": "^7.6.3",
     "tsx": "^4.19.2",
     "variable-diff": "^2.0.2",
-    "vitest": "^2.1.4",
+    "vitest": "^2.1.6",
     "yargs": "^17.7.2"
   },
   "devDependencies": {
-    "@skyleague/therefore": "^5.17.0",
+    "@skyleague/therefore": "^6.1.0",
     "@types/find-root": "^1.1.4",
     "@types/is-ci": "^3.0.4",
     "@types/semver": "^7.5.8",
     "@types/yargs": "^17.0.33",
-    "typescript": "^5.6.3"
+    "typescript": "^5.7.2"
   },
   "peerDependencies": {
-    "typescript": "^5.6.3"
+    "typescript": "^5.7.2"
   },
   "engines": {
-    "node": ">=20"
+    "node": ">=22"
   },
   "publishConfig": {
     "access": "public",

@@ -3,9 +3,9 @@ description: 'Setup a NodeJS environment and restore dependencies'
 
 inputs:
   node-version:
-    description: 'Node version to use, default to (20.x)'
+    description: 'Node version to use, default to (22.x)'
     required: true
-    default: 20
+    default: '22'
   working-directory:
     description: 'From which directory do we need to set this up'
     required: true
