@@ -82,7 +82,7 @@
   "workspaces": ["./", "examples/*"],
   "node-standards": {
     "extends": "yargs-cli",
-    "ignorePatterns": ["biome.json", "release.config.cjs", "tsconfig.json"],
+    "ignorePatterns": ["biome.json", "release.config.cjs", "tsconfig.json", ".github/workflows/package.yml"],
     "rules": {
       "files": false
     }
