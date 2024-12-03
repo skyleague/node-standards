@@ -4,7 +4,7 @@
   "description": "Build tools for SkyLeague packages.",
   "repository": {
     "type": "git",
-    "url": "https://github.com/skyleague/node-standards.git"
+    "url": "git+https://github.com/skyleague/node-standards.git"
   },
   "license": "MIT",
   "author": "SkyLeague Technologies B.V. <technologies@skyleague.io> (https://skyleague.io)",
@@ -20,7 +20,7 @@
   },
   "types": "./.dist/index.d.ts",
   "bin": {
-    "node-standards": "./bin/run.js"
+    "node-standards": "bin/run.js"
   },
   "files": ["bin", ".dist", "biome.json", "package.json", "release.config.cjs", "templates", "examples", "tsconfig.base.json"],
   "scripts": {
