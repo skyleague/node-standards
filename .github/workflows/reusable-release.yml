@@ -3,6 +3,11 @@ name: Reusable release pipeline for NodeJS projects
 on:
   workflow_call:
     inputs:
+      node-version:
+        description: 'Node version to use, default to (22.x)'
+        type: string
+        required: false
+        default: '22'
       beta_release:
         description: Create beta release
         type: boolean
@@ -38,7 +43,7 @@ on:
 jobs:
   release:
     runs-on: ubuntu-latest
-    if: inputs.semantic_release
+    if: inputs.semantic_release && (github.ref == 'refs/heads/next' || github.ref == 'refs/heads/main' || inputs.beta_release)
     permissions:
       contents: write # to be able to publish a GitHub release
       issues: write # to be able to comment on released issues
@@ -52,7 +57,13 @@ jobs:
         with:
           name: ${{ inputs.build_artifact_name }}
           path: ${{ inputs.build_artifact_path }}
-      - uses: skyleague/node-standards/.github/actions/setup-node@main
+      - name: Create semantic-release cache file
+        run: touch semantic-release
+      - uses: actions/setup-node@v4
+        with:
+          cache: 'npm'
+          node-version: ${{ inputs.node-version }}
+          cache-dependency-path: 'semantic-release'
         env:
           GITHUB_NPM_TOKEN: ${{ secrets.GITHUB_NPM_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
@@ -81,7 +92,7 @@ jobs:
     if: ${{ inputs.publish_docs == 'true' && (github.ref == 'refs/heads/next' || github.ref == 'refs/heads/main') }}
     steps:
       - uses: actions/checkout@v4
-      - uses: skyleague/node-standards/.github/actions/setup-node@main
+      - uses: skyleague/node-standards/.github/actions/setup-js@main
         env:
           GITHUB_NPM_TOKEN: ${{ secrets.GITHUB_NPM_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
