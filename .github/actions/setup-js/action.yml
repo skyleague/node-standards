@@ -1,4 +1,4 @@
-name: 'Setup Node.js'
+name: 'Setup js'
 description: 'Setup a NodeJS environment and restore dependencies'
 
 inputs:
@@ -30,26 +30,16 @@ inputs:
     description: 'Additional hash for caching'
     required: false
     default: ''
-outputs:
-  cache-hit:
-    description: 'Had an exact cache hit'
-    value: ${{ steps.cache.outputs.cache-hit }}
 
 runs:
   using: 'composite'
   steps:
     - name: Use Node.js ${{ inputs.node-version }}
       uses: actions/setup-node@v4
+      id: setup-node
       with:
+        cache: 'npm'
         node-version: ${{ inputs.node-version }}
-    - name: Cache dependencies
-      id: cache
-      uses: actions/cache@v4
-      with:
-        path: |
-          ${{ inputs.working-directory }}**/package-lock.json
-          ${{ inputs.working-directory }}node_modules
-        key: ${{ inputs.working-directory }}-node-modules-${{ inputs.node-version }}-${{ hashFiles('package-lock.json') }}-${{ inputs.cache-hash }}
     - name: Install global dependencies
       if: ${{ inputs.global-packages != '' }}
       run: npm install -g ${{ inputs.global-packages }}
@@ -60,7 +50,6 @@ runs:
       working-directory: ${{ inputs.working-directory }}
       shell: bash
     - name: Install dependencies
-      if: steps.cache.outputs.cache-hit != 'true'
       run: ${{ inputs.install }}
       working-directory: ${{ inputs.working-directory }}
       shell: bash
