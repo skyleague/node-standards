@@ -67,6 +67,10 @@ jobs:
         env:
           GITHUB_NPM_TOKEN: ${{ secrets.GITHUB_NPM_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - run: npm ci --ignore-scripts
+        env:
+          GITHUB_NPM_TOKEN: ${{ secrets.GITHUB_NPM_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
       - uses: skyleague/node-standards/.github/actions/release@main
         with:
           dry_run: ${{ (github.ref == 'refs/heads/next' || github.ref == 'refs/heads/main' || inputs.beta_release) && 'false' || 'true' }}
