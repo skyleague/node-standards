@@ -19,7 +19,7 @@
   "files": [".dist", "package.json"],
   "scripts": {
     "build": "tsc -p tsconfig.dist.json",
-    "build:docs": "npm run --workspace=docs build",
+    "build:docs": "npm run --prefix=docs build",
     "check:coverage": "vitest run --coverage=true",
     "check:project": "node-standards lint",
     "check:types": "tsc -p tsconfig.json",
@@ -44,6 +44,5 @@
   },
   "node-standards": {
     "extends": ["library", "docusaurus"]
-  },
-  "workspaces": ["docs"]
+  }
 }
