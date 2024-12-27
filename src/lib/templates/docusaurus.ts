@@ -7,6 +7,7 @@ export const DocusaurusTemplate: ProjectTemplate = {
     template: {
         repositoryUrl,
         scripts: {
+            'prebuild:docs': undefined,
             'build:docs': 'npm run --prefix=docs build',
         },
         devDependencies: {},
