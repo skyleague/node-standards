@@ -96,7 +96,15 @@ jobs:
     if: ${{ inputs.publish_docs == 'true' && (github.ref == 'refs/heads/next' || github.ref == 'refs/heads/main') }}
     steps:
       - uses: actions/checkout@v4
-      - uses: skyleague/node-standards/.github/actions/setup-js@main
+      - name: Create semantic-release cache file
+        run: touch documentation
+      - uses: actions/setup-node@v4
+        with:
+          cache: 'npm'
+          node-version: ${{ inputs.node-version }}
+          cache-dependency-path: |
+            docs/package.json
+            package-lock.json
         env:
           GITHUB_NPM_TOKEN: ${{ secrets.GITHUB_NPM_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
