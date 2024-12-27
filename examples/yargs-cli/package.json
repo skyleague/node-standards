@@ -28,7 +28,8 @@
     "lint:fix": "node --run lint -- --write --unsafe",
     "package": "rm -rf .dist && node --run build",
     "prepare": "husky || true",
-    "test": "vitest run"
+    "test": "vitest run",
+    "prebuild:docs": "npm ci"
   },
   "dependencies": {
     "yargs": "^17.7.2"
