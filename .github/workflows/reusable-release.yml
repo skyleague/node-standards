@@ -92,15 +92,29 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    if: |
-      inputs.publish_docs == 'true' && 
-      fromJson(readFile('package.json')).scripts['build:docs'] && 
-      (github.ref == 'refs/heads/next' || github.ref == 'refs/heads/main')
     steps:
       - uses: actions/checkout@v4
+      - name: Check documentation requirements
+        id: check_docs
+        run: |
+          if [[ "${{ inputs.publish_docs }}" != "true" ]]; then
+            echo "Documentation publishing not requested"
+            exit 0
+          fi
+          if ! jq -e '.scripts["build:docs"]' package.json > /dev/null; then
+            echo "No build:docs script found in package.json"
+            exit 0
+          fi
+          if [[ "${{ github.ref }}" != "refs/heads/next" && "${{ github.ref }}" != "refs/heads/main" ]]; then
+            echo "Not on main or next branch"
+            exit 0
+          fi
+          echo "should_publish=true" >> "$GITHUB_OUTPUT"
       - name: Create semantic-release cache file
+        if: steps.check_docs.outputs.should_publish == 'true'
         run: touch documentation
       - uses: actions/setup-node@v4
+        if: steps.check_docs.outputs.should_publish == 'true'
         with:
           cache: 'npm'
           node-version: ${{ inputs.node-version }}
@@ -111,11 +125,15 @@ jobs:
           GITHUB_NPM_TOKEN: ${{ secrets.GITHUB_NPM_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
       - run: npm ci --ignore-scripts
+        if: steps.check_docs.outputs.should_publish == 'true'
       - run: npm run build:docs
+        if: steps.check_docs.outputs.should_publish == 'true'
       - name: Upload artifact
+        if: steps.check_docs.outputs.should_publish == 'true'
         uses: actions/upload-pages-artifact@v3
         with:
           path: '.docs'
       - name: Deploy to GitHub Pages
+        if: steps.check_docs.outputs.should_publish == 'true'
         id: deployment
         uses: actions/deploy-pages@v4
