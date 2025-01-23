@@ -94,7 +94,6 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     if: |
       inputs.publish_docs == 'true' && 
-      hashFiles('package.json') != '' && 
       fromJson(readFile('package.json')).scripts['build:docs'] && 
       (github.ref == 'refs/heads/next' || github.ref == 'refs/heads/main')
     steps:
