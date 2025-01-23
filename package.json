@@ -26,7 +26,6 @@
   "scripts": {
     "build": "tsc -p tsconfig.dist.json",
     "prebuild:docs": "npm ci",
-    "build:docs": "npx typedoc",
     "check:coverage": "vitest run --coverage=true",
     "check:project": "node-standards lint",
     "check:types": "tsc -p tsconfig.json",
