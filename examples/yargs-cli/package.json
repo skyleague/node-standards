@@ -20,7 +20,6 @@
   "files": ["bin", ".dist", "package.json"],
   "scripts": {
     "build": "tsc -p tsconfig.dist.json",
-    "build:docs": "npx typedoc",
     "check:coverage": "vitest run --coverage=true",
     "check:project": "node-standards lint",
     "check:types": "tsc -p tsconfig.json",

@@ -93,7 +93,7 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
 
-    if: ${{ inputs.publish_docs == 'true' && (github.ref == 'refs/heads/next' || github.ref == 'refs/heads/main') }}
+    if: ${{ inputs.publish_docs == 'true' && contains(fromJSON(inputs.package_json).scripts, 'build:docs') && (github.ref == 'refs/heads/next' || github.ref == 'refs/heads/main') }}
     steps:
       - uses: actions/checkout@v4
       - name: Create semantic-release cache file
