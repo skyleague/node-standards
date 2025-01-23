@@ -32,7 +32,7 @@
   "dependencies": {},
   "devDependencies": {
     "@skyleague/node-standards": ">=8.2.4",
-    "typescript": "^5.7.2"
+    "typescript": "^5.7.3"
   },
   "engines": {
     "node": ">=22"
