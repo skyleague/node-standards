@@ -19,7 +19,6 @@
   "files": [".dist", "package.json"],
   "scripts": {
     "build": "tsc -p tsconfig.dist.json",
-    "build:docs": "npm run --prefix=docs build",
     "check:coverage": "vitest run --coverage=true",
     "check:project": "node-standards lint",
     "check:types": "tsc -p tsconfig.json",
@@ -27,12 +26,13 @@
     "lint:fix": "node --run lint -- --write --unsafe",
     "package": "rm -rf .dist && node --run build",
     "prepare": "husky || true",
-    "test": "vitest run"
+    "test": "vitest run",
+    "prebuild:docs": "npm ci"
   },
   "dependencies": {},
   "devDependencies": {
     "@skyleague/node-standards": ">=8.2.4",
-    "typescript": "^5.7.3"
+    "typescript": "^5.8.2"
   },
   "engines": {
     "node": ">=22"
@@ -43,6 +43,6 @@
     "registry": "https://registry.npmjs.org"
   },
   "node-standards": {
-    "extends": ["library", "docusaurus"]
+    "extends": ["library"]
   }
 }
