@@ -84,6 +84,7 @@ jobs:
   documentation:
     concurrency: gh-pages
     runs-on: ubuntu-latest
+    if: inputs.semantic_release && (github.ref == 'refs/heads/next' || github.ref == 'refs/heads/main' || inputs.beta_release)
     permissions:
       contents: read
       pages: write

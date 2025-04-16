@@ -25,7 +25,6 @@
   "files": ["bin", ".dist", "biome.json", "package.json", "release.config.cjs", "templates", "examples", "tsconfig.base.json"],
   "scripts": {
     "build": "tsc -p tsconfig.dist.json",
-    "prebuild:docs": "npm ci",
     "check:coverage": "vitest run --coverage=true",
     "check:project": "node-standards lint",
     "check:types": "tsc -p tsconfig.json",
