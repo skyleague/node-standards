@@ -26,8 +26,7 @@
     "lint:fix": "node --run lint -- --write --unsafe",
     "package": "rm -rf .dist && node --run build",
     "prepare": "husky || true",
-    "test": "vitest run",
-    "prebuild:docs": "npm ci"
+    "test": "vitest run"
   },
   "dependencies": {},
   "devDependencies": {

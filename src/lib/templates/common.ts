@@ -23,7 +23,7 @@ export const CommonTypescriptTemplate: ProjectTemplateBuilder = {
         scripts: {
             build: 'tsc -p tsconfig.dist.json',
             'build:clean': undefined,
-            'prebuild:docs': 'npm ci',
+            'prebuild:docs': undefined,
             'build:docs': undefined,
             'check:cost': undefined,
             'check:coverage': 'vitest run --coverage=true',
