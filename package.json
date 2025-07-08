@@ -52,7 +52,7 @@
     "tsx": "^4.19.2",
     "variable-diff": "^2.0.2",
     "vitest": "^3.0.3",
-    "yargs": "^17.7.2"
+    "yargs": "^18.0.0"
   },
   "devDependencies": {
     "@skyleague/therefore": "^7.11.1",

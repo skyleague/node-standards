@@ -30,7 +30,7 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "yargs": "^17.7.2"
+    "yargs": "^18.0.0"
   },
   "devDependencies": {
     "@skyleague/node-standards": ">=7.0.0",
