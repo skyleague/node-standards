@@ -1,6 +1,5 @@
 {
   "extends": "@total-typescript/tsconfig/tsc/no-dom/library",
-  "exclude": ["examples/**/*.ts", "templates/**/*.ts"],
   "compilerOptions": {
     /* https://github.com/total-typescript/tsconfig/issues/17 */
     "lib": ["esnext"],
@@ -13,10 +12,7 @@
     "noImplicitReturns": true,
     "noUncheckedSideEffectImports": true,
 
-    /* Only enable type checking, not type generation */
     "noEmit": true,
-
-    "rootDir": ".",
     "outDir": ".dist"
   }
 }

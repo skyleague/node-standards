@@ -11,18 +11,21 @@
   "type": "module",
   "exports": {
     ".": "./.dist/index.js",
-    "./biome": "./biome.json",
     "./package.json": "./package.json",
     "./*.cjs": "./*.cjs",
     "./.*.cjs": "./.*.cjs",
-    "./tsconfig.base.json": "./tsconfig.base.json",
     "./*.js": "./.dist/*.js"
   },
   "types": "./.dist/index.d.ts",
   "bin": {
     "node-standards": "bin/run.js"
   },
-  "files": ["bin", ".dist", "biome.json", "package.json", "release.config.cjs", "templates", "examples", "tsconfig.base.json"],
+  "files": [
+    "bin",
+    ".dist",
+    "package.json",
+    "templates"
+  ],
   "scripts": {
     "build": "tsc -p tsconfig.dist.json",
     "check:coverage": "vitest run --coverage=true",
@@ -35,35 +38,29 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@biomejs/biome": "^1.9.4",
-    "@commitlint/cli": "^19.6.1",
-    "@commitlint/config-conventional": "^19.6.0",
+    "@biomejs/biome": "^2.1.1",
+    "@commitlint/cli": "^19.8.1",
+    "@commitlint/config-conventional": "^19.8.1",
     "@total-typescript/tsconfig": "^1.0.4",
-    "@types/node": "^22.10.9",
-    "@vitest/coverage-v8": "^3.0.3",
-    "conventional-changelog": "^6.0.0",
-    "enquirer": "^2.4.1",
-    "fast-glob": "^3.3.3",
+    "@types/node": "^22.16.4",
+    "@vitest/coverage-v8": "^3.2.4",
+    "conventional-changelog": "^7.1.1",
     "find-root": "^1.1.0",
     "husky": "^9.1.7",
-    "line-diff": "^2.1.1",
-    "lint-staged": "^15.4.2",
-    "semver": "^7.6.3",
-    "tsx": "^4.19.2",
-    "variable-diff": "^2.0.2",
-    "vitest": "^3.0.3",
+    "lint-staged": "^16.1.2",
+    "semver": "^7.7.2",
+    "tsx": "^4.20.3",
+    "vitest": "^3.2.4",
     "yargs": "^18.0.0"
   },
   "devDependencies": {
-    "@skyleague/therefore": "^7.11.1",
     "@types/find-root": "^1.1.4",
-    "@types/is-ci": "^3.0.4",
-    "@types/semver": "^7.5.8",
+    "@types/semver": "^7.7.0",
     "@types/yargs": "^17.0.33",
-    "typescript": "^5.8.2"
+    "typescript": "^5.8.3"
   },
   "peerDependencies": {
-    "typescript": "^5.8.2"
+    "typescript": "^5.8.3"
   },
   "engines": {
     "node": ">=22"
@@ -73,10 +70,12 @@
     "provenance": true,
     "registry": "https://registry.npmjs.org"
   },
-  "workspaces": ["./", "examples/*"],
+  "workspaces": [
+    "./",
+    "examples/*"
+  ],
   "node-standards": {
     "extends": "yargs-cli",
-    "ignorePatterns": ["biome.json", "release.config.cjs", "tsconfig.json", ".github/workflows/package.yml"],
     "rules": {
       "files": false
     }

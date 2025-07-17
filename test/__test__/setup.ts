@@ -8,6 +8,4 @@ const consoleMock = {
 }
 
 vi.stubGlobal('console', consoleMock)
-
-// biome-ignore lint/correctness/useHookAtTopLevel: This is a test setup file
 vi.useFakeTimers()

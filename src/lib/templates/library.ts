@@ -1,6 +1,5 @@
-import type { ProjectTemplateBuilder } from './types.js'
-
 import { repositoryUrl, rootDirectory } from '../constants.js'
+import type { ProjectTemplateBuilder } from './types.js'
 
 export const LibraryTemplate: ProjectTemplateBuilder = {
     type: 'library',
@@ -12,7 +11,6 @@ export const LibraryTemplate: ProjectTemplateBuilder = {
             './package.json': './package.json',
             './*.js': './.dist/*.js',
         },
-        main: undefined,
         types: './.dist/index.d.ts',
         packageType: 'module',
         links: ['common-typescript', 'license'],

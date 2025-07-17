@@ -1,6 +1,4 @@
 export { CommonTemplate } from './common.js'
 export { LibraryTemplate } from './library.js'
+export type { ProjectTemplate, ProjectTemplateBuilder } from './types.js'
 export { YargsCliTemplate } from './yargs-cli.js'
-export { DocusaurusTemplate } from './docusaurus.js'
-export { TypedocTemplate } from './typedoc.js'
-export type { ProjectTemplateBuilder, ProjectTemplate } from './types.js'

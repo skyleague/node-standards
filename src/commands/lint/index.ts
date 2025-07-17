@@ -1,21 +1,17 @@
+import type { Argv } from 'yargs'
 import { templates as ossTemplates } from '../../lib/index.js'
 import { ProjectLinter } from '../../lib/linter.js'
 import type { ProjectTemplateBuilder } from '../../lib/templates/index.js'
 
-import yargs from 'yargs'
-import type { Argv } from 'yargs'
-import { hideBin } from 'yargs/helpers'
-
-export function builder(y: Argv) {
-    return y
+export function builder(yargs: Argv) {
+    return yargs
         .option('fix', {
             describe: 'Auto-correct detected errors if not provided, only report.',
             type: 'boolean',
             default: false,
         })
-        .option('force-var-storage', {
-            alias: 'fvs',
-            describe: 'Enforce variable storage in package.json',
+        .option('force', {
+            describe: 'Force template updates even for files marked with provisionNewOnly (+).',
             type: 'boolean',
             default: false,
         })
@@ -34,30 +30,22 @@ export async function handler(
     {
         templates = ossTemplates,
         configurationKey = 'node-standards',
-        command: projectCommand = command,
-    }: { templates?: readonly ProjectTemplateBuilder[]; configurationKey?: string; command?: typeof command } = {},
+    }: { templates?: readonly ProjectTemplateBuilder[]; configurationKey?: string } = {},
 ): Promise<void> {
-    const { fix, directory, forceVarStorage } = await argv
+    const { fix, force, directory } = await argv
 
-    const project = new ProjectLinter({
+    new ProjectLinter({
         cwd: directory,
-        forceVarStorage,
         configurationKey,
         templates,
         fix,
-    })
-
-    await yargs(hideBin(process.argv)).command({
-        ...projectCommand,
-        builder: (y) => project.builder(projectCommand.builder(y)).strict(true).help(),
-        handler: async (_argv) => project.lint({ argv: _argv as Record<string, string> }),
-    }).argv
+        force,
+    }).lint()
 }
 
-export const command = {
+export default {
     command: 'lint',
-    describe: 'Analyze project config for errors or deviations from best practices.',
+    describe: 'lint the project configuration',
     builder,
     handler,
 }
-export default command

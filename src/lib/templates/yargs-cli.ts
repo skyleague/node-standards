@@ -1,6 +1,5 @@
-import type { ProjectTemplateBuilder } from './types.js'
-
 import { dependencies, devDependencies, repositoryUrl, rootDirectory } from '../constants.js'
+import type { ProjectTemplateBuilder } from './types.js'
 
 export const YargsCliTemplate: ProjectTemplateBuilder = {
     type: 'yargs-cli',
@@ -8,15 +7,9 @@ export const YargsCliTemplate: ProjectTemplateBuilder = {
         repositoryUrl,
         files: ['bin', '.dist', 'package.json'],
         dependencies: {
-            tslib: undefined,
             yargs: dependencies.yargs,
-            '@types/source-map-support': undefined,
-            'source-map-support': undefined,
         },
         devDependencies: {
-            '@types/source-map-support': undefined,
-            yargs: undefined,
-            'source-map-support': undefined,
             '@types/yargs': devDependencies['@types/yargs'],
         },
         exports: {
@@ -24,7 +17,6 @@ export const YargsCliTemplate: ProjectTemplateBuilder = {
             './package.json': './package.json',
             './*.js': './.dist/*.js',
         },
-        main: undefined,
         types: './.dist/index.d.ts',
         packageType: 'module',
         links: ['common-typescript', 'license'],
