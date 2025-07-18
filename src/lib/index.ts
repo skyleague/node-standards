@@ -1,5 +1,5 @@
+export { templates } from './definition.js'
+export { ProjectLinter } from './linter.js'
+export { Project } from './project.js'
 export type { ProjectTemplate } from './templates/index.js'
 export * from './templates/index.js'
-export { templates } from './definition.js'
-export { Project } from './project.js'
-export { ProjectLinter } from './linter.js'

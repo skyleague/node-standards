@@ -1,6 +1,5 @@
-import type { ProjectTemplate, ProjectTemplateBuilder } from './types.js'
-
 import { peerDependencies, repositoryUrl, rootDirectory } from '../constants.js'
+import type { ProjectTemplate, ProjectTemplateBuilder } from './types.js'
 
 export const CommonTemplate: ProjectTemplate = {
     type: 'common',
@@ -22,17 +21,10 @@ export const CommonTypescriptTemplate: ProjectTemplateBuilder = {
         },
         scripts: {
             build: 'tsc -p tsconfig.dist.json',
-            'build:clean': undefined,
-            'prebuild:docs': undefined,
-            'build:docs': undefined,
-            'check:cost': undefined,
             'check:coverage': 'vitest run --coverage=true',
-            'check:full': undefined,
             'check:project': 'node-standards lint',
             'check:types': 'tsc -p tsconfig.json',
-            format: undefined,
             lint: 'biome check',
-            'lint:full': undefined,
             'lint:fix': 'node --run lint -- --write --unsafe',
             package: 'rm -rf .dist && node --run build',
             test: 'vitest run',
@@ -42,12 +34,9 @@ export const CommonTypescriptTemplate: ProjectTemplateBuilder = {
             provenance: true,
             registry: 'https://registry.npmjs.org',
         },
-        dependencies: {
-            tslib: undefined,
-        },
+        dependencies: {},
         devDependencies: {
             ...peerDependencies,
-            tslib: undefined,
         },
         roots: [rootDirectory],
         links: ['common'],

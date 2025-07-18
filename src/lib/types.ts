@@ -1,4 +1,4 @@
-import type { PackageConfiguration } from '../config/config.type.js'
+import type { PackageConfiguration } from '../config/config.js'
 
 export type PackageJson = Record<string, unknown> & {
     name: string | undefined

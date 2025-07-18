@@ -1,8 +1,0 @@
-{
-  "extends": "./tsconfig.json",
-  "include": ["src/**/*", "index.ts"],
-  "exclude": ["src/**/*.spec.ts", "src/**/*.schema.ts"],
-  "compilerOptions": {
-    "noEmit": false
-  }
-}

@@ -4,9 +4,9 @@ module.exports = {
         ...(process.env.BETA_RELEASE === 'true'
             ? [
                   {
-                      name: gitBranch(),
+                      name: '/^[0-9]+-[0-9]+-(feat|fix|perf)_.*/',
+                      prerelease: 'beta',
                       channel: 'beta',
-                      prerelease: `beta-${gitSha().substring(0, 8)}`,
                   },
               ]
             : []),
@@ -15,38 +15,16 @@ module.exports = {
         [
             '@semantic-release/commit-analyzer',
             {
-                preset: 'angular',
-                releaseRules: [
-                    { breaking: true, release: 'major' },
-                    { revert: true, release: 'patch' },
-                    { type: 'feat', release: 'minor' },
-                    { type: 'fix', release: 'patch' },
-                    { type: 'perf', release: 'patch' },
-                    { type: 'docs', release: 'patch' },
-                    { type: 'refactor', release: 'patch' },
-                ],
-                parserOpts: {
-                    noteKeywords: ['BREAKING CHANGE', 'BREAKING CHANGES', 'BREAKING'],
-                },
+                preset: 'conventionalcommits',
             },
         ],
-        '@semantic-release/release-notes-generator',
+        [
+            '@semantic-release/release-notes-generator',
+            {
+                preset: 'conventionalcommits',
+            },
+        ],
         '@semantic-release/github',
         '@semantic-release/npm',
     ],
-}
-
-function gitSha() {
-    return (
-        process.env.GITHUB_SHA ??
-        // Fallback, will not be executed in CI environments
-        require('node:child_process').execSync('git rev-parse HEAD', { cwd: process.cwd(), encoding: 'utf-8' })
-    )
-}
-function gitBranch() {
-    return (
-        process.env.GITHUB_REF_NAME ??
-        // Fallback, will not be executed in CI environments
-        require('node:child_process').execSync('git rev-parse --abbrev-ref HEAD', { cwd: process.cwd(), encoding: 'utf-8' })
-    )
 }

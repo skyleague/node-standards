@@ -1,9 +1,7 @@
-import packageJson from '../../package.json' with { type: 'json' }
-
-import findRoot from 'find-root'
-
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import findRoot from 'find-root'
+import packageJson from '../../package.json' with { type: 'json' }
 
 const { peerDependencies, devDependencies, dependencies, version, repository } = packageJson
 const [, repositoryUrl] = /(https:\/\/.*?)(?:\.git)?$/.exec(repository.url) ?? []

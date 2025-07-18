@@ -1,37 +1,35 @@
+import { spawnSync } from 'node:child_process'
+import fs from 'node:fs'
+import os from 'node:os'
+import path from 'node:path'
+import semver from 'semver'
+import { getAllFiles } from '../common/index.js'
+import type { PackageConfiguration } from '../config/config.js'
 import { Project, type ProjectOptions } from './project.js'
 import type { ProjectTemplateDefinition } from './templates/types.js'
 import type { PackageJson } from './types.js'
 
-import { getAllFiles } from '../common/index.js'
-import type { PackageConfiguration } from '../config/config.type.js'
-
-import LineDiff from 'line-diff'
-import semver from 'semver'
-import vdiff from 'variable-diff'
-
-import fs from 'node:fs'
-import path from 'node:path'
-
 export class ProjectLinter extends Project {
     public readonly fix: boolean
+    public readonly force: boolean
     public shouldFail = false
 
     public constructor({
         fix = false,
+        force = false,
         ...options
     }: ProjectOptions & {
         fix?: boolean
+        force?: boolean
     }) {
         super(options)
         this.fix = fix
+        this.force = force
         this.shouldFail = false
     }
 
-    public async lint({
-        throwOnFail = true,
-        argv = {},
-    }: { throwOnFail?: boolean; argv?: Record<string, string> } = {}): Promise<void> {
-        await this.lintPackage(argv)
+    public lint({ throwOnFail = true }: { throwOnFail?: boolean } = {}): void {
+        this.lintPackage()
         this.lintTemplate()
 
         if (this.shouldFail && throwOnFail) {
@@ -56,7 +54,7 @@ export class ProjectLinter extends Project {
                     const strippedTarget = target.replace(/^[+-]/, '')
                     if (!this.configuration?.ignorePatterns?.includes(strippedTarget)) {
                         targets[strippedTarget] ??= () => {
-                            this.lintFile(`${templateRoot}${relFile}`, target, template.type)
+                            this.lintFile({ from: `${templateRoot}${relFile}`, target, origin: template.type })
                         }
                     }
                 }
@@ -68,7 +66,7 @@ export class ProjectLinter extends Project {
         }
     }
 
-    private lintFile(from: string, target: string, origin: string): void {
+    private lintFile({ from, target, origin }: { from: string; target: string; origin: string }): void {
         let fullTarget = path.join(this.cwd, target)
         const targetBasename = path.basename(target)
         const targetDir = path.dirname(fullTarget)
@@ -80,7 +78,7 @@ export class ProjectLinter extends Project {
         }
 
         const oldContent = fs.existsSync(fullTarget) ? fs.readFileSync(fullTarget).toString() : undefined
-        const newContent = removeExisting ? undefined : this.renderContent(fs.readFileSync(from).toString())
+        const newContent = removeExisting ? undefined : fs.readFileSync(from).toString()
 
         const targetExists = fs.existsSync(fullTarget)
         const oldPermissions = targetExists ? fs.statSync(fullTarget).mode : undefined
@@ -90,10 +88,14 @@ export class ProjectLinter extends Project {
         const isPermissionsDifferent =
             oldPermissions !== undefined && newPermissions !== oldPermissions && newPermissions !== undefined
         const isDifferent = isContentDifferent || isPermissionsDifferent
-        if (isDifferent && (!(provisionNewOnly && targetExists) || removeExisting)) {
+        /*
+         * When force is true, we ignore the provisionNewOnly restriction and always check for differences
+         * This allows enforcing template updates even on existing files marked with '+'
+         */
+        if (isDifferent && (this.force || !(provisionNewOnly && targetExists) || removeExisting)) {
             if (isContentDifferent) {
                 if (oldContent !== undefined) {
-                    console.warn(`[${target}] (${origin}):\n${new LineDiff(oldContent, newContent ?? '').toString()}`)
+                    console.warn(`[${target}] (${origin}):\n${this.generateDiff(oldContent, newContent ?? '')}`)
                 } else {
                     console.warn(`[${target}] (${origin}): file not found`)
                 }
@@ -123,9 +125,50 @@ export class ProjectLinter extends Project {
         }
     }
 
-    private async lintPackage(argv: Record<string, string>): Promise<void> {
+    /*
+     * Generates a unified diff between two text contents.
+     * For JSON inputs, it will pretty print them before comparison.
+     */
+    private generateDiff(before: unknown, after: unknown, options: { format?: 'json' } = {}): string {
+        const beforeStr = options.format === 'json' ? JSON.stringify(before, null, 2) : String(before)
+        const afterStr = options.format === 'json' ? JSON.stringify(after, null, 2) : String(after)
+
+        // Create temporary files for comparison to handle newlines and encoding correctly
+        const tmpDir = os.tmpdir()
+        const beforeFile = path.join(tmpDir, `before-${Date.now()}-${Math.random().toString(36).slice(2)}`)
+        const afterFile = path.join(tmpDir, `after-${Date.now()}-${Math.random().toString(36).slice(2)}`)
+
+        try {
+            fs.writeFileSync(beforeFile, beforeStr)
+            fs.writeFileSync(afterFile, afterStr)
+
+            const { stdout, status } = spawnSync('diff', ['-u', beforeFile, afterFile], {
+                encoding: 'utf8',
+            })
+
+            if (status === 0) {
+                return '' // No differences
+            }
+            if (stdout) {
+                // Remove temporary file paths from the output
+                return stdout.replace(new RegExp(beforeFile, 'g'), 'before').replace(new RegExp(afterFile, 'g'), 'after')
+            }
+
+            return `--- before\n${beforeStr}\n+++ after\n${afterStr}`
+        } finally {
+            // Clean up temporary files
+            try {
+                fs.unlinkSync(beforeFile)
+                fs.unlinkSync(afterFile)
+            } catch {
+                // Ignore cleanup errors
+            }
+        }
+    }
+
+    private lintPackage(): void {
         const json = JSON.stringify(this.packagejson, null, 2)
-        await this.evaluate(argv)
+
         this.lintConfiguration()
         this.lintScripts()
         this.lintPublishConfig()
@@ -155,22 +198,11 @@ export class ProjectLinter extends Project {
             this.packagejson[this.configurationKey] = {
                 type: 'library',
             }
+        } else {
+            this.packagejson[this.configurationKey] = this.packagejson[this.configurationKey] as PackageConfiguration
         }
-
-        for (const [name, variable] of Object.entries(this.templateVariables).filter(
-            ([, v]) => v.skipStore !== true || this.forceVarStorage,
-        )) {
-            const config = this.packagejson[this.configurationKey] as PackageConfiguration
-            config.projectSettings ??= {}
-            config.projectSettings[name] ??= variable.value
-        }
-
         if (JSON.stringify(this.packagejson[this.configurationKey]) !== json) {
-            console.warn(
-                `[package.json>${this.configurationKey}] missing or outdated configuration:\n${
-                    vdiff(JSON.parse(json), this.packagejson[this.configurationKey]).text
-                }`,
-            )
+            console.warn(this.generateDiff(JSON.parse(json), this.packagejson[this.configurationKey], { format: 'json' }))
 
             this.fail()
         }
@@ -243,9 +275,10 @@ export class ProjectLinter extends Project {
         )
         if (JSON.stringify(this.packagejson.exports) !== json) {
             console.warn(
-                `[package.json>exports] missing or outdated entries found:\n${
-                    vdiff(JSON.parse(json), this.packagejson.exports).text
-                }`,
+                `[package.json>exports] missing or outdated entries found:\n${this.generateDiff(
+                    JSON.parse(json),
+                    this.packagejson.exports,
+                )}`,
             )
 
             this.fail()
@@ -290,9 +323,11 @@ export class ProjectLinter extends Project {
         )
         if (JSON.stringify(this.packagejson.scripts) !== json) {
             console.warn(
-                `[package.json>scripts] missing or outdated script entries found:\n${
-                    vdiff(JSON.parse(json), this.packagejson.scripts).text
-                }`,
+                `[package.json>scripts] missing or outdated script entries found:\n${this.generateDiff(
+                    JSON.parse(json),
+                    this.packagejson.scripts,
+                    { format: 'json' },
+                )}`,
             )
 
             this.fail()
@@ -323,9 +358,11 @@ export class ProjectLinter extends Project {
         }
         if (JSON.stringify(this.packagejson.dependencies) !== json) {
             console.warn(
-                `[package.json>dependencies] missing or outdated script entries found:\n${
-                    vdiff(JSON.parse(json), this.packagejson.dependencies).text
-                }`,
+                `[package.json>dependencies] missing or outdated script entries found:\n${this.generateDiff(
+                    JSON.parse(json),
+                    this.packagejson.dependencies,
+                    { format: 'json' },
+                )}`,
             )
 
             this.fail()
@@ -357,9 +394,11 @@ export class ProjectLinter extends Project {
 
         if (JSON.stringify(this.packagejson.devDependencies) !== json) {
             console.warn(
-                `[package.json>devDependencies] missing or outdated script entries found:\n${
-                    vdiff(JSON.parse(json), this.packagejson.devDependencies).text
-                }`,
+                `[package.json>devDependencies] missing or outdated script entries found:\n${this.generateDiff(
+                    JSON.parse(json),
+                    this.packagejson.devDependencies,
+                    { format: 'json' },
+                )}`,
             )
 
             this.fail()
@@ -396,16 +435,18 @@ export class ProjectLinter extends Project {
         for (const value of this.getRequiredTemplates({ order })
             .filter((l) => key in l)
             .map((l) => l[key])) {
-            // biome-ignore lint/suspicious/noExplicitAny:
+            // biome-ignore lint/suspicious/noExplicitAny:wef
             this.packagejson[packageJsonKey] = value as any
             hasValues = true
         }
 
         if (JSON.stringify(this.packagejson[packageJsonKey] ?? {}) !== json && hasValues) {
             console.warn(
-                `[package.json>${packageJsonKey}] missing or outdated configuration found:\n${
-                    vdiff(JSON.parse(json), this.packagejson[packageJsonKey]).text
-                }`,
+                `[package.json>${packageJsonKey}] missing or outdated configuration found:\n${this.generateDiff(
+                    JSON.parse(json),
+                    this.packagejson[packageJsonKey],
+                    { format: 'json' },
+                )}`,
             )
 
             this.fail()

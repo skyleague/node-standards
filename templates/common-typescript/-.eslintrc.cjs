@@ -1,3 +1,0 @@
-/**
- * Migrated to biomejs
- */

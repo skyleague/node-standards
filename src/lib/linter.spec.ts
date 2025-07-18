@@ -1,10 +1,8 @@
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import type { PackageConfiguration } from '../config/index.js'
 import { ProjectLinter } from './linter.js'
 import type { ProjectDefinition } from './templates/types.js'
 import type { PackageJson } from './types.js'
-
-import type { PackageConfiguration } from '../config/index.js'
-
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 describe('lint configuration', () => {
     let linter: ProjectLinter
