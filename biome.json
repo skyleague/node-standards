@@ -5,7 +5,6 @@
   },
   "formatter": {
     "includes": ["**", "!**/sst-env.d.ts"],
-    "enabled": true,
     "indentStyle": "space",
     "indentWidth": 4,
     "lineWidth": 130
@@ -19,12 +18,11 @@
   },
   "linter": {
     "includes": ["**", "!**/sst-env.d.ts"],
-    "enabled": true,
     "domains": {
-      "test": "recommended"
+      "test": "recommended",
+      "project": "recommended"
     },
     "rules": {
-      "recommended": true,
       "style": {
         "noNamespace": "error",
         "useForOf": "error",
@@ -44,8 +42,7 @@
       },
       "correctness": {
         "noUnusedVariables": "error",
-        "noUnusedImports": "error",
-        "useHookAtTopLevel": "error"
+        "noUnusedImports": "error"
       },
       "nursery": {
         "noMisusedPromises": "error"
